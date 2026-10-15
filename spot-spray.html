@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GCP Spot-Spray Script Architect</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-hover: #0ea5e9;
+      --code-bg: #0b1120;
+      --tag-bg: #1e293b;
+      --success: #10b981;
+      --warn: #f59e0b;
+    }
+    .light {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --border: #cbd5e1;
+      --text: #0f172a;
+      --muted: #475569;
+      --accent: #0284c7;
+      --accent-hover: #0369a1;
+      --code-bg: #f8fafc;
+      --tag-bg: #e2e8f0;
+      --success: #059669;
+      --warn: #b45309;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .bg-card-custom { background-color: var(--card); }
+    .border-custom { border-color: var(--border); }
+    .text-muted-custom { color: var(--muted); }
+    .text-accent-custom { color: var(--accent); }
+    .bg-code-custom { background-color: var(--code-bg); }
+    pre {
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* Light Mode High-Contrast Visibility Overrides */
+    .light .text-slate-100 { color: #0f172a !important; }
+    .light .text-slate-200 { color: #1e293b !important; }
+    .light .text-slate-300 { color: #334155 !important; }
+    .light .text-slate-400 { color: #475569 !important; }
+
+    .light .text-sky-300 { color: #0369a1 !important; }
+    .light .text-sky-400 { color: #0369a1 !important; }
+    .light .text-emerald-300 { color: #047857 !important; }
+    .light .text-emerald-400 { color: #047857 !important; }
+    .light .text-amber-300 { color: #b45309 !important; }
+    .light .text-amber-400 { color: #c2410c !important; }
+    .light .text-indigo-300 { color: #4338ca !important; }
+    .light .text-indigo-400 { color: #4338ca !important; }
+
+    /* Code Viewer & Terminal in Light Mode */
+    .light #codePre,
+    .light #codeOutput,
+    .light pre,
+    .light code {
+      color: #0f172a !important;
+    }
+    .light pre#codePre {
+      background-color: #f8fafc !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    /* Simulator Terminal / Log Boxes in Light Mode */
+    .light #simLogTerminal,
+    .light #simLadderLog {
+      background-color: #f8fafc !important;
+      color: #0f172a !important;
+      border: 1px solid #cbd5e1 !important;
+    }
+    .light #simLogTerminal .text-muted-custom,
+    .light #simLadderLog .text-muted-custom {
+      color: #475569 !important;
+    }
+
+    /* Form Controls: Inputs, Selects, and Dropdowns in Light Mode */
+    .light input[type="text"],
+    .light input[type="number"],
+    .light select,
+    .light textarea {
+      color: #0f172a !important;
+      background-color: #ffffff !important;
+      border-color: #cbd5e1 !important;
+    }
+    .light input::placeholder {
+      color: #94a3b8 !important;
+    }
+    .light select option {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+    }
+
+    /* Badges in Light Mode */
+    .light .badge.bg-sky-500\/20 { background-color: #e0f2fe !important; color: #0369a1 !important; border-color: #bae6fd !important; }
+    .light .badge.bg-emerald-500\/20 { background-color: #d1fae5 !important; color: #047857 !important; border-color: #a7f3d0 !important; }
+    .light .badge.bg-amber-500\/20 { background-color: #fef3c7 !important; color: #b45309 !important; border-color: #fde68a !important; }
+    .light .badge.bg-indigo-500\/20 { background-color: #e0e7ff !important; color: #4338ca !important; border-color: #c7d2fe !important; }
+    .light .badge.bg-slate-700\/60,
+    .light .badge.bg-slate-700 { background-color: #e2e8f0 !important; color: #1e293b !important; border-color: #cbd5e1 !important; }
+
+    /* Interactive States & Hovers in Light Mode */
+    .light .hover\:text-white:hover { color: #0f172a !important; }
+    .light .hover\:text-\[var\(--text\)\]:hover { color: #0f172a !important; }
+    .light .hover\:bg-slate-700\/20:hover { background-color: #f1f5f9 !important; }
+    .light .hover\:bg-slate-800\/30:hover { background-color: #f1f5f9 !important; }
+
+    /* Buttons & Toolbar Pills in Light Mode */
+    .light .bg-slate-700\/60 { background-color: #e2e8f0 !important; color: #0f172a !important; }
+    .light .bg-slate-700 { background-color: #e2e8f0 !important; color: #0f172a !important; }
+    .light .bg-slate-700\/50 { background-color: #e2e8f0 !important; color: #1e293b !important; }
+
+    /* Info Callouts & Tips in Light Mode */
+    .light .bg-sky-500\/10 { background-color: #f0f9ff !important; border-color: #bae6fd !important; }
+    .light .bg-emerald-500\/10 { background-color: #ecfdf5 !important; border-color: #a7f3d0 !important; }
+    .light .bg-amber-500\/10 { background-color: #fffbeb !important; border-color: #fde68a !important; }
+    .light .bg-sky-500\/15 { background-color: #e0f2fe !important; border-color: #7dd3fc !important; }
+    .light .bg-emerald-500\/15 { background-color: #d1fae5 !important; border-color: #6ee7b7 !important; }
+    .light .bg-amber-500\/15 { background-color: #fef3c7 !important; border-color: #fde68a !important; }
+
+    /* Splitter Drag Divider in Light Mode */
+    .light #dragDivider:hover { background-color: rgba(5, 150, 105, 0.15) !important; }
+    .light #dragDivider:active { background-color: rgba(5, 150, 105, 0.25) !important; }
+    .light #dragDivider > div { background-color: #94a3b8 !important; }
+  </style>
+</head>
+<body class="p-4 md:p-8 transition-colors duration-200">
+  <div class="max-w-7xl mx-auto space-y-6">
+
+    <!-- Header Section -->
+    <header class="bg-card-custom border border-custom rounded-2xl p-6 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div>
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-2xl font-bold tracking-tight">GCP Spot-Spray Architect</h1>
+              <span class="badge bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">SPOT ROUND-ROBIN</span>
+            </div>
+            <p class="text-muted-custom text-sm mt-0.5">High-speed synchronous retry loop across candidate zones to capture ephemeral Spot GPU capacity</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Top Actions & Navigation Switcher -->
+      <div class="flex flex-wrap items-center gap-2.5">
+        <a href="flex-spray.html" class="px-3 py-1.5 rounded-lg border border-custom bg-card-custom text-sm font-medium hover:border-sky-500 transition flex items-center gap-1.5 text-muted-custom hover:text-[var(--text)]">
+          <span>⚡</span>
+          <span>Flex Spray</span>
+        </a>
+        <span class="px-3 py-1.5 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-sm font-semibold flex items-center gap-1.5">
+          <span>🎯</span>
+          <span>Spot Spray</span>
+        </span>
+        <a href="dws-reservation.html" class="px-3 py-1.5 rounded-lg border border-custom bg-card-custom text-sm font-medium hover:border-sky-500 transition flex items-center gap-1.5 text-muted-custom hover:text-[var(--text)]">
+          <span>📋</span>
+          <span>DWS Reservations</span>
+        </a>
+        <a href="colab-workbench.html" class="px-3 py-1.5 rounded-lg border border-custom bg-card-custom text-sm font-medium hover:border-sky-500 transition flex items-center gap-1.5 text-muted-custom hover:text-[var(--text)]">
+          <span>📓</span>
+          <span>Colab / Workbench</span>
+        </a>
+        <button id="themeToggle" class="px-3 py-1.5 rounded-lg border border-custom bg-card-custom text-sm font-medium hover:border-sky-500/50 transition flex items-center gap-2 ml-1">
+          <span id="themeIcon">☀️</span>
+          <span id="themeText">Theme</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="flex border-b border-custom gap-2 overflow-x-auto pb-1" aria-label="Main tabs">
+      <button class="tab-btn px-4 py-2 font-semibold text-sm border-b-2 border-emerald-500 text-emerald-400 transition" data-tab="configurator">
+        1. Spot Configurator
+      </button>
+      <button class="tab-btn px-4 py-2 font-semibold text-sm border-b-2 border-transparent text-muted-custom hover:text-[var(--text)] transition" data-tab="simulator">
+        2. Live Spot Simulator
+      </button>
+      <button class="tab-btn px-4 py-2 font-semibold text-sm border-b-2 border-transparent text-muted-custom hover:text-[var(--text)] transition" data-tab="matrix">
+        3. Accelerator & Region Matrix
+      </button>
+      <button class="tab-btn px-4 py-2 font-semibold text-sm border-b-2 border-transparent text-muted-custom hover:text-[var(--text)] transition" data-tab="docs">
+        4. Spot Capacity Guide
+      </button>
+      <button class="tab-btn px-4 py-2 font-semibold text-sm border-b-2 border-transparent text-muted-custom hover:text-[var(--text)] transition flex items-center gap-1.5" data-tab="quotas">
+        <span>⚡</span>
+        <span>5. Quota & Capacity Automation</span>
+      </button>
+    </nav>
+
+    <!-- Tab 1: Configurator -->
+    <div id="tab-configurator" class="tab-content flex flex-col lg:flex-row items-stretch gap-4 lg:gap-0 relative">
+      
+      <!-- Left Column: Controls -->
+      <section id="leftPanel" class="w-full lg:w-[42%] lg:pr-3 space-y-6 flex-shrink-0 transition-[width,opacity] duration-150">
+
+        <!-- Accelerator Selection -->
+        <div class="bg-card-custom border border-custom rounded-2xl p-5 shadow-sm space-y-4">
+          <div class="flex justify-between items-center">
+            <h2 class="text-base font-semibold flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              1. Target Accelerators
+            </h2>
+            <span class="text-xs text-muted-custom">Multi-SKU spray supported</span>
+          </div>
+          
+          <div class="space-y-2" id="acceleratorList">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <!-- Regions & Zones -->
+        <div class="bg-card-custom border border-custom rounded-2xl p-5 shadow-sm space-y-4">
+          <div class="flex justify-between items-center">
+            <h2 class="text-base font-semibold flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+              2. Target Regions & Zones
+            </h2>
+            <div class="flex gap-1.5 text-xs">
+              <button id="btnSelectAllZones" class="px-2 py-1 rounded bg-card-custom border border-custom hover:border-emerald-500">All</button>
+              <button id="btnSelectWestOnly" class="px-2 py-1 rounded bg-card-custom border border-custom hover:border-emerald-500">West</button>
+              <button id="btnSelectCentralOnly" class="px-2 py-1 rounded bg-card-custom border border-custom hover:border-emerald-500">Central</button>
+              <button id="btnClearZones" class="px-2 py-1 rounded bg-card-custom border border-custom hover:border-emerald-500">Clear</button>
+            </div>
+          </div>
+
+          <div class="p-3 bg-code-custom rounded-xl border border-custom text-xs space-y-1">
+            <div class="flex justify-between">
+              <span class="text-muted-custom">Total Candidate Zones:</span>
+              <span id="zoneCountBadge" class="font-bold text-emerald-400">0 zones</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-muted-custom">Total Spray Combinations:</span>
+              <span id="comboCountBadge" class="font-bold text-sky-400">0 combinations</span>
+            </div>
+          </div>
+
+          <div class="max-h-56 overflow-y-auto space-y-3 pr-1" id="zoneCheckboxesContainer">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <!-- Spot Parameters -->
+        <div class="bg-card-custom border border-custom rounded-2xl p-5 shadow-sm space-y-4">
+          <h2 class="text-base font-semibold flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+            3. Spot Retry Parameters
+          </h2>
+
+          <div class="grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <label class="block font-medium mb-1">Project ID</label>
+              <input type="text" id="paramProjectId" value="${PROJECT_ID:-my-project}" class="w-full bg-code-custom border border-custom rounded-lg p-2 font-mono text-xs focus:outline-none focus:border-emerald-500">
+            </div>
+            <div>
+              <label class="block font-medium mb-1">Prefix</label>
+              <input type="text" id="paramPrefix" value="spotspray" class="w-full bg-code-custom border border-custom rounded-lg p-2 font-mono text-xs focus:outline-none focus:border-emerald-500">
+            </div>
+            
+            <div>
+              <label class="block font-medium mb-1">Spot Retry Rounds</label>
+              <input type="number" id="paramSpotRounds" value="30" min="1" max="100" class="w-full bg-code-custom border border-custom rounded-lg p-2 font-mono text-xs focus:outline-none focus:border-emerald-500">
+            </div>
+
+            <div>
+              <label class="block font-medium mb-1">Sleep Between Rounds (sec)</label>
+              <input type="number" id="paramSpotSleep" value="20" min="5" max="120" class="w-full bg-code-custom border border-custom rounded-lg p-2 font-mono text-xs focus:outline-none focus:border-emerald-500">
+            </div>
+
+            <div>
+              <label class="block font-medium mb-1">Disk Size (GB)</label>
+              <input type="number" id="paramDiskSize" value="250" class="w-full bg-code-custom border border-custom rounded-lg p-2 font-mono text-xs focus:outline-none focus:border-emerald-500">
+            </div>
+
+            <div>
+              <label class="block font-medium mb-1">Disk Type</label>
+              <select id="paramDiskType" class="w-full bg-code-custom border border-custom rounded-lg p-2 font-mono text-xs focus:outline-none focus:border-emerald-500">
+                <option value="hyperdisk-balanced" selected>hyperdisk-balanced</option>
+                <option value="pd-ssd">pd-ssd</option>
+                <option value="pd-balanced">pd-balanced</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="space-y-2 pt-2 border-t border-custom text-xs">
+            <label class="flex items-center gap-2 cursor-pointer font-medium text-emerald-400">
+              <input type="checkbox" id="optPrecheckQuota" checked class="accent-emerald-500">
+              <span>Validate approved regional quota & graceful skip</span>
+            </label>
+            <p class="text-[11px] text-muted-custom pl-5">Pre-checks regional quota headroom and prunes zero-quota regions to prevent QUOTA_EXCEEDED errors.</p>
+
+            <label class="flex items-center gap-2 cursor-pointer pt-1">
+              <input type="checkbox" id="optGcsFuse" checked class="accent-emerald-500">
+              <span>Auto-mount Cloud Storage FUSE (Multi-Region /gcs bucket for checkpoints)</span>
+            </label>
+            <input type="text" id="paramGcsBucket" placeholder="GCS bucket name (e.g. my-ml-checkpoints)" value="my-ml-checkpoints" class="w-full bg-code-custom border border-custom rounded-lg p-2 font-mono text-xs">
+            
+            <label class="flex items-center gap-2 cursor-pointer pt-1">
+              <input type="checkbox" id="optExternalIp" class="accent-emerald-500">
+              <span>Attach External IP (uncheck for IAP tunnel only --no-address)</span>
+            </label>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Horizontal Draggable Splitter -->
+      <div id="dragDivider" class="hidden lg:flex items-center justify-center w-3 cursor-col-resize hover:bg-emerald-500/20 active:bg-emerald-500/40 rounded select-none relative z-10 transition-colors group mx-0.5" title="Drag horizontally to resize panel width">
+        <div class="w-1 h-12 rounded-full bg-slate-600/60 group-hover:bg-emerald-400 group-active:bg-emerald-400 transition-colors"></div>
+      </div>
+
+      <!-- Right Column: Generated Code & Output -->
+      <section id="rightPanel" class="w-full lg:flex-1 lg:pl-3 flex flex-col space-y-4 min-w-0 transition-[width] duration-150">
+        
+        <div class="bg-card-custom border border-custom rounded-2xl p-5 shadow-xl flex-1 flex flex-col justify-between">
+          <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-custom">
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 id="generatedFileName" class="text-base font-bold font-mono text-emerald-400">spot-spray.sh</h2>
+                <span id="badgeStrategy" class="badge bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">SPOT ROUND-ROBIN</span>
+              </div>
+              <p class="text-xs text-muted-custom mt-0.5">Ready to execute in Cloud Shell or on any workstation with gcloud CLI</p>
+            </div>
+            
+            <div class="flex items-center gap-2 flex-wrap">
+              <!-- Horizontal Resize Controls -->
+              <div class="flex items-center gap-1 bg-code-custom border border-custom rounded-lg p-1 text-xs">
+                <span class="text-muted-custom px-1.5 text-[11px] font-mono">Width:</span>
+                <button type="button" class="btn-width px-2 py-0.5 rounded text-[11px] font-medium bg-slate-700/60 text-slate-200 hover:text-white transition" data-width="default" title="Default split view (42% / 58%)">Default</button>
+                <button type="button" class="btn-width px-2 py-0.5 rounded text-[11px] font-medium text-muted-custom hover:text-white transition" data-width="wide" title="Wide code view (28% / 72%)">Wide (70%)</button>
+                <button type="button" class="btn-width px-2 py-0.5 rounded text-[11px] font-medium text-muted-custom hover:text-white transition" data-width="full" title="Maximize code viewer to full 100% width">Full (100%)</button>
+              </div>
+
+              <!-- Wrap Toggle -->
+              <button id="btnToggleWrap" type="button" class="px-2.5 py-1 rounded-lg border border-custom bg-card-custom text-xs font-mono text-muted-custom hover:text-white hover:border-emerald-500 transition flex items-center gap-1.5" title="Toggle line wrap mode">
+                <span id="wrapIcon">↔</span>
+                <span id="wrapText">No Wrap</span>
+              </button>
+
+              <button id="btnOpenQuotaHub" type="button" class="px-2.5 py-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/10 text-xs font-semibold text-emerald-400 hover:bg-emerald-500/20 transition flex items-center gap-1.5" title="Automate Quota Requests & Capacity Reservations">
+                <span>⚡</span>
+                <span>Automate Quota</span>
+              </button>
+
+              <button id="btnCopyScript" class="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 text-xs font-semibold hover:bg-emerald-400 transition flex items-center gap-1.5 shadow-sm">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                <span id="copyBtnText">Copy Script</span>
+              </button>
+              <button id="btnDownloadScript" class="px-3 py-1.5 rounded-lg border border-custom bg-card-custom text-xs font-semibold hover:border-emerald-500 transition flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Download .sh
+              </button>
+            </div>
+          </div>
+
+          <!-- Code View Area -->
+          <div class="relative mt-4 flex-1 flex flex-col min-h-0">
+            <pre id="codePre" class="bg-code-custom text-slate-200 border border-custom rounded-xl p-4 font-mono text-xs overflow-auto flex-1 min-h-[620px] leading-relaxed"><code id="codeOutput"># Generating Spot-Spray script...</code></pre>
+            <div class="flex justify-between items-center text-[10px] text-muted-custom px-1 pt-1.5 font-mono">
+              <span id="codeLineCount">0 lines</span>
+              <span class="flex items-center gap-1 text-slate-400"><span>Drag divider ⬄ or use Width buttons to resize horizontally</span></span>
+            </div>
+          </div>
+
+          <!-- Quick Execution Notes -->
+          <div class="mt-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs flex items-start gap-3">
+            <span class="text-base">💡</span>
+            <div class="space-y-1">
+              <span class="font-bold text-emerald-400">Spot Execution Advantage:</span>
+              <p class="text-muted-custom">
+                Spot VMs offer 60%–91% discounts compared to on-demand pricing. Because spot capacity fluctuates constantly as batch jobs start and finish, this fast synchronous round-robin loop catches newly freed slots before other queue systems react.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+
+    <!-- Tab 2: Live Spot Simulator -->
+    <div id="tab-simulator" class="tab-content hidden space-y-6">
+      <div class="bg-card-custom border border-custom rounded-2xl p-6 shadow-sm space-y-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h2 class="text-lg font-bold">Synchronous Spot Round-Robin Simulator</h2>
+            <p class="text-sm text-muted-custom">Simulates sequential candidate zone probing, handling stockouts, and locking onto the first freed Spot instance.</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <button id="btnRunSimulation" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm transition flex items-center gap-2 shadow-lg shadow-emerald-600/20">
+              <span>▶ Run Spot Retry Loop</span>
+            </button>
+            <button id="btnResetSimulation" class="px-3 py-2 rounded-xl border border-custom hover:border-emerald-500 text-sm transition">
+              Reset
+            </button>
+          </div>
+        </div>
+
+        <!-- Simulation Progress Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="simZoneCards">
+          <!-- Zone cards dynamically inserted here -->
+        </div>
+
+        <!-- Simulation Event Terminal Log -->
+        <div class="border border-custom rounded-xl p-4 bg-code-custom font-mono text-xs space-y-1.5 h-48 overflow-y-auto" id="simLogTerminal">
+          <div class="text-muted-custom">// Click 'Run Spot Retry Loop' to observe round-robin probing across candidate zones...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 3: Accelerator & Region Matrix -->
+    <div id="tab-matrix" class="tab-content hidden space-y-6">
+      <div class="bg-card-custom border border-custom rounded-2xl p-6 shadow-sm space-y-4">
+        <div>
+          <h2 class="text-lg font-bold">Accelerator Availability & Specification Matrix</h2>
+          <p class="text-sm text-muted-custom">Complete mapping of GPU types, machine types, VRAM, RoCE GPUDirect fabrics, and active Google Cloud zones.</p>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="border-b border-custom text-muted-custom">
+                <th class="py-3 px-3">Accelerator SKU</th>
+                <th class="py-3 px-3">Machine Family</th>
+                <th class="py-3 px-3">GPU Count & VRAM</th>
+                <th class="py-3 px-3">Network Interconnect</th>
+                <th class="py-3 px-3">Verified Zones</th>
+                <th class="py-3 px-3">Best Used For</th>
+              </tr>
+            </thead>
+            <tbody id="matrixTableBody" class="divide-y divide-custom/50">
+              <!-- Dynamically rendered -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 4: Spot Strategy Guide -->
+    <div id="tab-docs" class="tab-content hidden space-y-6">
+      <div class="bg-card-custom border border-custom rounded-2xl p-6 shadow-sm space-y-6 max-w-4xl">
+        <h2 class="text-xl font-bold text-emerald-400">Deep Dive: Surviving & Winning with GCP Spot GPUs</h2>
+        
+        <div class="space-y-4 text-sm leading-relaxed text-slate-300">
+          <div class="p-4 rounded-xl bg-code-custom border border-custom space-y-2">
+            <h3 class="font-bold text-slate-100 text-base">1. Spot Economics vs. DWS Flex</h3>
+            <p>
+              While <strong>DWS Flex-Start</strong> provides a 2-hour queue with guaranteed non-preemptible execution once granted, <strong>Spot VMs</strong> are interruptible at any moment when Google Cloud needs capacity back. In exchange, Spot delivers <strong>60%–91% discounts</strong>, making it ideal for distributed checkpointed pretraining and resilient worker nodes.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-xl bg-code-custom border border-custom space-y-2">
+            <h3 class="font-bold text-slate-100 text-base">2. Why Synchronous Round-Robin Retries Work</h3>
+            <p>
+              Spot capacity is not static: large enterprise jobs finish every few minutes, temporarily replenishing the spot pool in unpredictable zones. A round-robin probe loop cycles across 10–20 zones rapidly. Instead of waiting in a single zone, the loop will grab any capacity release immediately.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-xl bg-code-custom border border-custom space-y-2">
+            <h3 class="font-bold text-slate-100 text-base">3. Checkpointing & Multi-Region GCS-FUSE</h3>
+            <p>
+              Because Spot VMs can be reclaimed with a 30-second preemption notice, state must be continuously preserved. The script mounts a Cloud Storage bucket directly to <code class="text-emerald-300 font-mono">/gcs</code>. When a preemption signal arrives, modern training loops (such as PyTorch Lightning or Megatron-LM) trigger an emergency checkpoint directly into the bucket, allowing instant resume in another zone.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 5: Quota & Capacity Automation -->
+    <div id="tab-quotas" class="tab-content hidden space-y-6">
+      <div class="bg-card-custom border border-custom rounded-2xl p-6 shadow-sm space-y-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-custom pb-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xl">⚡</span>
+              <h2 class="text-lg font-bold">Automated GPU Quota & Capacity Management</h2>
+              <span class="badge bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Cloud Quotas API + Terraform</span>
+            </div>
+            <p class="text-sm text-muted-custom mt-0.5">Automate capacity requests, programmatic quota approvals, and resilient multi-region fallback handling.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-mono text-muted-custom">API: cloudquotas.googleapis.com</span>
+          </div>
+        </div>
+
+        <!-- Strategy Architecture Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="p-4 rounded-xl bg-code-custom border border-custom space-y-2">
+            <div class="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+              <span>1. Pre-Flight Headroom Gate</span>
+            </div>
+            <p class="text-xs text-muted-custom leading-relaxed">
+              Before submitting parallel sprays, the script queries <code class="font-mono text-slate-200">limit - usage</code> for target metrics across candidate regions. Zero-quota regions are pruned gracefully without failing the entire run.
+            </p>
+          </div>
+          <div class="p-4 rounded-xl bg-code-custom border border-custom space-y-2">
+            <div class="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+              <span>2. Programmatic Quota Requester</span>
+            </div>
+            <p class="text-xs text-muted-custom leading-relaxed">
+              Use Google's modern <strong class="text-slate-100">Cloud Quotas API</strong> (<code class="font-mono text-emerald-300">gcloud beta quotas preferences create</code>) or the bundled <code class="font-mono text-slate-200">./scripts/request-gpu-quota.sh</code> to request capacity across multiple regions in one step.
+            </p>
+          </div>
+          <div class="p-4 rounded-xl bg-code-custom border border-custom space-y-2">
+            <div class="flex items-center gap-2 text-amber-400 font-bold text-sm">
+              <span>3. Future Reservations (Calendar)</span>
+            </div>
+            <p class="text-xs text-muted-custom leading-relaxed">
+              For mission-critical deadlines or multi-node training, automate scheduling guaranteed hardware windows using DWS Calendar-Mode (<code class="font-mono text-amber-300">gcloud compute future-reservations create</code>).
+            </p>
+          </div>
+        </div>
+
+        <!-- Interactive Quota Request Generator -->
+        <div class="border border-custom rounded-xl p-5 bg-card-custom space-y-4">
+          <h3 class="font-bold text-sm text-slate-100 flex items-center gap-2">
+            <span>⚙️</span> Interactive Quota & Capacity Command Generator
+          </h3>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+            <div>
+              <label class="block text-muted-custom mb-1 font-semibold">Target Accelerator</label>
+              <select id="quotaHubAcc" class="w-full bg-code-custom border border-custom rounded-lg p-2 font-mono">
+                <option value="a3-megagpu-8g|NVIDIA_H100_GPUS">NVIDIA H100 Mega (a3-megagpu-8g)</option>
+                <option value="a3-ultragpu-8g|NVIDIA_H200_GPUS">NVIDIA H200 (a3-ultragpu-8g)</option>
+                <option value="a4-highgpu-8g|NVIDIA_B200_GPUS">NVIDIA B200 (a4-highgpu-8g)</option>
+                <option value="g2-standard-96|NVIDIA_L4_GPUS">NVIDIA L4 (g2-standard-96)</option>
+                <option value="a2-ultragpu-8g|NVIDIA_A100_80GB_GPUS">NVIDIA A100 80GB (a2-ultragpu-8g)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-muted-custom mb-1 font-semibold">Preferred GPUs per Region</label>
+              <select id="quotaHubGpuCount" class="w-full bg-code-custom border border-custom rounded-lg p-2 font-mono">
+                <option value="8">8 GPUs (1 node)</option>
+                <option value="16" selected>16 GPUs (2 nodes)</option>
+                <option value="32">32 GPUs (4 nodes)</option>
+                <option value="64">64 GPUs (8 nodes)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-muted-custom mb-1 font-semibold">Target Regions</label>
+              <input type="text" id="quotaHubRegions" value="us-central1 us-east4 us-east5 us-west1" class="w-full bg-code-custom border border-custom rounded-lg p-2 font-mono text-xs">
+            </div>
+          </div>
+
+          <!-- Code Tabs for Quota Request Methods -->
+          <div class="pt-2">
+            <div class="flex items-center gap-2 border-b border-custom pb-2 text-xs">
+              <button type="button" class="quota-tab-btn font-semibold px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" data-qtab="cli">1. Bundled CLI Script</button>
+              <button type="button" class="quota-tab-btn font-medium px-3 py-1 rounded-lg text-muted-custom hover:text-white" data-qtab="gcloud">2. Cloud Quotas API (gcloud)</button>
+              <button type="button" class="quota-tab-btn font-medium px-3 py-1 rounded-lg text-muted-custom hover:text-white" data-qtab="terraform">3. Terraform (Quota-as-Code)</button>
+              <button type="button" class="quota-tab-btn font-medium px-3 py-1 rounded-lg text-muted-custom hover:text-white" data-qtab="future">4. DWS Future Reservations</button>
+            </div>
+
+            <div class="mt-3 relative">
+              <pre id="quotaCodeBlock" class="bg-code-custom text-slate-200 border border-custom rounded-xl p-4 font-mono text-xs overflow-x-auto leading-relaxed max-h-72"></pre>
+              <button id="btnCopyQuotaCode" class="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-[11px] font-semibold transition flex items-center gap-1 shadow">
+                <span>Copy</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Human Review Note -->
+        <div class="p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 text-xs space-y-1">
+          <div class="font-bold text-amber-400 flex items-center gap-1.5">
+            <span>⚠️</span>
+            <span>Approval Gate Reality for High-Demand Accelerators (A3 / A4)</span>
+          </div>
+          <p class="text-slate-300 leading-relaxed">
+            While L4 and T4 quotas are frequently auto-approved in minutes, <strong>H100, H200, and B200 requests almost always trigger manual Google Capacity Review</strong>. The Cloud Quotas API immediately creates and registers your formal capacity request ticket in Google's internal queue. For allocations &gt;32 GPUs, engage your Google Account Executive / Technical Account Manager (TAM) referencing the generated ticket IDs.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- JavaScript Application Logic -->
+  <script>
+    const ACCELERATORS = [
+      {
+        id: 'a3-ultragpu-8g',
+        name: 'NVIDIA H200 (8x 141GB)',
+        family: 'Hopper Ultra',
+        vram: '1128 GB HBM3e',
+        network: '3.2 Tbps RoCE GPUDirect RDMA',
+        zones: ['us-central1-b', 'us-east4-b', 'us-east5-a', 'us-south1-b', 'us-west1-c', 'europe-west4-a'],
+        bestFor: 'LLM training & massive parameter inference'
+      },
+      {
+        id: 'a3-megagpu-8g',
+        name: 'NVIDIA H100 Mega (8x 80GB)',
+        family: 'Hopper Mega',
+        vram: '640 GB HBM3',
+        network: '3.2 Tbps RoCE GPUDirect RDMA',
+        zones: ['us-central1-a', 'us-central1-b', 'us-central1-c', 'us-east4-a', 'us-east4-b', 'us-east4-c', 'us-east5-a', 'us-west1-a', 'us-west1-b', 'us-west4-a', 'europe-west4-b'],
+        bestFor: 'Distributed foundation model pretraining'
+      },
+      {
+        id: 'a3-highgpu-8g',
+        name: 'NVIDIA H100 Vanilla (8x 80GB)',
+        family: 'Hopper',
+        vram: '640 GB HBM3',
+        network: '200 Gbps Standard',
+        zones: ['us-central1-a', 'us-central1-b', 'us-central1-c', 'us-east4-a', 'us-east4-b', 'us-east5-a', 'us-west1-a', 'us-west1-b', 'us-west4-a'],
+        bestFor: 'Single-node batch training & high-throughput inference'
+      },
+      {
+        id: 'a4-highgpu-8g',
+        name: 'NVIDIA B200 (8x 144GB)',
+        family: 'Blackwell',
+        vram: '1152 GB HBM3e',
+        network: 'Next-Gen RoCE / Falcon',
+        zones: ['us-central1-b', 'us-east1-b', 'us-east4-b', 'us-south1-b', 'us-west2-c', 'us-west3-b', 'europe-north1-b'],
+        bestFor: 'Next-generation frontier reasoning models'
+      },
+      {
+        id: 'a2-ultragpu-8g',
+        name: 'NVIDIA A100 80GB (8x 80GB)',
+        family: 'Ampere',
+        vram: '640 GB HBM2e',
+        network: '100 Gbps Standard',
+        zones: ['us-central1-a', 'us-central1-b', 'us-central1-c', 'us-east4-a', 'us-west1-b', 'europe-west4-a', 'europe-west4-b'],
+        bestFor: 'Established deep learning pipelines & Stable Diffusion'
+      },
+      {
+        id: 'g2-standard-96',
+        name: 'NVIDIA L4 (8x 24GB)',
+        family: 'Ada Lovelace',
+        vram: '192 GB GDDR6',
+        network: '100 Gbps Standard',
+        zones: ['us-central1-a', 'us-central1-c', 'us-east1-c', 'us-east4-a', 'us-west1-a', 'us-west1-b', 'europe-west1-b', 'europe-west4-a'],
+        bestFor: 'Cost-efficient inference, vision models, video processing'
+      }
+    ];
+
+    const state = {
+      selectedAccelerators: ['a3-megagpu-8g'],
+      selectedZones: new Set(),
+      projectId: '${PROJECT_ID:-my-project}',
+      prefix: 'spotspray',
+      spotRounds: 30,
+      spotSleep: 20,
+      diskSize: 250,
+      diskType: 'hyperdisk-balanced',
+      gcsFuse: true,
+      gcsBucket: 'my-ml-checkpoints',
+      externalIp: false,
+      precheckQuota: true
+    };
+
+    function updateCandidateZones() {
+      const availableZones = new Set();
+      ACCELERATORS.forEach(acc => {
+        if (state.selectedAccelerators.includes(acc.id)) {
+          acc.zones.forEach(z => availableZones.add(z));
+        }
+      });
+
+      const newSelected = new Set();
+      availableZones.forEach(z => {
+        if (state.selectedZones.has(z) || state.selectedZones.size === 0) {
+          newSelected.add(z);
+        }
+      });
+      state.selectedZones = newSelected;
+      renderZoneCheckboxes();
+      updateCounters();
+      generateScript();
+    }
+
+    function renderAccelerators() {
+      const container = document.getElementById('acceleratorList');
+      container.innerHTML = '';
+
+      ACCELERATORS.forEach(acc => {
+        const isSelected = state.selectedAccelerators.includes(acc.id);
+        const card = document.createElement('label');
+        card.className = `cursor-pointer block border border-custom rounded-xl p-3 transition ${isSelected ? 'bg-emerald-500/10 border-emerald-500' : 'bg-card-custom hover:border-slate-500'}`;
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <input type="checkbox" value="${acc.id}" ${isSelected ? 'checked' : ''} class="accent-emerald-500 acc-check">
+              <div>
+                <div class="font-bold text-xs flex items-center gap-1.5">
+                  <span>${acc.name}</span>
+                  <span class="badge bg-slate-700/60 text-slate-300 font-mono text-[10px]">${acc.id}</span>
+                </div>
+                <div class="text-[11px] text-muted-custom mt-0.5">${acc.vram} · ${acc.network}</div>
+              </div>
+            </div>
+            <span class="text-[10px] font-mono text-muted-custom">${acc.zones.length} zones</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      container.querySelectorAll('.acc-check').forEach(chk => {
+        chk.addEventListener('change', (e) => {
+          if (e.target.checked) {
+            state.selectedAccelerators.push(e.target.value);
+          } else {
+            state.selectedAccelerators = state.selectedAccelerators.filter(id => id !== e.target.value);
+            if (state.selectedAccelerators.length === 0) {
+              state.selectedAccelerators = ['a3-megagpu-8g'];
+            }
+          }
+          renderAccelerators();
+          updateCandidateZones();
+        });
+      });
+    }
+
+    function renderZoneCheckboxes() {
+      const container = document.getElementById('zoneCheckboxesContainer');
+      container.innerHTML = '';
+
+      const availableZones = new Set();
+      ACCELERATORS.forEach(acc => {
+        if (state.selectedAccelerators.includes(acc.id)) {
+          acc.zones.forEach(z => availableZones.add(z));
+        }
+      });
+
+      const regions = {};
+      availableZones.forEach(zone => {
+        const region = zone.substring(0, zone.lastIndexOf('-'));
+        if (!regions[region]) regions[region] = [];
+        regions[region].push(zone);
+      });
+
+      Object.keys(regions).sort().forEach(reg => {
+        const regBox = document.createElement('div');
+        regBox.className = 'border border-custom/60 rounded-xl p-2.5 bg-code-custom/50';
+
+        let zonesHtml = '';
+        regions[reg].forEach(z => {
+          const isChecked = state.selectedZones.has(z);
+          zonesHtml += `
+            <label class="flex items-center justify-between text-xs p-1 rounded hover:bg-slate-700/20 cursor-pointer">
+              <span class="flex items-center gap-2">
+                <input type="checkbox" value="${z}" ${isChecked ? 'checked' : ''} class="zone-check accent-emerald-500">
+                <span class="font-mono ${isChecked ? 'text-emerald-300 font-semibold' : 'text-slate-300'}">${z}</span>
+              </span>
+              <span class="text-[10px] text-muted-custom font-mono">Spot Candidate</span>
+            </label>
+          `;
+        });
+
+        regBox.innerHTML = `
+          <div class="flex justify-between items-center pb-1.5 mb-1.5 border-b border-custom/40">
+            <span class="font-bold text-xs text-emerald-400 uppercase tracking-wide font-mono">${reg}</span>
+            <span class="text-[10px] text-muted-custom font-mono">${regions[reg].length} zones</span>
+          </div>
+          <div class="space-y-1">
+            ${zonesHtml}
+          </div>
+        `;
+        container.appendChild(regBox);
+      });
+
+      container.querySelectorAll('.zone-check').forEach(chk => {
+        chk.addEventListener('change', (e) => {
+          if (e.target.checked) {
+            state.selectedZones.add(e.target.value);
+          } else {
+            state.selectedZones.delete(e.target.value);
+          }
+          updateCounters();
+          generateScript();
+        });
+      });
+    }
+
+    function updateCounters() {
+      const zCount = state.selectedZones.size;
+      const accCount = state.selectedAccelerators.length;
+      document.getElementById('zoneCountBadge').textContent = `${zCount} zones`;
+      document.getElementById('comboCountBadge').textContent = `${zCount * accCount} combinations`;
+    }
+
+    function updateCodeLineCount() {
+      const code = document.getElementById('codeOutput').textContent;
+      const lines = code.split('\n').length;
+      const el = document.getElementById('codeLineCount');
+      if (el) el.textContent = `${lines} lines`;
+    }
+
+    function generateScript() {
+      const candidateZones = Array.from(state.selectedZones).join(' ');
+      const machineTypes = state.selectedAccelerators.join(' ');
+      const ipFlag = state.externalIp ? '' : '--no-address';
+      const fuseScript = state.gcsFuse ? `
+echo ">>> Auto-Mounting GCS Bucket '${state.gcsBucket}' via Cloud Storage FUSE..."
+mkdir -p /gcs
+gcsfuse --implicit-dirs ${state.gcsBucket} /gcs || echo "Warning: GCS FUSE mount skipped (install gcsfuse on VM)"
+` : '';
+
+      const quotaCheckSnippet = state.precheckQuota ? `
+# Helper: resolve SKU to quota metric
+get_quota_metric() {
+  case "\$1" in
+    *a3-ultragpu*|*h200*) echo "NVIDIA_H200_GPUS" ;;
+    *a3-megagpu*|*h100*)  echo "NVIDIA_H100_GPUS" ;;
+    *a4-highgpu*|*b200*)  echo "NVIDIA_B200_GPUS" ;;
+    *g2-standard*|*l4*)   echo "NVIDIA_L4_GPUS" ;;
+    *a2-ultragpu*|*a100-80gb*) echo "NVIDIA_A100_80GB_GPUS" ;;
+    *) echo "GPUS_ALL_REGIONS" ;;
+  esac
+}
+
+echo ">>> Performing Pre-Flight Quota Validation for \$PROJECT_ID..."
+GLOBAL_INFO=\$(gcloud compute project-info describe --project="\$PROJECT_ID" --format="json(quotas)" 2>/dev/null || true)
+GLOBAL_LIMIT=\$(echo "\$GLOBAL_INFO" | jq -r '.quotas[] | select(.metric == "GPUS_ALL_REGIONS") | .limit // 0' 2>/dev/null || echo 0)
+GLOBAL_USAGE=\$(echo "\$GLOBAL_INFO" | jq -r '.quotas[] | select(.metric == "GPUS_ALL_REGIONS") | .usage // 0' 2>/dev/null || echo 0)
+echo "    Global GPUS_ALL_REGIONS: Limit=\$GLOBAL_LIMIT, In-Use=\$GLOBAL_USAGE"
+
+declare -A REGION_CHECKED_PASS
+declare -A REGION_CHECKED_FAIL
+APPROVED_ZONES=()
+
+for zone in "\${ZONES[@]}"; do
+  reg="\${zone%-*}"
+  metric=\$(get_quota_metric "\${MACHINE_TYPES[0]}")
+  cache_key="\${reg}_\${metric}"
+
+  if [[ -n "\${REGION_CHECKED_PASS[\$cache_key]:-}" ]]; then
+    APPROVED_ZONES+=("\$zone")
+    continue
+  elif [[ -n "\${REGION_CHECKED_FAIL[\$cache_key]:-}" ]]; then
+    continue
+  fi
+
+  REG_DATA=\$(gcloud compute regions describe "\$reg" --project="\$PROJECT_ID" --format="json(quotas)" 2>/dev/null || true)
+  limit=\$(echo "\$REG_DATA" | jq -r --arg m "\$metric" '.quotas[] | select(.metric == \$m) | .limit // 0' 2>/dev/null || echo 0)
+  usage=\$(echo "\$REG_DATA" | jq -r --arg m "\$metric" '.quotas[] | select(.metric == \$m) | .usage // 0' 2>/dev/null || echo 0)
+  headroom=\$(awk "BEGIN {print \$limit - \$usage}")
+
+  if (( \$(echo "\$headroom >= 8" | bc -l 2>/dev/null || echo 0) )); then
+    echo "    [QUOTA OK]   \$reg headroom: \$headroom GPUs for \$metric (Limit: \$limit, In-Use: \$usage)"
+    REGION_CHECKED_PASS[\$cache_key]=1
+    APPROVED_ZONES+=("\$zone")
+  else
+    echo "    [QUOTA SKIP] \$reg lacks headroom for \$metric (Limit: \$limit, Need: 8)"
+    REGION_CHECKED_FAIL[\$cache_key]=1
+  fi
+done
+
+if [[ \${#APPROVED_ZONES[@]} -eq 0 ]]; then
+  echo
+  echo "========================================================================"
+  echo " [GRACEFUL ABORT] None of the candidate regions have approved GPU quota headroom."
+  echo " Project: \$PROJECT_ID"
+  echo " To automate requesting quota, execute:"
+  echo "   ./scripts/request-gpu-quota.sh --project=\$PROJECT_ID --accelerator=\${MACHINE_TYPES[0]} --gpus-per-region=16"
+  echo " Or use the Cloud Quotas API directly:"
+  echo "   gcloud beta quotas preferences create --project=\$PROJECT_ID --service=compute.googleapis.com --quota-id=\${metric} --preferred-value=16 --dimensions=region=us-central1"
+  echo "========================================================================"
+  exit 2
+fi
+
+ZONES=("\${APPROVED_ZONES[@]}")
+echo ">>> Quota validated: \${#ZONES[@]} approved candidate zones remaining."
+echo
+` : '';
+
+      const script = `#!/usr/bin/env bash
+# ==============================================================================
+# spot-spray.sh — Fast Synchronous Spot Retry Loop Across Zones
+# ==============================================================================
+# Usage:
+#   chmod +x spot-spray.sh
+#   ./spot-spray.sh
+#
+# Strategy:
+#   Sequentially probes candidate zones for immediate Spot VM grants.
+#   Exits 0 immediately upon the first successful VM creation.
+#   Retries for up to ${state.spotRounds} rounds with ${state.spotSleep}s sleep between rounds.
+# ==============================================================================
+set -euo pipefail
+
+PROJECT_ID="\${PROJECT_ID:-${state.projectId}}"
+PREFIX="${state.prefix}"
+DISK_SIZE="${state.diskSize}"
+DISK_TYPE="${state.diskType}"
+ROUNDS="${state.spotRounds}"
+SLEEP="${state.spotSleep}"
+
+MACHINE_TYPES=(${machineTypes})
+ZONES=(${candidateZones})
+
+LOG="spot_spray_\$(date +%Y%m%d_%H%M%S).log"
+exec > >(tee -a "\$LOG") 2>&1
+
+echo "========================================================================"
+echo " GCP Spot Capacity Hunter (Round-Robin Synchronous)"
+echo " Project:       \$PROJECT_ID"
+echo " Accelerators:  \${MACHINE_TYPES[*]}"
+echo " Max Rounds:    \$ROUNDS"
+echo " Sleep/Round:   \${SLEEP}s"
+echo " Candidate:     \${#ZONES[@]} zones across candidate regions"
+echo "========================================================================"
+${quotaCheckSnippet}
+for r in \$(seq 1 "\$ROUNDS"); do
+  echo "--- Round \$r of \$ROUNDS ---"
+  for zone in "\${ZONES[@]}"; do
+    for mach in "\${MACHINE_TYPES[@]}"; do
+      VM_NAME="\${PREFIX}-\${zone//-/}-\${mach//-/}-\$(date +%s)"
+      echo -n "Trying \$mach in \$zone (\$VM_NAME)... "
+      
+      if gcloud compute instances create "\$VM_NAME" \\
+        --project="\$PROJECT_ID" \\
+        --zone="\$zone" \\
+        --machine-type="\$mach" \\
+        --provisioning-model=SPOT \\
+        --instance-termination-action=DELETE \\
+        --boot-disk-size="\${DISK_SIZE}GB" \\
+        --boot-disk-type="\$DISK_TYPE" \\
+        ${ipFlag} \\
+        --quiet 2>/dev/null; then
+        echo "SUCCESS! Spot instance granted in \$zone"
+        echo
+        echo "****************************************************************"
+        echo " INSTANCE ACTIVE: \$VM_NAME in \$zone"
+        echo " Connect via: gcloud compute ssh \$VM_NAME --zone=\$zone"
+        echo "****************************************************************"
+        ${fuseScript}
+        exit 0
+      else
+        echo "Stockout"
+      fi
+    done
+  done
+  echo "Sleeping \${SLEEP}s before next round..."
+  sleep "\$SLEEP"
+done
+
+echo "NO SPOT GRANT after \$ROUNDS rounds across candidate zones." | tee -a "\$LOG"
+exit 1
+`;
+
+      document.getElementById('codeOutput').textContent = script;
+      updateCodeLineCount();
+    }
+
+    // Filter Buttons
+    document.getElementById('btnSelectAllZones').addEventListener('click', () => {
+      ACCELERATORS.forEach(a => {
+        if (state.selectedAccelerators.includes(a.id)) {
+          a.zones.forEach(z => state.selectedZones.add(z));
+        }
+      });
+      renderZoneCheckboxes();
+      updateCounters();
+      generateScript();
+    });
+
+    document.getElementById('btnSelectWestOnly').addEventListener('click', () => {
+      state.selectedZones.clear();
+      ACCELERATORS.forEach(a => {
+        if (state.selectedAccelerators.includes(a.id)) {
+          a.zones.filter(z => z.startsWith('us-west')).forEach(z => state.selectedZones.add(z));
+        }
+      });
+      renderZoneCheckboxes();
+      updateCounters();
+      generateScript();
+    });
+
+    document.getElementById('btnSelectCentralOnly').addEventListener('click', () => {
+      state.selectedZones.clear();
+      ACCELERATORS.forEach(a => {
+        if (state.selectedAccelerators.includes(a.id)) {
+          a.zones.filter(z => z.startsWith('us-central')).forEach(z => state.selectedZones.add(z));
+        }
+      });
+      renderZoneCheckboxes();
+      updateCounters();
+      generateScript();
+    });
+
+    document.getElementById('btnClearZones').addEventListener('click', () => {
+      state.selectedZones.clear();
+      renderZoneCheckboxes();
+      updateCounters();
+      generateScript();
+    });
+
+    // Inputs change
+    ['paramProjectId', 'paramPrefix', 'paramSpotRounds', 'paramSpotSleep', 'paramDiskSize', 'paramDiskType', 'paramGcsBucket'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', () => {
+          state.projectId = document.getElementById('paramProjectId').value;
+          state.prefix = document.getElementById('paramPrefix').value;
+          state.spotRounds = document.getElementById('paramSpotRounds').value;
+          state.spotSleep = document.getElementById('paramSpotSleep').value;
+          state.diskSize = document.getElementById('paramDiskSize').value;
+          state.diskType = document.getElementById('paramDiskType').value;
+          state.gcsBucket = document.getElementById('paramGcsBucket').value;
+          generateScript();
+        });
+      }
+    });
+
+    document.getElementById('optGcsFuse').addEventListener('change', (e) => {
+      state.gcsFuse = e.target.checked;
+      generateScript();
+    });
+
+    document.getElementById('optExternalIp').addEventListener('change', (e) => {
+      state.externalIp = e.target.checked;
+      generateScript();
+    });
+
+    const optPrecheckEl = document.getElementById('optPrecheckQuota');
+    if (optPrecheckEl) {
+      optPrecheckEl.addEventListener('change', (e) => {
+        state.precheckQuota = e.target.checked;
+        generateScript();
+      });
+    }
+
+    const btnOpenQuotaHubEl = document.getElementById('btnOpenQuotaHub');
+    if (btnOpenQuotaHubEl) {
+      btnOpenQuotaHubEl.addEventListener('click', () => {
+        const quotaTabBtn = document.querySelector('.tab-btn[data-tab="quotas"]');
+        if (quotaTabBtn) quotaTabBtn.click();
+      });
+    }
+
+    // Copy Button
+    document.getElementById('btnCopyScript').addEventListener('click', () => {
+      const code = document.getElementById('codeOutput').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        const btnText = document.getElementById('copyBtnText');
+        btnText.textContent = 'Copied to Clipboard!';
+        setTimeout(() => { btnText.textContent = 'Copy Script'; }, 2000);
+      });
+    });
+
+    // Download Button
+    document.getElementById('btnDownloadScript').addEventListener('click', () => {
+      const code = document.getElementById('codeOutput').textContent;
+      const fileName = document.getElementById('generatedFileName').textContent;
+      const blob = new Blob([code], { type: 'text/x-sh' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // Horizontal Panel Resizing & Width Presets
+    const containerEl = document.getElementById('tab-configurator');
+    const leftPanelEl = document.getElementById('leftPanel');
+    const rightPanelEl = document.getElementById('rightPanel');
+    const dragDividerEl = document.getElementById('dragDivider');
+    const btnWidths = document.querySelectorAll('.btn-width');
+    const codePreEl = document.getElementById('codePre');
+    const btnToggleWrap = document.getElementById('btnToggleWrap');
+
+    function setWidthMode(mode) {
+      btnWidths.forEach(b => {
+        if (b.dataset.width === mode) {
+          b.classList.add('bg-slate-700/60', 'text-slate-200');
+          b.classList.remove('text-muted-custom');
+        } else {
+          b.classList.remove('bg-slate-700/60', 'text-slate-200');
+          b.classList.add('text-muted-custom');
+        }
+      });
+
+      if (mode === 'full') {
+        if (leftPanelEl) leftPanelEl.style.display = 'none';
+        if (dragDividerEl) dragDividerEl.style.display = 'none';
+      } else {
+        if (leftPanelEl) {
+          leftPanelEl.style.display = '';
+          leftPanelEl.style.width = mode === 'wide' ? '28%' : '42%';
+        }
+        if (dragDividerEl) dragDividerEl.style.display = '';
+      }
+    }
+
+    btnWidths.forEach(btn => {
+      btn.addEventListener('click', () => {
+        setWidthMode(btn.dataset.width);
+      });
+    });
+
+    // Draggable Splitter
+    if (dragDividerEl && containerEl && leftPanelEl) {
+      let isDragging = false;
+      let startX = 0;
+      let startWidth = 0;
+
+      dragDividerEl.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.clientX;
+        startWidth = leftPanelEl.getBoundingClientRect().width;
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const containerWidth = containerEl.getBoundingClientRect().width;
+        const dx = e.clientX - startX;
+        const newWidth = Math.max(280, Math.min(containerWidth - 360, startWidth + dx));
+        const pct = (newWidth / containerWidth) * 100;
+        leftPanelEl.style.width = `${pct}%`;
+
+        btnWidths.forEach(b => {
+          b.classList.remove('bg-slate-700/60', 'text-slate-200');
+          b.classList.add('text-muted-custom');
+        });
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (isDragging) {
+          isDragging = false;
+          document.body.style.cursor = '';
+          document.body.style.userSelect = '';
+        }
+      });
+    }
+
+    // Line Wrap Toggle
+    if (btnToggleWrap && codePreEl) {
+      let isWrapped = false;
+      btnToggleWrap.addEventListener('click', () => {
+        isWrapped = !isWrapped;
+        const wrapIcon = document.getElementById('wrapIcon');
+        const wrapText = document.getElementById('wrapText');
+        if (isWrapped) {
+          codePreEl.classList.add('whitespace-pre-wrap', 'break-words');
+          codePreEl.classList.remove('whitespace-pre');
+          wrapText.textContent = 'Wrapped';
+          wrapIcon.textContent = '↵';
+          btnToggleWrap.classList.add('border-emerald-500', 'text-emerald-400');
+        } else {
+          codePreEl.classList.remove('whitespace-pre-wrap', 'break-words');
+          codePreEl.classList.add('whitespace-pre');
+          wrapText.textContent = 'No Wrap';
+          wrapIcon.textContent = '↔';
+          btnToggleWrap.classList.remove('border-emerald-500', 'text-emerald-400');
+        }
+      });
+    }
+
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => {
+          b.classList.remove('border-emerald-500', 'text-emerald-400');
+          b.classList.add('border-transparent', 'text-muted-custom');
+        });
+        btn.classList.add('border-emerald-500', 'text-emerald-400');
+        btn.classList.remove('border-transparent', 'text-muted-custom');
+
+        const tab = btn.dataset.tab;
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+        document.getElementById(`tab-${tab}`).classList.remove('hidden');
+
+        if (tab === 'matrix') renderMatrix();
+        if (tab === 'quotas') renderQuotaHubCode();
+      });
+    });
+
+    // Dark/Light Theme toggle
+    function initTheme() {
+      const savedTheme = localStorage.getItem('gcp_theme');
+      if (savedTheme === 'light') {
+        document.body.classList.add('light');
+        document.getElementById('themeIcon').textContent = '🌙';
+        document.getElementById('themeText').textContent = 'Dark';
+      }
+    }
+    initTheme();
+
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      document.body.classList.toggle('light');
+      const isLight = document.body.classList.contains('light');
+      document.getElementById('themeIcon').textContent = isLight ? '🌙' : '☀️';
+      document.getElementById('themeText').textContent = isLight ? 'Dark' : 'Light';
+      localStorage.setItem('gcp_theme', isLight ? 'light' : 'dark');
+    });
+
+    // Populate Matrix Tab
+    function renderMatrix() {
+      const tbody = document.getElementById('matrixTableBody');
+      tbody.innerHTML = '';
+
+      ACCELERATORS.forEach(acc => {
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-custom/30 hover:bg-slate-800/30';
+        tr.innerHTML = `
+          <td class="py-3 px-3 font-mono font-bold text-emerald-400">${acc.id}</td>
+          <td class="py-3 px-3">${acc.name}</td>
+          <td class="py-3 px-3 font-mono">${acc.vram}</td>
+          <td class="py-3 px-3 text-[11px] text-muted-custom">${acc.network}</td>
+          <td class="py-3 px-3 font-mono text-[11px]">
+            <div class="flex flex-wrap gap-1 max-w-xs">
+              ${acc.zones.map(z => `<span class="px-1.5 py-0.5 rounded bg-slate-700/50 text-[10px]">${z}</span>`).join('')}
+            </div>
+          </td>
+          <td class="py-3 px-3 text-[11px] text-slate-300">${acc.bestFor}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Live Simulator Logic
+    let simInterval = null;
+    document.getElementById('btnRunSimulation').addEventListener('click', () => {
+      clearInterval(simInterval);
+      const container = document.getElementById('simZoneCards');
+      const terminal = document.getElementById('simLogTerminal');
+      container.innerHTML = '';
+      terminal.innerHTML = '';
+
+      const zonesToSim = Array.from(state.selectedZones).slice(0, 8);
+      if (zonesToSim.length === 0) {
+        zonesToSim.push('us-central1-a', 'us-central1-b', 'us-east4-a', 'us-west1-b');
+      }
+
+      function logMsg(msg, color = 'text-slate-300') {
+        const div = document.createElement('div');
+        div.className = color;
+        div.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+        terminal.appendChild(div);
+        terminal.scrollTop = terminal.scrollHeight;
+      }
+
+      logMsg(`Starting synchronous Spot round-robin loop across ${zonesToSim.length} zones...`, 'text-emerald-400');
+
+      const cards = {};
+      zonesToSim.forEach(z => {
+        const card = document.createElement('div');
+        card.className = 'border border-custom rounded-xl p-3 bg-code-custom space-y-2';
+        card.innerHTML = `
+          <div class="flex justify-between items-center text-xs">
+            <span class="font-mono font-bold text-slate-200">${z}</span>
+            <span class="badge bg-slate-700 text-slate-300 status-badge">READY TO PROBE</span>
+          </div>
+          <div class="text-[11px] text-muted-custom font-mono probe-status">Waiting for round probe...</div>
+        `;
+        container.appendChild(card);
+        cards[z] = card;
+      });
+
+      let currentIdx = 0;
+      let round = 1;
+      const winnerZone = zonesToSim[Math.floor(Math.random() * zonesToSim.length)];
+      const targetRound = 2;
+
+      simInterval = setInterval(() => {
+        const z = zonesToSim[currentIdx];
+        const card = cards[z];
+
+        if (round === targetRound && z === winnerZone) {
+          clearInterval(simInterval);
+          card.className = 'border-2 border-emerald-500 rounded-xl p-3 bg-emerald-500/10 space-y-2';
+          card.querySelector('.status-badge').className = 'badge bg-emerald-500/20 text-emerald-300 font-bold';
+          card.querySelector('.status-badge').textContent = 'SPOT GRANTED!';
+          card.querySelector('.probe-status').textContent = 'Instance live in 48s. Loop exited.';
+          card.querySelector('.probe-status').className = 'text-[11px] text-emerald-300 font-mono font-bold';
+          logMsg(`🎯 SPOT GRANTED: Instance acquired in ${z}! Synchronous loop terminated with exit code 0.`, 'text-emerald-400 font-bold');
+          return;
+        }
+
+        // Stockout attempt
+        card.className = 'border border-custom rounded-xl p-3 bg-slate-900/60 space-y-2';
+        card.querySelector('.status-badge').className = 'badge bg-rose-500/20 text-rose-300';
+        card.querySelector('.status-badge').textContent = 'STOCKOUT (429/503)';
+        card.querySelector('.probe-status').textContent = `Round ${round}: ZONE_RESOURCE_POOL_EXHAUSTED`;
+        logMsg(`Probe failed in ${z}: ZONE_RESOURCE_POOL_EXHAUSTED. Advancing to next zone...`, 'text-slate-400');
+
+        currentIdx++;
+        if (currentIdx >= zonesToSim.length) {
+          currentIdx = 0;
+          round++;
+          logMsg(`Round completed. Sleeping ${state.spotSleep}s before round ${round}...`, 'text-amber-400');
+        }
+      }, 700);
+    });
+
+    document.getElementById('btnResetSimulation').addEventListener('click', () => {
+      clearInterval(simInterval);
+      document.getElementById('simZoneCards').innerHTML = '';
+      document.getElementById('simLogTerminal').innerHTML = '<div class="text-muted-custom">// Click \'Run Spot Retry Loop\' to observe round-robin probing across candidate zones...</div>';
+    });
+
+    // Quota & Capacity Automation Hub
+    let currentQuotaTab = 'cli';
+    function renderQuotaHubCode() {
+      const accSelect = document.getElementById('quotaHubAcc').value;
+      const [accSku, quotaMetric] = accSelect.split('|');
+      const gpuCount = document.getElementById('quotaHubGpuCount').value;
+      const regionsStr = document.getElementById('quotaHubRegions').value.trim();
+      const regions = regionsStr.split(/\s+/).filter(Boolean);
+      const proj = state.projectId || 'my-project';
+
+      let out = '';
+      if (currentQuotaTab === 'cli') {
+        out = `# Run the bundled multi-region automated quota requester:
+chmod +x ./scripts/request-gpu-quota.sh
+
+./scripts/request-gpu-quota.sh \\
+  --project="${proj}" \\
+  --accelerator="${accSku}" \\
+  --gpus-per-region=${gpuCount} \\
+  --regions="${regionsStr}" \\
+  --justification="Multi-region Spot capacity hunter and distributed training"`;
+      } else if (currentQuotaTab === 'gcloud') {
+        out = `# Google Cloud Quotas API (cloudquotas.googleapis.com)
+# Execute per region to submit automated QuotaPreference requests:\n\n`;
+        regions.forEach(r => {
+          out += `gcloud beta quotas preferences create \\
+  --project="${proj}" \\
+  --service="compute.googleapis.com" \\
+  --quota-id="${quotaMetric}" \\
+  --preferred-value=${gpuCount} \\
+  --dimensions="region=${r}" \\
+  --preference-id="pref-${quotaMetric.toLowerCase().replace(/_/g, '-')}-${r}-\$(date +%s)" \\
+  --justification="Spot round-robin parallel capacity hunting"\n\n`;
+        });
+      } else if (currentQuotaTab === 'terraform') {
+        const hclRegions = regions.map(r => `"${r}"`).join(', ');
+        out = `# Terraform Quota-as-Code using google_cloud_quotas_quota_preference
+resource "google_cloud_quotas_quota_preference" "gpu_quotas" {
+  for_each        = toset([${hclRegions}])
+  parent          = "projects/${proj}/locations/\${each.key}"
+  name            = "\${lower("${quotaMetric}")}-\${each.key}-pref"
+  service         = "compute.googleapis.com"
+  quota_id        = "${quotaMetric}"
+  preferred_value = ${gpuCount}
+  dimensions = {
+    region = each.key
+  }
+  justification = "Multi-region Spot GPU cluster allocation"
+}`;
+      } else if (currentQuotaTab === 'future') {
+        const sampleZone = `${regions[0] || 'us-central1'}-a`;
+        const nodeCount = Math.max(1, Math.floor(gpuCount / 8));
+        out = `# DWS Calendar Future Reservation (Automate Guaranteed Schedule)
+gcloud compute future-reservations create "dws-sched-\$(date +%s)" \\
+  --project="${proj}" \\
+  --zone="${sampleZone}" \\
+  --machine-type="${accSku}" \\
+  --total-count=${nodeCount} \\
+  --start-time="\$(date -u -v+1d +%Y-%m-%dT08:00:00Z 2>/dev/null || date -u -d '+1 day' +%Y-%m-%dT08:00:00Z)" \\
+  --duration="28800s" \\
+  --planning-status=SUBMITTED \\
+  --auto-delete-auto-created-reservations`;
+      }
+
+      const block = document.getElementById('quotaCodeBlock');
+      if (block) block.textContent = out;
+    }
+
+    document.querySelectorAll('.quota-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.quota-tab-btn').forEach(b => {
+          b.classList.remove('bg-emerald-500/20', 'text-emerald-400', 'border', 'border-emerald-500/30');
+          b.classList.add('text-muted-custom');
+        });
+        btn.classList.add('bg-emerald-500/20', 'text-emerald-400', 'border', 'border-emerald-500/30');
+        btn.classList.remove('text-muted-custom');
+        currentQuotaTab = btn.dataset.qtab;
+        renderQuotaHubCode();
+      });
+    });
+
+    ['quotaHubAcc', 'quotaHubGpuCount', 'quotaHubRegions'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', renderQuotaHubCode);
+      if (el) el.addEventListener('change', renderQuotaHubCode);
+    });
+
+    const btnCopyQuota = document.getElementById('btnCopyQuotaCode');
+    if (btnCopyQuota) {
+      btnCopyQuota.addEventListener('click', () => {
+        const code = document.getElementById('quotaCodeBlock').textContent;
+        navigator.clipboard.writeText(code).then(() => {
+          btnCopyQuota.textContent = 'Copied!';
+          setTimeout(() => { btnCopyQuota.textContent = 'Copy'; }, 2000);
+        });
+      });
+    }
+
+    // Boot
+    renderAccelerators();
+    updateCandidateZones();
+  </script>
+</body>
+</html>

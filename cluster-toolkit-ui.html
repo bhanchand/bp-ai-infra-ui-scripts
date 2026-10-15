@@ -144,6 +144,10 @@
           <span class="text-slate-300">|</span>
           <button type="button" onclick="loadPreset('batch-l4')" class="font-semibold text-blue-600 hover:text-blue-800 transition px-2 py-0.5 rounded hover:bg-blue-50">Batch L4 Inference</button>
         </div>
+        <a href="index.html" class="text-xs font-semibold text-slate-700 hover:text-blue-600 border border-slate-200 hover:border-blue-300 bg-white px-3 py-1.5 rounded-lg transition shadow-2xs flex items-center space-x-1.5">
+          <svg class="w-3.5 h-3.5 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          <span>Portal</span>
+        </a>
         <button type="button" onclick="resetFormToDefaults()" class="text-xs font-medium text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 bg-white px-3 py-1.5 rounded-lg transition shadow-2xs flex items-center space-x-1.5">
           <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
           <span>Reset</span>
@@ -929,7 +933,7 @@
                 <p class="text-xs text-slate-500">Cost-optimization models, Dynamic Workload Scheduler, and hardware reservations</p>
               </div>
             </div>
-            <a id="provisioningDocsLink" href="https://cloud.google.com/compute/docs/instances/dynamic-workload-scheduler" target="_blank" rel="noopener noreferrer" title="View Capacity & DWS Documentation" class="inline-flex items-center text-xs font-medium text-blue-600 hover:text-blue-800 transition py-1 px-2.5 rounded-lg hover:bg-blue-50 border border-transparent hover:border-blue-200">
+            <a id="provisioningDocsLink" href="https://cloud.google.com/compute/docs/instances/about-flex-start-vms" target="_blank" rel="noopener noreferrer" title="View Capacity & DWS Documentation" class="inline-flex items-center text-xs font-medium text-blue-600 hover:text-blue-800 transition py-1 px-2.5 rounded-lg hover:bg-blue-50 border border-transparent hover:border-blue-200">
               <span>Docs</span>
               <svg class="w-3.5 h-3.5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
             </a>
@@ -990,7 +994,7 @@
                 <p class="text-xs text-slate-500">Control plane release cadence, version, and AI/HPC distributed training controllers</p>
               </div>
             </div>
-            <a href="https://cloud.google.com/kubernetes-engine/docs/concepts/kueue" target="_blank" rel="noopener noreferrer" title="View GKE AI/HPC Documentation" class="inline-flex items-center text-xs font-medium text-blue-600 hover:text-blue-800 transition py-1 px-2.5 rounded-lg hover:bg-blue-50 border border-transparent hover:border-blue-200">
+            <a href="https://cloud.google.com/kubernetes-engine/docs/how-to/dws-flex-start-training" target="_blank" rel="noopener noreferrer" title="View GKE AI/HPC Documentation" class="inline-flex items-center text-xs font-medium text-blue-600 hover:text-blue-800 transition py-1 px-2.5 rounded-lg hover:bg-blue-50 border border-transparent hover:border-blue-200">
               <span>Docs</span>
               <svg class="w-3.5 h-3.5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
             </a>
@@ -1115,7 +1119,7 @@
                   <input type="checkbox" id="gkeKueue" name="gkeKueue" class="mt-1 h-4 w-4 rounded text-blue-600 border-slate-300 focus:ring-blue-500" checked>
                   <div class="ml-3">
                     <span class="block text-sm font-semibold text-slate-900">Kueue</span>
-                    <span class="block text-xs text-slate-500 mt-0.5">Kubernetes-native job queueing, quota management & preemption for batch ML. <a href="https://cloud.google.com/kubernetes-engine/docs/concepts/kueue" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">Docs ↗</a></span>
+                    <span class="block text-xs text-slate-500 mt-0.5">Kubernetes-native job queueing, quota management & preemption for batch ML. <a href="https://cloud.google.com/kubernetes-engine/docs/how-to/dws-flex-start-training" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">Docs ↗</a></span>
                   </div>
                 </label>
 
@@ -1124,7 +1128,7 @@
                   <input type="checkbox" id="gkeJobset" name="gkeJobset" class="mt-1 h-4 w-4 rounded text-blue-600 border-slate-300 focus:ring-blue-500" checked>
                   <div class="ml-3">
                     <span class="block text-sm font-semibold text-slate-900">JobSet</span>
-                    <span class="block text-xs text-slate-500 mt-0.5">API for managing homogeneous & multi-slice distributed ML workloads (e.g., PyTorch, JAX). <a href="https://cloud.google.com/kubernetes-engine/docs/how-to/jobset" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">Docs ↗</a></span>
+                    <span class="block text-xs text-slate-500 mt-0.5">API for managing homogeneous & multi-slice distributed ML workloads (e.g., PyTorch, JAX). <a href="https://jobset.sigs.k8s.io/" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">Docs ↗</a></span>
                   </div>
                 </label>
 
@@ -1142,7 +1146,7 @@
                   <input type="checkbox" id="gkeParallelstoreCsi" name="gkeParallelstoreCsi" class="mt-1 h-4 w-4 rounded text-blue-600 border-slate-300 focus:ring-blue-500">
                   <div class="ml-3">
                     <span class="block text-sm font-semibold text-slate-900">Parallelstore CSI Driver</span>
-                    <span class="block text-xs text-slate-500 mt-0.5">Native driver for Google's sub-millisecond DAOS-based parallel storage. <a href="https://cloud.google.com/kubernetes-engine/docs/how-to/persistent-volumes/parallelstore-csi-driver" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">Docs ↗</a></span>
+                    <span class="block text-xs text-slate-500 mt-0.5">Native driver for Google's sub-millisecond DAOS-based parallel storage. <a href="https://cloud.google.com/parallelstore/docs/csi-driver" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">Docs ↗</a></span>
                   </div>
                 </label>
               </div>
@@ -1158,7 +1162,7 @@
                   </h3>
                   <p class="text-xs text-slate-500">Declaratively manage hardware preferences, spot fallback tiers, and automatic active migration</p>
                 </div>
-                <a href="https://cloud.google.com/kubernetes-engine/docs/concepts/compute-class" target="_blank" rel="noopener noreferrer" title="View GKE ComputeClass Documentation" class="inline-flex items-center text-xs font-medium text-blue-600 hover:text-blue-800 transition py-1 px-2.5 rounded-lg hover:bg-blue-50 border border-transparent hover:border-blue-200">
+                <a href="https://cloud.google.com/kubernetes-engine/docs/how-to/node-auto-provisioning" target="_blank" rel="noopener noreferrer" title="View GKE ComputeClass Documentation" class="inline-flex items-center text-xs font-medium text-blue-600 hover:text-blue-800 transition py-1 px-2.5 rounded-lg hover:bg-blue-50 border border-transparent hover:border-blue-200">
                   <span>Docs</span>
                   <svg class="w-3.5 h-3.5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                 </a>
@@ -1275,7 +1279,7 @@
               <input type="checkbox" id="enableLoginNodes" name="enableLoginNodes" class="mt-1 h-4 w-4 rounded text-blue-600 border-slate-300 focus:ring-blue-500" checked>
               <div class="ml-3">
                 <span class="block text-sm font-semibold text-slate-900">Provision Dedicated Slurm Login Node(s)</span>
-                <span class="block text-xs text-slate-500 mt-0.5">Creates user-facing VMs via <code class="font-mono text-blue-700">community/modules/scheduler/schedmd-slurm-gcp-v6-login</code> for SSH, compilation, and <code class="font-mono text-slate-600">sbatch</code> dispatch. <a href="https://cloud.google.com/cluster-toolkit/docs/deploy/deploy-slurm-cluster" target="_blank" rel="noopener noreferrer" class="text-amber-700 hover:underline">Docs ↗</a></span>
+                <span class="block text-xs text-slate-500 mt-0.5">Creates user-facing VMs via <code class="font-mono text-blue-700">community/modules/scheduler/schedmd-slurm-gcp-v6-login</code> for SSH, compilation, and <code class="font-mono text-slate-600">sbatch</code> dispatch. <a href="https://cloud.google.com/cluster-toolkit/docs" target="_blank" rel="noopener noreferrer" class="text-amber-700 hover:underline">Docs ↗</a></span>
               </div>
             </label>
 
@@ -1480,7 +1484,7 @@
         </div>
 
         <!-- STEP 7: Lifecycle & Automation Scripts (Startup, Prolog & Epilog) -->
-        <div class="section-card section-card-odd bg-white rounded-xl shadow-xs border border-slate-200/90 p-6 md:p-7 transition-all duration-200 hover:shadow-sm">
+        <div id="slurmStartupCard" class="section-card section-card-odd bg-white rounded-xl shadow-xs border border-slate-200/90 p-6 md:p-7 transition-all duration-200 hover:shadow-sm">
           <div class="section-header flex items-center justify-between mb-5 border-b border-slate-100 pb-4">
             <div class="flex items-center space-x-3">
               <span class="section-badge flex items-center justify-center w-7 h-7 rounded-lg bg-blue-600 text-white font-mono text-xs font-bold shadow-xs">
@@ -1495,7 +1499,7 @@
               <span id="scriptsActiveBadge" class="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200">
                 0 Active
               </span>
-              <a href="https://cloud.google.com/cluster-toolkit/docs/reference/modules/scripts/startup-script" target="_blank" rel="noopener noreferrer" title="View Cluster Toolkit Script Docs" class="inline-flex items-center text-xs font-medium text-blue-600 hover:text-blue-800 transition py-1 px-2.5 rounded-lg hover:bg-blue-50 border border-transparent hover:border-blue-200">
+              <a href="https://github.com/GoogleCloudPlatform/cluster-toolkit/tree/main/modules/scripts/startup-script" target="_blank" rel="noopener noreferrer" title="View Cluster Toolkit Script Docs" class="inline-flex items-center text-xs font-medium text-blue-600 hover:text-blue-800 transition py-1 px-2.5 rounded-lg hover:bg-blue-50 border border-transparent hover:border-blue-200">
                 <span>Docs</span>
                 <svg class="w-3.5 h-3.5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
               </a>
@@ -3801,7 +3805,7 @@ gcloud iam service-accounts add-iam-policy-binding ${saEmail} \\
         descEl.innerHTML = 'Slurm generates <code class="font-mono text-blue-700">schedmd-slurm-gcp-v6-login</code>, <code class="font-mono text-blue-700">slurm-controller</code>, and dynamic partitions.';
         iconEl.className = 'w-2 h-2 rounded-full bg-amber-500';
         if (orchDocs) {
-          orchDocs.href = 'https://cloud.google.com/cluster-toolkit/docs/deploy/deploy-slurm-cluster';
+          orchDocs.href = 'https://cloud.google.com/cluster-toolkit/docs';
           orchDocs.title = 'View Slurm on GCP Documentation';
         }
       } else if (state.orchestrator === 'batch') {
@@ -3874,7 +3878,7 @@ gcloud iam service-accounts add-iam-policy-binding ${saEmail} \\
       } else if (state.provisioningModel === 'dws-flex') {
         reservationNameContainer.classList.add('hidden');
         provisioningExplanation.textContent = 'Queues workload with Google Dynamic Workload Scheduler (DWS) Flex Start reservation affinity.';
-        if (provDocs) provDocs.href = 'https://cloud.google.com/compute/docs/instances/dynamic-workload-scheduler';
+        if (provDocs) provDocs.href = 'https://cloud.google.com/compute/docs/instances/about-flex-start-vms';
       } else if (state.provisioningModel === 'spot') {
         reservationNameContainer.classList.add('hidden');
         provisioningExplanation.textContent = 'Runs on preemptible Spot VMs with up to 91% cost savings for fault-tolerant computing.';
@@ -5541,13 +5545,13 @@ gcloud iam service-accounts add-iam-policy-binding ${saEmail} \\
           },
           {
             title: 'Cluster Toolkit CLI (gcluster) Installation',
-            url: 'https://cloud.google.com/cluster-toolkit/docs/setup/install-toolkit',
+            url: 'https://github.com/GoogleCloudPlatform/cluster-toolkit',
             desc: 'Prerequisites, Terraform setup, and gcluster binary installation on Linux and macOS.',
             tag: 'Installation'
           },
           {
             title: 'Declarative Blueprint YAML Reference',
-            url: 'https://cloud.google.com/cluster-toolkit/docs/reference/blueprint-reference',
+            url: 'https://cloud.google.com/cluster-toolkit/docs',
             desc: 'Complete specification of vars, deployment, and module composition schema.',
             tag: 'Reference'
           },
@@ -5711,7 +5715,7 @@ gcloud iam service-accounts add-iam-policy-binding ${saEmail} \\
         });
         secLinks.push({
           title: 'Supported Machine Types for Confidential Computing',
-          url: 'https://cloud.google.com/confidential-computing/confidential-vm/docs/supported-machine-types',
+          url: 'https://cloud.google.com/confidential-computing/confidential-vm/docs/confidential-vm-overview',
           desc: 'Compatibility matrix for N2D, C2D, C3D (AMD SEV), C3 (Intel TDX), and A3 (NVIDIA Hopper Confidential Computing).',
           tag: 'Compatibility'
         });
@@ -5747,7 +5751,7 @@ gcloud iam service-accounts add-iam-policy-binding ${saEmail} \\
         if (state.gkeKueue) {
           orchLinks.push({
             title: 'Kueue: Kubernetes-Native Job Queueing & Quota',
-            url: 'https://cloud.google.com/kubernetes-engine/docs/concepts/kueue',
+            url: 'https://cloud.google.com/kubernetes-engine/docs/how-to/dws-flex-start-training',
             desc: 'Dynamic queueing, multi-tenancy, fair-sharing, and preemption for batch AI jobs.',
             tag: 'Kueue'
           });
@@ -5755,7 +5759,7 @@ gcloud iam service-accounts add-iam-policy-binding ${saEmail} \\
         if (state.gkeJobset) {
           orchLinks.push({
             title: 'JobSet Distributed AI Training API',
-            url: 'https://cloud.google.com/kubernetes-engine/docs/how-to/jobset',
+            url: 'https://jobset.sigs.k8s.io/',
             desc: 'Orchestrating multi-pod training jobs (PyTorch, JAX, Megatron-LM) with group scheduling.',
             tag: 'JobSet'
           });
@@ -5771,7 +5775,7 @@ gcloud iam service-accounts add-iam-policy-binding ${saEmail} \\
         if (state.gkeParallelstoreCsi) {
           orchLinks.push({
             title: 'Parallelstore CSI Driver for GKE',
-            url: 'https://cloud.google.com/kubernetes-engine/docs/how-to/persistent-volumes/parallelstore-csi-driver',
+            url: 'https://cloud.google.com/parallelstore/docs/csi-driver',
             desc: 'Sub-millisecond parallel POSIX access to Intel DAOS storage from Kubernetes pods.',
             tag: 'CSI'
           });
@@ -5779,25 +5783,25 @@ gcloud iam service-accounts add-iam-policy-binding ${saEmail} \\
         if (state.gkeEnableComputeClass) {
           orchLinks.push({
             title: 'GKE ComputeClass with Priority Fallback & Node Auto-creation',
-            url: 'https://cloud.google.com/kubernetes-engine/docs/how-to/compute-class',
+            url: 'https://cloud.google.com/kubernetes-engine/docs/how-to/node-auto-provisioning',
             desc: 'Define ordered hardware tiers (Calendar -> Flex Start -> On-Demand -> Spot) and automated capacity fallback rules.',
             tag: 'ComputeClass'
           });
           orchLinks.push({
             title: 'Dynamic Workload Scheduler (DWS) Overview & Modes',
-            url: 'https://cloud.google.com/compute/docs/dynamic-workload-scheduler',
+            url: 'https://cloud.google.com/compute/docs/instances/about-flex-start-vms',
             desc: 'Understand DWS Flex Start (queued non-preemptible) and Calendar Mode (future pre-booked capacity blocks).',
             tag: 'DWS'
           });
           orchLinks.push({
             title: 'DWS Flex Start for GKE GPU & TPU Workloads',
-            url: 'https://cloud.google.com/kubernetes-engine/docs/how-to/dynamic-workload-scheduler',
+            url: 'https://cloud.google.com/kubernetes-engine/docs/how-to/dws-flex-start-training',
             desc: 'Gang-schedule batch AI workloads with queue wait times up to 7 days and up to 50% cost savings.',
             tag: 'Flex Start'
           });
           orchLinks.push({
             title: 'DWS Calendar Mode & Future Capacity Reservations',
-            url: 'https://cloud.google.com/compute/docs/instances/reservations-future',
+            url: 'https://cloud.google.com/compute/docs/instances/reservations-overview',
             desc: 'Pre-book guaranteed GPU capacity blocks for scheduled training windows and target them in ComputeClass.',
             tag: 'Calendar'
           });
@@ -5809,7 +5813,7 @@ gcloud iam service-accounts add-iam-policy-binding ${saEmail} \\
           });
           orchLinks.push({
             title: 'GKE Active Migration & Dynamic Priority Optimization',
-            url: 'https://cloud.google.com/kubernetes-engine/docs/concepts/compute-class#active-migration',
+            url: 'https://cloud.google.com/kubernetes-engine/docs/how-to/node-auto-provisioning',
             desc: 'Automatically migrate active workloads to higher-priority tiers as reserved or cheaper capacity opens up.',
             tag: 'Optimization'
           });
@@ -5817,7 +5821,7 @@ gcloud iam service-accounts add-iam-policy-binding ${saEmail} \\
       } else if (state.orchestrator === 'slurm') {
         orchLinks.push({
           title: 'Deploying Slurm Clusters with Cluster Toolkit',
-          url: 'https://cloud.google.com/cluster-toolkit/docs/deploy/deploy-slurm-cluster',
+          url: 'https://cloud.google.com/cluster-toolkit/docs',
           desc: 'Provisioning auto-scaling Slurm clusters with dynamic node provisioning and preemption.',
           tag: 'Slurm'
         });
@@ -5985,7 +5989,7 @@ gcloud iam service-accounts add-iam-policy-binding ${saEmail} \\
       if (state.provisioningModel === 'dws-flex') {
         capLinks.push({
           title: 'Dynamic Workload Scheduler (DWS) Flex Start',
-          url: 'https://cloud.google.com/compute/docs/instances/dynamic-workload-scheduler',
+          url: 'https://cloud.google.com/compute/docs/instances/about-flex-start-vms',
           desc: 'Queue-based capacity provisioning that allocates contiguous GPU slices when available.',
           tag: 'DWS Flex'
         });
@@ -6033,7 +6037,7 @@ gcloud iam service-accounts add-iam-policy-binding ${saEmail} \\
       if (allBackends.has('managed-lustre')) {
         storLinks.push({
           title: 'Deploying Managed Lustre with Cluster Toolkit',
-          url: 'https://cloud.google.com/cluster-toolkit/docs/deploy/deploy-lustre',
+          url: 'https://cloud.google.com/parallelstore/docs/overview',
           desc: 'Enterprise high-throughput parallel file system deployed via Cluster Toolkit modules.',
           tag: 'Lustre'
         });
@@ -6090,7 +6094,7 @@ gcloud iam service-accounts add-iam-policy-binding ${saEmail} \\
       if (state.enableStartupScript) {
         scriptLinks.push({
           title: 'Cluster Toolkit Startup Script Module',
-          url: 'https://cloud.google.com/cluster-toolkit/docs/reference/modules#startup-script',
+          url: 'https://github.com/GoogleCloudPlatform/cluster-toolkit/tree/main/modules/scripts/startup-script',
           desc: 'Executing custom provisioning, package installations, and local SSD formatting at instance boot.',
           tag: 'Startup Script'
         });
@@ -6110,7 +6114,7 @@ gcloud iam service-accounts add-iam-policy-binding ${saEmail} \\
         });
         scriptLinks.push({
           title: 'Slurm GCP Cluster Controller Customization',
-          url: 'https://github.com/GoogleCloudPlatform/slurm-gcp/blob/master/docs/custom_scripts.md',
+          url: 'https://github.com/GoogleCloudPlatform/slurm-gcp',
           desc: 'Deploying custom controller scripts, slurm.conf hooks, and job environment initializers.',
           tag: 'Slurm-GCP'
         });

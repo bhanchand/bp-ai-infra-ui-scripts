@@ -334,7 +334,7 @@
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="9.5" height="9.5" rx="1.5" fill="#F25022"/><rect x="12.5" y="2" width="9.5" height="9.5" rx="1.5" fill="#7FBA00"/><rect x="2" y="12.5" width="9.5" height="9.5" rx="1.5" fill="#00A4EF"/><rect x="12.5" y="12.5" width="9.5" height="9.5" rx="1.5" fill="#FFB900"/></svg>
               <span>Microsoft Learn ↗</span>
             </a>
-            <a href="https://help.okta.com/en-us/content/topics/apps/apps-google-workspace-overview.htm" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:border-sky-400 text-slate-700 dark:text-slate-300 text-[11px] font-medium transition shadow-xs">
+            <a href="https://help.okta.com/en-us/content/topics/apps/apps-overview-get-started.htm" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:border-sky-400 text-slate-700 dark:text-slate-300 text-[11px] font-medium transition shadow-xs">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="#00297A"/><circle cx="12" cy="12" r="5" fill="#FFFFFF"/></svg>
               <span>Okta Integration ↗</span>
             </a>
@@ -1397,11 +1397,11 @@
             <span class="font-bold text-slate-700 dark:text-slate-300">Authoritative Provisioning References:</span>
           </div>
           <div class="flex flex-wrap items-center gap-2">
-            <a href="https://learn.microsoft.com/en-us/entra/identity/saas-apps/google-apps-provisioning-tutorial" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:border-emerald-500 text-slate-700 dark:text-slate-300 text-[11px] font-semibold transition shadow-xs">
+            <a href="https://learn.microsoft.com/en-us/entra/identity/saas-apps/google-apps-tutorial" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:border-emerald-500 text-slate-700 dark:text-slate-300 text-[11px] font-semibold transition shadow-xs">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="9.5" height="9.5" rx="1.5" fill="#F25022"/><rect x="12.5" y="2" width="9.5" height="9.5" rx="1.5" fill="#7FBA00"/><rect x="2" y="12.5" width="9.5" height="9.5" rx="1.5" fill="#00A4EF"/><rect x="12.5" y="12.5" width="9.5" height="9.5" rx="1.5" fill="#FFB900"/></svg>
               <span>Entra SCIM Tutorial ↗</span>
             </a>
-            <a href="https://help.okta.com/en-us/content/topics/users-groups-profiles/usgp-about-push-groups.htm" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:border-emerald-500 text-slate-700 dark:text-slate-300 text-[11px] font-semibold transition shadow-xs">
+            <a href="https://help.okta.com/en-us/content/topics/users-groups-profiles/usgp-about-groups.htm" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:border-emerald-500 text-slate-700 dark:text-slate-300 text-[11px] font-semibold transition shadow-xs">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="#00297A"/><circle cx="12" cy="12" r="5" fill="#FFFFFF"/></svg>
               <span>Okta Push Groups ↗</span>
             </a>
@@ -1855,29 +1855,29 @@ resource "google_project_iam_member" "workforce_group_binding" {
       gcp: [
         { title: 'Workforce Identity Federation Overview', url: 'https://cloud.google.com/iam/docs/workforce-identity-federation', desc: 'Google Cloud official IAM documentation on workforce pools, providers, and STS exchange.' },
         { title: 'Manage Workforce Identity Pools & Providers', url: 'https://cloud.google.com/iam/docs/manage-workforce-identity-pools-providers', desc: 'Step-by-step gcloud CLI and Terraform guide for workforce pool administration.' },
-        { title: 'Console Web Sign-In with Workforce Identity', url: 'https://cloud.google.com/iam/docs/workforce-sign-in-console', desc: 'Configuring dedicated web sign-in entry points and employee session flows.' },
+        { title: 'Console Web Sign-In with Workforce Identity', url: 'https://cloud.google.com/iam/docs/workforce-identity-federation', desc: 'Configuring dedicated web sign-in entry points and employee session flows.' },
         { title: 'Workforce Principal Identifiers (principalSet)', url: 'https://cloud.google.com/iam/docs/principal-identifiers#workforce-pool', desc: 'Syntax specification for principalSet:// groups and principal:// user tokens.' },
         { title: 'Google Cloud Identity Overview & SAML SSO', url: 'https://cloud.google.com/identity/docs/overview', desc: 'Inbound SAML 2.0 authentication and managed account administration.' },
         { title: 'Google Cloud Directory Sync (GCDS) Admin Guide', url: 'https://support.google.com/a/answer/106368', desc: 'Complete architecture guide for Active Directory on-premise LDAP sync to Cloud Identity.' },
-        { title: 'Dynamic Groups with CEL Expressions', url: 'https://cloud.google.com/identity/docs/how-to/setup-dynamic-groups', desc: 'Common Expression Language membership queries for automated Google Groups management.' },
-        { title: 'Architecture Framework: Federating GCP with Azure AD', url: 'https://cloud.google.com/architecture/identity/federating-gcp-with-azure-ad-overview', desc: 'Google Cloud official reference architecture whitepaper.' }
+        { title: 'Dynamic Groups with CEL Expressions', url: 'https://cloud.google.com/identity/docs/how-to/create-dynamic-groups', desc: 'Common Expression Language membership queries for automated Google Groups management.' },
+        { title: 'Architecture Framework: Federating GCP with Azure AD', url: 'https://cloud.google.com/architecture/identity/federating-gcp-with-azure-ad-configuring-provisioning-and-single-sign-on', desc: 'Google Cloud official reference architecture whitepaper.' }
       ],
       entra: [
         { title: 'Microsoft Entra ID Google Cloud SSO Tutorial', url: 'https://learn.microsoft.com/en-us/entra/identity/saas-apps/google-apps-tutorial', desc: 'Official Microsoft Learn tutorial for federating Google Cloud with Entra ID SAML.' },
-        { title: 'Automated SCIM Provisioning with Google Cloud', url: 'https://learn.microsoft.com/en-us/entra/identity/saas-apps/google-apps-provisioning-tutorial', desc: 'Configuring enterprise user & group automated outbound provisioning.' },
+        { title: 'Automated SCIM Provisioning with Google Cloud', url: 'https://learn.microsoft.com/en-us/entra/identity/saas-apps/google-apps-tutorial', desc: 'Configuring enterprise user & group automated outbound provisioning.' },
         { title: 'Configure Group Claims in Tokens', url: 'https://learn.microsoft.com/en-us/entra/identity/hybrid/connect/how-to-connect-fed-group-claims', desc: 'How to emit Security Group ObjectIDs or sAMAccountNames in SAML/OIDC tokens.' },
-        { title: 'Attribute Mapping Expressions (RegexReplace)', url: 'https://learn.microsoft.com/en-us/entra/identity/app-provisioning/functions-for-customizing-application-attributes', desc: 'Microsoft expressions reference for handling domain mismatch and user formatting.' }
+        { title: 'Attribute Mapping Expressions (RegexReplace)', url: 'https://learn.microsoft.com/en-us/entra/identity/app-provisioning/customize-application-attributes', desc: 'Microsoft expressions reference for handling domain mismatch and user formatting.' }
       ],
       okta: [
-        { title: 'Google Workspace & GCP App Integration', url: 'https://help.okta.com/en-us/content/topics/apps/apps-google-workspace-overview.htm', desc: 'Okta Integration Network (OIN) app setup for SSO and provisioning.' },
-        { title: 'Okta Push Groups to Google Cloud Identity', url: 'https://help.okta.com/en-us/content/topics/users-groups-profiles/usgp-about-push-groups.htm', desc: 'Configuring near real-time 2-5 second Push Group synchronizations.' },
-        { title: 'Pass Group Attributes in SAML Assertions', url: 'https://support.okta.com/help/s/article/How-to-pass-group-attributes-in-SAML-assertion', desc: 'Configuring regex-based group attribute statements in Okta SAML assertions.' },
+        { title: 'Google Workspace & GCP App Integration', url: 'https://help.okta.com/en-us/content/topics/apps/apps-overview-get-started.htm', desc: 'Okta Integration Network (OIN) app setup for SSO and provisioning.' },
+        { title: 'Okta Push Groups to Google Cloud Identity', url: 'https://help.okta.com/en-us/content/topics/users-groups-profiles/usgp-about-groups.htm', desc: 'Configuring near real-time 2-5 second Push Group synchronizations.' },
+        { title: 'Pass Group Attributes in SAML Assertions', url: 'https://help.okta.com/en-us/content/topics/apps/apps_app_integration_wizard_saml.htm', desc: 'Configuring regex-based group attribute statements in Okta SAML assertions.' },
         { title: 'Okta Expression Language (OEL) Reference', url: 'https://developer.okta.com/docs/reference/okta-expression-language/', desc: 'String transformation syntax for UPN prefix extraction and domain translation.' }
       ],
       ping: [
-        { title: 'PingFederate Google Cloud Connector Suite', url: 'https://docs.pingidentity.com/r/en-us/pingfederate-112/pf_google_cloud_connector_suite', desc: 'Outbound channel configuration and Domain-Wide Delegation setup.' },
-        { title: 'PingFederate OGNL Expressions for Attribute Mapping', url: 'https://docs.pingidentity.com/r/en-us/pingfederate-112/pf_ognl_expressions', desc: 'Extracting group Common Names and formatting claims for Google Cloud.' },
-        { title: 'PingOne Cloud SCIM Outbound Provisioning', url: 'https://docs.pingidentity.com/r/en-us/pingone/p1_c_provisioning', desc: 'Cloud-based SCIM 2.0 provisioning to Google Cloud Directory.' }
+        { title: 'PingFederate Google Cloud Connector Suite', url: 'https://docs.pingidentity.com/pingfederate', desc: 'Outbound channel configuration and Domain-Wide Delegation setup.' },
+        { title: 'PingFederate OGNL Expressions for Attribute Mapping', url: 'https://docs.pingidentity.com/pingfederate', desc: 'Extracting group Common Names and formatting claims for Google Cloud.' },
+        { title: 'PingOne Cloud SCIM Outbound Provisioning', url: 'https://docs.pingidentity.com/pingone', desc: 'Cloud-based SCIM 2.0 provisioning to Google Cloud Directory.' }
       ],
       standards: [
         { title: 'RFC 7643: SCIM 2.0 Core Schema', url: 'https://datatracker.ietf.org/doc/html/rfc7643', desc: 'IETF standard definition for Users, Groups, and enterprise extensions.' },
@@ -6477,7 +6477,7 @@ resource "google_iam_workforce_pool_provider" "provider" {
                     ${getSystemLogo('okta', 'w-3 h-3')}
                     <span>Okta Token Groups ↗</span>
                   </a>
-                  <a href="https://docs.pingidentity.com/pingfederate/latest/administrators_reference_guide/pf_idp_token_exchange.html" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[10px] font-semibold text-slate-700 dark:text-slate-300 hover:border-purple-500 transition">
+                  <a href="https://docs.pingidentity.com/pingfederate" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[10px] font-semibold text-slate-700 dark:text-slate-300 hover:border-purple-500 transition">
                     ${getSystemLogo('ping', 'w-3 h-3')}
                     <span>Ping Token Exchange ↗</span>
                   </a>
@@ -6603,7 +6603,7 @@ resource "google_iam_workforce_pool_provider" "provider" {
                     ${getSystemLogo('gcp', 'w-3 h-3')}
                     <span>GCP IAM Roles Reference ↗</span>
                   </a>
-                  <a href="https://cloud.google.com/identity/docs/how-to/dynamic-groups" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-[10px] font-semibold text-slate-700 dark:text-slate-300 hover:border-indigo-500 transition">
+                  <a href="https://cloud.google.com/identity/docs/how-to/create-dynamic-groups" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-[10px] font-semibold text-slate-700 dark:text-slate-300 hover:border-indigo-500 transition">
                     ${getSystemLogo('gcp', 'w-3 h-3')}
                     <span>Cloud Identity Dynamic Groups ↗</span>
                   </a>
@@ -7614,7 +7614,7 @@ Add-ADGroupMember -Identity "${groupName}" -Members "alice.smith", "bob.johnson"
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   <!-- Doc 1: Setup Dynamic Groups -->
-                  <a href="https://cloud.google.com/identity/docs/how-to/setup-dynamic-groups" target="_blank" rel="noopener noreferrer" class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 transition flex flex-col justify-between group">
+                  <a href="https://cloud.google.com/identity/docs/how-to/create-dynamic-groups" target="_blank" rel="noopener noreferrer" class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 transition flex flex-col justify-between group">
                     <div class="space-y-1.5">
                       <div class="flex items-center justify-between">
                         <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Admin Guide</span>
@@ -7623,11 +7623,11 @@ Add-ADGroupMember -Identity "${groupName}" -Members "alice.smith", "bob.johnson"
                       <div class="font-bold text-xs text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">Set Up Dynamic Groups in Cloud Identity</div>
                       <p class="text-[11px] text-slate-500 leading-snug">Prerequisites, licensing requirements (Cloud Identity Premium), and Admin Console setup instructions.</p>
                     </div>
-                    <div class="mt-2.5 text-[10px] font-mono text-slate-400 truncate">cloud.google.com/identity/docs/how-to/setup-dynamic-groups</div>
+                    <div class="mt-2.5 text-[10px] font-mono text-slate-400 truncate">cloud.google.com/identity/docs/how-to/create-dynamic-groups</div>
                   </a>
 
                   <!-- Doc 2: CEL Query Syntax -->
-                  <a href="https://cloud.google.com/identity/docs/reference/dynamic-groups-syntax" target="_blank" rel="noopener noreferrer" class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 transition flex flex-col justify-between group">
+                  <a href="https://support.google.com/a/answer/10286841" target="_blank" rel="noopener noreferrer" class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 transition flex flex-col justify-between group">
                     <div class="space-y-1.5">
                       <div class="flex items-center justify-between">
                         <span class="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Language Spec</span>
@@ -7636,11 +7636,11 @@ Add-ADGroupMember -Identity "${groupName}" -Members "alice.smith", "bob.johnson"
                       <div class="font-bold text-xs text-slate-900 dark:text-slate-100 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition">Dynamic Groups CEL Query Syntax Reference</div>
                       <p class="text-[11px] text-slate-500 leading-snug">Exhaustive reference for supported user attributes, string functions (startsWith, contains), and collection expressions.</p>
                     </div>
-                    <div class="mt-2.5 text-[10px] font-mono text-slate-400 truncate">cloud.google.com/identity/docs/reference/dynamic-groups-syntax</div>
+                    <div class="mt-2.5 text-[10px] font-mono text-slate-400 truncate">support.google.com/a/answer/10286841</div>
                   </a>
 
                   <!-- Doc 3: Custom User Schemas -->
-                  <a href="https://cloud.google.com/identity/docs/how-to/custom-user-schemas" target="_blank" rel="noopener noreferrer" class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 transition flex flex-col justify-between group">
+                  <a href="https://developers.google.com/admin-sdk/directory/v1/guides/manage-schemas" target="_blank" rel="noopener noreferrer" class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 transition flex flex-col justify-between group">
                     <div class="space-y-1.5">
                       <div class="flex items-center justify-between">
                         <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Directory API</span>
@@ -7649,7 +7649,7 @@ Add-ADGroupMember -Identity "${groupName}" -Members "alice.smith", "bob.johnson"
                       <div class="font-bold text-xs text-slate-900 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition">Custom User Schemas for Dynamic Groups</div>
                       <p class="text-[11px] text-slate-500 leading-snug">How to define custom schema fields (e.g. Clearance, Cost Center) in Directory API and query them via CEL.</p>
                     </div>
-                    <div class="mt-2.5 text-[10px] font-mono text-slate-400 truncate">cloud.google.com/identity/docs/how-to/custom-user-schemas</div>
+                    <div class="mt-2.5 text-[10px] font-mono text-slate-400 truncate">developers.google.com/admin-sdk/directory/v1/guides/manage-schemas</div>
                   </a>
 
                   <!-- Doc 4: Cloud Identity Groups API -->
