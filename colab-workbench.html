@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GCP Colab Enterprise & Vertex AI Workbench Architect</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-hover: #0ea5e9;
+      --code-bg: #0b1120;
+      --tag-bg: #1e293b;
+      --success: #10b981;
+      --warn: #f59e0b;
+    }
+    .light {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --border: #cbd5e1;
+      --text: #0f172a;
+      --muted: #475569;
+      --accent: #0284c7;
+      --accent-hover: #0369a1;
+      --code-bg: #f8fafc;
+      --tag-bg: #e2e8f0;
+      --success: #059669;
+      --warn: #b45309;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .bg-card-custom { background-color: var(--card); }
+    .border-custom { border-color: var(--border); }
+    .text-muted-custom { color: var(--muted); }
+    .text-accent-custom { color: var(--accent); }
+    .bg-code-custom { background-color: var(--code-bg); }
+    pre {
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* Light Mode High-Contrast Visibility Overrides */
+    .light .text-slate-100 { color: #0f172a !important; }
+    .light .text-slate-200 { color: #1e293b !important; }
+    .light .text-slate-300 { color: #334155 !important; }
+    .light .text-slate-400 { color: #475569 !important; }
+
+    .light .text-sky-300 { color: #0369a1 !important; }
+    .light .text-sky-400 { color: #0369a1 !important; }
+    .light .text-emerald-300 { color: #047857 !important; }
+    .light .text-emerald-400 { color: #047857 !important; }
+    .light .text-amber-300 { color: #b45309 !important; }
+    .light .text-amber-400 { color: #c2410c !important; }
+    .light .text-indigo-300 { color: #4338ca !important; }
+    .light .text-indigo-400 { color: #4338ca !important; }
+
+    /* Code Viewer & Terminal in Light Mode */
+    .light #codePre,
+    .light #codeOutput,
+    .light pre,
+    .light code {
+      color: #0f172a !important;
+    }
+    .light pre#codePre {
+      background-color: #f8fafc !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    /* Simulator Terminal / Log Boxes in Light Mode */
+    .light #simLogTerminal,
+    .light #simLadderLog {
+      background-color: #f8fafc !important;
+      color: #0f172a !important;
+      border: 1px solid #cbd5e1 !important;
+    }
+    .light #simLogTerminal .text-muted-custom,
+    .light #simLadderLog .text-muted-custom {
+      color: #475569 !important;
+    }
+
+    /* Form Controls: Inputs, Selects, and Dropdowns in Light Mode */
+    .light input[type="text"],
+    .light input[type="number"],
+    .light select,
+    .light textarea {
+      color: #0f172a !important;
+      background-color: #ffffff !important;
+      border-color: #cbd5e1 !important;
+    }
+    .light input::placeholder {
+      color: #94a3b8 !important;
+    }
+    .light select option {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+    }
+
+    /* Badges in Light Mode */
+    .light .badge.bg-sky-500\/20 { background-color: #e0f2fe !important; color: #0369a1 !important; border-color: #bae6fd !important; }
+    .light .badge.bg-emerald-500\/20 { background-color: #d1fae5 !important; color: #047857 !important; border-color: #a7f3d0 !important; }
+    .light .badge.bg-amber-500\/20 { background-color: #fef3c7 !important; color: #b45309 !important; border-color: #fde68a !important; }
+    .light .badge.bg-indigo-500\/20 { background-color: #e0e7ff !important; color: #4338ca !important; border-color: #c7d2fe !important; }
+    .light .badge.bg-slate-700\/60,
+    .light .badge.bg-slate-700 { background-color: #e2e8f0 !important; color: #1e293b !important; border-color: #cbd5e1 !important; }
+
+    /* Interactive States & Hovers in Light Mode */
+    .light .hover\:text-white:hover { color: #0f172a !important; }
+    .light .hover\:text-\[var\(--text\)\]:hover { color: #0f172a !important; }
+    .light .hover\:bg-slate-700\/20:hover { background-color: #f1f5f9 !important; }
+    .light .hover\:bg-slate-800\/30:hover { background-color: #f1f5f9 !important; }
+
+    /* Buttons & Toolbar Pills in Light Mode */
+    .light .bg-slate-700\/60 { background-color: #e2e8f0 !important; color: #0f172a !important; }
+    .light .bg-slate-700 { background-color: #e2e8f0 !important; color: #0f172a !important; }
+    .light .bg-slate-700\/50 { background-color: #e2e8f0 !important; color: #1e293b !important; }
+
+    /* Info Callouts & Tips in Light Mode */
+    .light .bg-sky-500\/10 { background-color: #f0f9ff !important; border-color: #bae6fd !important; }
+    .light .bg-emerald-500\/10 { background-color: #ecfdf5 !important; border-color: #a7f3d0 !important; }
+    .light .bg-amber-500\/10 { background-color: #fffbeb !important; border-color: #fde68a !important; }
+    .light .bg-sky-500\/15 { background-color: #e0f2fe !important; border-color: #7dd3fc !important; }
+    .light .bg-emerald-500\/15 { background-color: #d1fae5 !important; border-color: #6ee7b7 !important; }
+    .light .bg-amber-500\/15 { background-color: #fef3c7 !important; border-color: #fde68a !important; }
+
+    /* Splitter Drag Divider in Light Mode */
+    .light #dragDivider:hover { background-color: rgba(217, 119, 6, 0.15) !important; }
+    .light #dragDivider:active { background-color: rgba(217, 119, 6, 0.25) !important; }
+    .light #dragDivider > div { background-color: #94a3b8 !important; }
+  </style>
+</head>
+<body class="p-4 md:p-8 transition-colors duration-200">
+  <div class="max-w-7xl mx-auto space-y-6">
+
+    <!-- Header Section -->
+    <header class="bg-card-custom border border-custom rounded-2xl p-6 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div>
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 bg-amber-500/10 text-amber-400 rounded-xl border border-amber-500/20">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-2xl font-bold tracking-tight">GCP Colab Enterprise & Vertex AI Workbench Architect</h1>
+              <span class="badge bg-amber-500/20 text-amber-300 border border-amber-500/30">H100 Slice & L4</span>
+            </div>
+            <p class="text-muted-custom text-sm mt-0.5">Automated template provisioner and regional fallback ladder for interactive AI research</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Top Actions & Navigation Switcher -->
+      <div class="flex flex-wrap items-center gap-2.5">
+        <a href="flex-spray.html" class="px-3 py-1.5 rounded-lg border border-custom bg-card-custom text-sm font-medium hover:border-sky-500 transition flex items-center gap-1.5 text-muted-custom hover:text-[var(--text)]">
+          <span>⚡</span>
+          <span>Flex Spray</span>
+        </a>
+        <a href="spot-spray.html" class="px-3 py-1.5 rounded-lg border border-custom bg-card-custom text-sm font-medium hover:border-sky-500 transition flex items-center gap-1.5 text-muted-custom hover:text-[var(--text)]">
+          <span>🎯</span>
+          <span>Spot Spray</span>
+        </a>
+        <a href="dws-reservation.html" class="px-3 py-1.5 rounded-lg border border-custom bg-card-custom text-sm font-medium hover:border-sky-500 transition flex items-center gap-1.5 text-muted-custom hover:text-[var(--text)]">
+          <span>📋</span>
+          <span>DWS Reservations</span>
+        </a>
+        <span class="px-3 py-1.5 rounded-lg bg-amber-500/15 text-amber-400 border border-amber-500/30 text-sm font-semibold flex items-center gap-1.5">
+          <span>📓</span>
+          <span>Colab / Workbench</span>
+        </span>
+        <button id="themeToggle" class="px-3 py-1.5 rounded-lg border border-custom bg-card-custom text-sm font-medium hover:border-sky-500/50 transition flex items-center gap-2 ml-1">
+          <span id="themeIcon">☀️</span>
+          <span id="themeText">Theme</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="flex border-b border-custom gap-2 overflow-x-auto pb-1" aria-label="Main tabs">
+      <button class="tab-btn px-4 py-2 font-semibold text-sm border-b-2 border-amber-500 text-amber-400 transition" data-tab="configurator">
+        1. Template Configurator
+      </button>
+      <button class="tab-btn px-4 py-2 font-semibold text-sm border-b-2 border-transparent text-muted-custom hover:text-[var(--text)] transition" data-tab="ladder">
+        2. Fallback Ladder Visualizer
+      </button>
+      <button class="tab-btn px-4 py-2 font-semibold text-sm border-b-2 border-transparent text-muted-custom hover:text-[var(--text)] transition" data-tab="walkthrough">
+        3. Console & Quota Walkthrough
+      </button>
+    </nav>
+
+    <!-- Tab 1: Configurator -->
+    <div id="tab-configurator" class="tab-content flex flex-col lg:flex-row items-stretch gap-4 lg:gap-0 relative">
+      
+      <!-- Left Column: Controls -->
+      <section id="leftPanel" class="w-full lg:w-[42%] lg:pr-3 space-y-6 flex-shrink-0 transition-[width,opacity] duration-150">
+        
+        <!-- Target Machine Type & Accelerator Slice -->
+        <div class="bg-card-custom border border-custom rounded-2xl p-5 shadow-sm space-y-4">
+          <div class="flex justify-between items-center">
+            <h2 class="text-base font-semibold flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              1. Notebook GPU Slice / Machine Type
+            </h2>
+            <span class="text-xs text-muted-custom">Interactive Tier</span>
+          </div>
+          
+          <div class="space-y-2" id="sliceOptionsList">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <!-- Regional Fallback Ladder -->
+        <div class="bg-card-custom border border-custom rounded-2xl p-5 shadow-sm space-y-4">
+          <h2 class="text-base font-semibold flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+            2. Regional Fallback Ladder
+          </h2>
+          <p class="text-xs text-muted-custom">
+            If primary region reports capacity exhaustion, researchers walk the fallback ladder sequentially:
+          </p>
+
+          <div class="space-y-3 text-xs">
+            <div>
+              <label class="block font-medium mb-1 text-slate-300">Primary Region (Step 1)</label>
+              <select id="paramPrimaryRegion" class="w-full bg-code-custom border border-custom rounded-lg p-2 font-mono text-xs focus:outline-none focus:border-amber-500">
+                <option value="us-west1" selected>us-west1 (Oregon) — Highest single-slice H100 availability</option>
+                <option value="us-east5">us-east5 (Columbus, Ohio)</option>
+                <option value="us-central1">us-central1 (Iowa)</option>
+                <option value="us-east4">us-east4 (Northern Virginia)</option>
+                <option value="europe-west4">europe-west4 (Eemshaven, Netherlands)</option>
+              </select>
+            </div>
+
+            <div class="p-3 bg-code-custom rounded-xl border border-custom space-y-2">
+              <div class="flex items-center justify-between font-mono text-[11px]">
+                <span class="text-sky-400 font-semibold">Step 2 (Secondary):</span>
+                <span id="ladderStep2Text" class="text-slate-300">us-east5 (a3-highgpu-1g)</span>
+              </div>
+              <div class="flex items-center justify-between font-mono text-[11px]">
+                <span class="text-indigo-400 font-semibold">Step 3 (Tertiary):</span>
+                <span id="ladderStep3Text" class="text-slate-300">us-central1 (a3-highgpu-1g)</span>
+              </div>
+              <div class="flex items-center justify-between font-mono text-[11px]">
+                <span class="text-amber-400 font-semibold">Step 4 (Graceful Fallback):</span>
+                <span class="text-slate-300">us-central1 (g2-standard-8 / L4)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Template Parameters -->
+        <div class="bg-card-custom border border-custom rounded-2xl p-5 shadow-sm space-y-4">
+          <h2 class="text-base font-semibold flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+            3. Runtime Template Parameters
+          </h2>
+
+          <div class="grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <label class="block font-medium mb-1">Project ID</label>
+              <input type="text" id="paramProjectId" value="${PROJECT_ID:-my-project}" class="w-full bg-code-custom border border-custom rounded-lg p-2 font-mono text-xs focus:outline-none focus:border-amber-500">
+            </div>
+            <div>
+              <label class="block font-medium mb-1">Template Name</label>
+              <input type="text" id="paramTemplateName" value="msu-h100" class="w-full bg-code-custom border border-custom rounded-lg p-2 font-mono text-xs focus:outline-none focus:border-amber-500">
+            </div>
+
+            <div class="col-span-2">
+              <label class="block font-medium mb-1">Display Name</label>
+              <input type="text" id="paramDisplayName" value="H100 80GB Researcher Template" class="w-full bg-code-custom border border-custom rounded-lg p-2 font-mono text-xs focus:outline-none focus:border-amber-500">
+            </div>
+
+            <div>
+              <label class="block font-medium mb-1">Boot Disk Size (GB)</label>
+              <input type="number" id="paramDiskSize" value="200" min="50" max="2000" class="w-full bg-code-custom border border-custom rounded-lg p-2 font-mono text-xs focus:outline-none focus:border-amber-500">
+            </div>
+
+            <div>
+              <label class="block font-medium mb-1">Disk Type</label>
+              <select id="paramDiskType" class="w-full bg-code-custom border border-custom rounded-lg p-2 font-mono text-xs focus:outline-none focus:border-amber-500">
+                <option value="PD_BALANCED" selected>PD_BALANCED (Recommended)</option>
+                <option value="PD_SSD">PD_SSD (High IOPS)</option>
+                <option value="PD_STANDARD">PD_STANDARD</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="space-y-2 pt-2 border-t border-custom text-xs">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="optEnableApis" checked class="accent-amber-500">
+              <span>Automatically enable required Google Cloud APIs (aiplatform, compute, bigquery, etc.)</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="optEnsureDefaultVpc" checked class="accent-amber-500">
+              <span>Ensure default auto-mode VPC network exists (required by Vertex AI Colab)</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="optDisableSecureBoot" checked class="accent-amber-500">
+              <span>Disable Shielded Secure Boot (--no-shielded-secure-boot for NVIDIA kernel modules)</span>
+            </label>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Horizontal Draggable Splitter -->
+      <div id="dragDivider" class="hidden lg:flex items-center justify-center w-3 cursor-col-resize hover:bg-amber-500/20 active:bg-amber-500/40 rounded select-none relative z-10 transition-colors group mx-0.5" title="Drag horizontally to resize panel width">
+        <div class="w-1 h-12 rounded-full bg-slate-600/60 group-hover:bg-amber-400 group-active:bg-amber-400 transition-colors"></div>
+      </div>
+
+      <!-- Right Column: Generated Code & Output -->
+      <section id="rightPanel" class="w-full lg:flex-1 lg:pl-3 flex flex-col space-y-4 min-w-0 transition-[width] duration-150">
+        
+        <div class="bg-card-custom border border-custom rounded-2xl p-5 shadow-xl flex-1 flex flex-col justify-between">
+          <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-custom">
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 id="generatedFileName" class="text-base font-bold font-mono text-amber-400">colab-workbench-setup.sh</h2>
+                <span class="badge bg-amber-500/20 text-amber-300 border border-amber-500/30">COLAB ENTERPRISE / VERTEX WORKBENCH</span>
+              </div>
+              <p class="text-xs text-muted-custom mt-0.5">Ready to execute in Google Cloud Shell or admin workstation</p>
+            </div>
+            
+            <div class="flex items-center gap-2 flex-wrap">
+              <!-- Horizontal Resize Controls -->
+              <div class="flex items-center gap-1 bg-code-custom border border-custom rounded-lg p-1 text-xs">
+                <span class="text-muted-custom px-1.5 text-[11px] font-mono">Width:</span>
+                <button type="button" class="btn-width px-2 py-0.5 rounded text-[11px] font-medium bg-slate-700/60 text-slate-200 hover:text-white transition" data-width="default" title="Default split view (42% / 58%)">Default</button>
+                <button type="button" class="btn-width px-2 py-0.5 rounded text-[11px] font-medium text-muted-custom hover:text-white transition" data-width="wide" title="Wide code view (28% / 72%)">Wide (70%)</button>
+                <button type="button" class="btn-width px-2 py-0.5 rounded text-[11px] font-medium text-muted-custom hover:text-white transition" data-width="full" title="Maximize code viewer to full 100% width">Full (100%)</button>
+              </div>
+
+              <!-- Wrap Toggle -->
+              <button id="btnToggleWrap" type="button" class="px-2.5 py-1 rounded-lg border border-custom bg-card-custom text-xs font-mono text-muted-custom hover:text-white hover:border-amber-500 transition flex items-center gap-1.5" title="Toggle line wrap mode">
+                <span id="wrapIcon">↔</span>
+                <span id="wrapText">No Wrap</span>
+              </button>
+
+              <button id="btnCopyScript" class="px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 text-xs font-semibold hover:bg-amber-400 transition flex items-center gap-1.5 shadow-sm">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                <span id="copyBtnText">Copy Script</span>
+              </button>
+              <button id="btnDownloadScript" class="px-3 py-1.5 rounded-lg border border-custom bg-card-custom text-xs font-semibold hover:border-amber-500 transition flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Download .sh
+              </button>
+            </div>
+          </div>
+
+          <!-- Code View Area -->
+          <div class="relative mt-4 flex-1 flex flex-col min-h-0">
+            <pre id="codePre" class="bg-code-custom text-slate-200 border border-custom rounded-xl p-4 font-mono text-xs overflow-auto flex-1 min-h-[620px] leading-relaxed"><code id="codeOutput"># Generating Colab Enterprise setup script...</code></pre>
+            <div class="flex justify-between items-center text-[10px] text-muted-custom px-1 pt-1.5 font-mono">
+              <span id="codeLineCount">0 lines</span>
+              <span class="flex items-center gap-1 text-slate-400"><span>Drag divider ⬄ or use Width buttons to resize horizontally</span></span>
+            </div>
+          </div>
+
+          <!-- Quick Execution Notes -->
+          <div class="mt-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs flex items-start gap-3">
+            <span class="text-base">💡</span>
+            <div class="space-y-1">
+              <span class="font-bold text-amber-400">Researcher User Experience:</span>
+              <p class="text-muted-custom">
+                Once registered, researchers don't need CLI access or IAM permission to create VMs directly. They simply open Vertex AI Colab Enterprise, pick your template from the dropdown, and spin up an H100 session with 1 click.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+
+    <!-- Tab 2: Fallback Ladder Visualizer -->
+    <div id="tab-ladder" class="tab-content hidden space-y-6">
+      <div class="bg-card-custom border border-custom rounded-2xl p-6 space-y-6">
+        <div>
+          <h2 class="text-base font-bold text-amber-400 flex items-center gap-2">
+            <span>🪜</span> Multi-Region H100 Capacity Fallback Ladder
+          </h2>
+          <p class="text-xs text-muted-custom mt-1">
+            NVIDIA H100 single-slice instances (<code class="font-mono text-slate-300">a3-highgpu-1g</code>) experience localized bursts in demand. This automated failover path ensures researchers never face dead ends.
+          </p>
+        </div>
+
+        <!-- Visual Step Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs font-mono">
+          
+          <div class="p-4 bg-code-custom border-2 border-emerald-500/80 rounded-2xl space-y-2 relative">
+            <span class="badge bg-emerald-500/20 text-emerald-300">Step 1 — Primary</span>
+            <div class="font-bold text-sm text-slate-200 mt-2" id="simStep1Region">us-west1 (Oregon)</div>
+            <div class="text-muted-custom font-sans text-xs">SKU: <span class="font-mono text-emerald-300" id="simStep1Sku">a3-highgpu-1g</span></div>
+            <p class="text-[11px] text-muted-custom font-sans leading-normal pt-1">
+              Largest single-slice H100 pool with lowest baseline contention.
+            </p>
+          </div>
+
+          <div class="p-4 bg-code-custom border border-custom rounded-2xl space-y-2 relative">
+            <span class="badge bg-sky-500/20 text-sky-300">Step 2 — Secondary</span>
+            <div class="font-bold text-sm text-slate-200 mt-2" id="simStep2Region">us-east5 (Columbus)</div>
+            <div class="text-muted-custom font-sans text-xs">SKU: <span class="font-mono text-sky-300">a3-highgpu-1g</span></div>
+            <p class="text-[11px] text-muted-custom font-sans leading-normal pt-1">
+              Secondary modern data center with deep Hopper inventory.
+            </p>
+          </div>
+
+          <div class="p-4 bg-code-custom border border-custom rounded-2xl space-y-2 relative">
+            <span class="badge bg-indigo-500/20 text-indigo-300">Step 3 — Tertiary</span>
+            <div class="font-bold text-sm text-slate-200 mt-2" id="simStep3Region">us-central1 (Iowa)</div>
+            <div class="text-muted-custom font-sans text-xs">SKU: <span class="font-mono text-indigo-300">a3-highgpu-1g</span></div>
+            <p class="text-[11px] text-muted-custom font-sans leading-normal pt-1">
+              Massive cluster footprint, frequently replenishing capacity cycles.
+            </p>
+          </div>
+
+          <div class="p-4 bg-code-custom border border-amber-500/40 rounded-2xl space-y-2 relative">
+            <span class="badge bg-amber-500/20 text-amber-300">Step 4 — Graceful Fallback</span>
+            <div class="font-bold text-sm text-slate-200 mt-2">us-central1 / us-west1</div>
+            <div class="text-muted-custom font-sans text-xs">SKU: <span class="font-mono text-amber-300">g2-standard-8 (L4)</span></div>
+            <p class="text-[11px] text-muted-custom font-sans leading-normal pt-1">
+              Guaranteed instant capacity for code debugging and preprocessing before full H100 training.
+            </p>
+          </div>
+
+        </div>
+
+        <!-- Ladder Simulation Interactive Test -->
+        <div class="p-4 bg-code-custom rounded-xl border border-custom space-y-3">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div>
+              <span class="text-xs font-bold text-slate-200">Interactive Availability Probe Simulator</span>
+              <p class="text-[11px] text-muted-custom">Simulate what happens when a researcher launches a notebook during peak cluster hours.</p>
+            </div>
+            <button id="btnSimulateLadder" class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold text-xs transition">
+              Simulate Launch Request
+            </button>
+          </div>
+          <div id="simLadderLog" class="p-3 bg-slate-950/60 rounded-lg text-xs font-mono text-slate-300 h-28 overflow-y-auto">
+            <span class="text-muted-custom">// Click 'Simulate Launch Request' to test fallback ladder resolution...</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Tab 3: Console Walkthrough -->
+    <div id="tab-walkthrough" class="tab-content hidden space-y-6">
+      <div class="bg-card-custom border border-custom rounded-2xl p-6 shadow-sm space-y-6">
+        <div>
+          <h2 class="text-base font-bold text-amber-400 flex items-center gap-2">
+            <span>🚀</span> Vertex AI Colab Enterprise Walkthrough
+          </h2>
+          <p class="text-xs text-muted-custom mt-1">
+            Detailed guide for admins and researchers to deploy and connect to interactive GPU notebooks.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs leading-relaxed text-slate-300">
+          
+          <div class="space-y-4">
+            <div class="p-4 bg-code-custom rounded-xl border border-custom space-y-2">
+              <span class="font-bold text-sky-400">Step 1: Run the Deployment Script</span>
+              <p class="text-muted-custom text-[11px]">
+                Open <strong class="text-slate-200">Google Cloud Shell</strong> and run the generated <code class="font-mono text-slate-200">colab-workbench-setup.sh</code> script. It creates template <code class="font-mono text-amber-300" id="walkthroughTemplateName">msu-h100</code> with the specified GPU, disk size, and network properties.
+              </p>
+            </div>
+
+            <div class="p-4 bg-code-custom rounded-xl border border-custom space-y-2">
+              <span class="font-bold text-emerald-400">Step 2: Open Colab Enterprise Console</span>
+              <p class="text-muted-custom text-[11px]">
+                Navigate to: <br>
+                <a href="https://console.cloud.google.com/vertex-ai/colab/notebooks" target="_blank" rel="noopener noreferrer" class="text-sky-400 hover:underline break-all font-mono">
+                  https://console.cloud.google.com/vertex-ai/colab/notebooks
+                </a>
+              </p>
+              <p class="text-muted-custom text-[11px]">
+                In the top right region picker, select <strong class="text-slate-200 font-mono" id="walkthroughRegion">us-west1</strong>.
+              </p>
+            </div>
+
+            <div class="p-4 bg-code-custom rounded-xl border border-custom space-y-2">
+              <span class="font-bold text-amber-400">Step 3: Launch Runtime</span>
+              <p class="text-muted-custom text-[11px]">
+                Click <strong class="text-slate-200">"Create runtime"</strong> or open any notebook and select "Connect to custom runtime". Choose the template created in Step 1. The H100 slice boots in ~60-90 seconds.
+              </p>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="p-4 bg-code-custom rounded-xl border border-custom space-y-2">
+              <span class="font-bold text-indigo-400">Step 4: Cost Control & Idle Shutdown</span>
+              <p class="text-muted-custom text-[11px]">
+                Colab Enterprise includes built-in idle termination:
+              </p>
+              <ul class="list-disc pl-4 space-y-1 text-muted-custom text-[11px]">
+                <li>Configure <strong class="text-slate-200">Idle Shutdown</strong> to 30 or 60 minutes to prevent researchers from leaving idle H100 instances running overnight.</li>
+                <li>Notebook code and output cells are stored in Google Drive or Cloud Storage, preserving state across shutdowns.</li>
+              </ul>
+            </div>
+
+            <div class="p-4 bg-code-custom rounded-xl border border-custom space-y-2">
+              <span class="font-bold text-rose-400">Step 5: Required IAM Roles</span>
+              <p class="text-muted-custom text-[11px]">
+                Ensure researchers have the following project roles:
+              </p>
+              <ul class="list-disc pl-4 space-y-1 text-muted-custom text-[11px] font-mono">
+                <li>roles/aiplatform.user</li>
+                <li>roles/notebooks.admin</li>
+                <li>roles/compute.networkUser</li>
+              </ul>
+            </div>
+
+            <div class="p-4 bg-code-custom rounded-xl border border-custom space-y-2">
+              <span class="font-bold text-slate-200">Step 6: Quota Preflight</span>
+              <p class="text-muted-custom text-[11px]">
+                Verify in Cloud Console Quotas that your project has:
+              </p>
+              <ul class="list-disc pl-4 space-y-1 text-muted-custom text-[11px] font-mono">
+                <li>NVIDIA_H100_GPUS &gt;= 1 in target region</li>
+                <li>CPUS &gt;= 26 in target region</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- JavaScript Application Logic -->
+  <script>
+    const SLICES = [
+      {
+        id: 'a3-highgpu-1g',
+        name: 'NVIDIA H100 Single Slice (1x 80GB)',
+        vram: '80 GB HBM3',
+        cpuRam: '26 vCPU · 208 GB RAM',
+        badge: 'Recommended',
+        badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+        bestFor: 'Interactive LLM fine-tuning, flash-attention notebooks & evaluation'
+      },
+      {
+        id: 'g2-standard-8',
+        name: 'NVIDIA L4 Prototype (1x 24GB)',
+        vram: '24 GB GDDR6',
+        cpuRam: '8 vCPU · 32 GB RAM',
+        badge: 'Cost-Saver',
+        badgeColor: 'bg-sky-500/20 text-sky-300 border-sky-500/30',
+        bestFor: 'Prototyping, data prep, vision model inference, testing code logic'
+      },
+      {
+        id: 'g2-standard-16',
+        name: 'NVIDIA L4 High-CPU (1x 24GB)',
+        vram: '24 GB GDDR6',
+        cpuRam: '16 vCPU · 64 GB RAM',
+        badge: 'High Memory',
+        badgeColor: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
+        bestFor: 'Heavy CPU preprocessing pipelines feeding GPU inference'
+      },
+      {
+        id: 'a2-highgpu-1g',
+        name: 'NVIDIA A100 Slice (1x 40GB)',
+        vram: '40 GB HBM2',
+        cpuRam: '12 vCPU · 85 GB RAM',
+        badge: 'Ampere Legacy',
+        badgeColor: 'bg-slate-700/60 text-slate-300',
+        bestFor: 'Established CUDA 11/12 pipelines & Stable Diffusion'
+      },
+      {
+        id: 'a3-highgpu-8g',
+        name: 'NVIDIA H100 Full Node (8x 80GB)',
+        vram: '640 GB HBM3',
+        cpuRam: '208 vCPU · 1872 GB RAM',
+        badge: '8x Multi-GPU',
+        badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+        bestFor: 'Full multi-GPU distributed development inside notebook'
+      }
+    ];
+
+    const state = {
+      selectedSlice: 'a3-highgpu-1g',
+      primaryRegion: 'us-west1',
+      projectId: '${PROJECT_ID:-my-project}',
+      templateName: 'msu-h100',
+      displayName: 'H100 80GB Researcher Template',
+      diskSize: 200,
+      diskType: 'PD_BALANCED',
+      enableApis: true,
+      ensureDefaultVpc: true,
+      disableSecureBoot: true
+    };
+
+    function renderSliceOptions() {
+      const container = document.getElementById('sliceOptionsList');
+      container.innerHTML = '';
+
+      SLICES.forEach(slice => {
+        const isSelected = state.selectedSlice === slice.id;
+        const card = document.createElement('label');
+        card.className = `cursor-pointer block border border-custom rounded-xl p-3 transition ${isSelected ? 'bg-amber-500/10 border-amber-500' : 'bg-card-custom hover:border-slate-500'}`;
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <input type="radio" name="sliceSelect" value="${slice.id}" ${isSelected ? 'checked' : ''} class="accent-amber-500 slice-radio">
+              <div>
+                <div class="font-bold text-xs flex items-center gap-1.5">
+                  <span>${slice.name}</span>
+                  <span class="badge ${slice.badgeColor} text-[10px]">${slice.badge}</span>
+                </div>
+                <div class="text-[11px] text-muted-custom mt-0.5">${slice.vram} · ${slice.cpuRam}</div>
+              </div>
+            </div>
+            <span class="text-[10px] font-mono text-amber-400 font-bold">${slice.id}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      container.querySelectorAll('.slice-radio').forEach(r => {
+        r.addEventListener('change', (e) => {
+          if (e.target.checked) {
+            state.selectedSlice = e.target.value;
+            renderSliceOptions();
+            generateScript();
+            updateWalkthrough();
+          }
+        });
+      });
+    }
+
+    function updateLadderUI() {
+      const p = state.primaryRegion;
+      let s2 = 'us-east5';
+      let s3 = 'us-central1';
+
+      if (p === 'us-east5') {
+        s2 = 'us-west1';
+        s3 = 'us-central1';
+      } else if (p === 'us-central1') {
+        s2 = 'us-west1';
+        s3 = 'us-east5';
+      }
+
+      document.getElementById('ladderStep2Text').textContent = `${s2} (${state.selectedSlice})`;
+      document.getElementById('ladderStep3Text').textContent = `${s3} (${state.selectedSlice})`;
+      
+      const s1Reg = document.getElementById('simStep1Region');
+      if (s1Reg) s1Reg.textContent = `${p}`;
+      const s1Sku = document.getElementById('simStep1Sku');
+      if (s1Sku) s1Sku.textContent = state.selectedSlice;
+      const s2Reg = document.getElementById('simStep2Region');
+      if (s2Reg) s2Reg.textContent = `${s2}`;
+      const s3Reg = document.getElementById('simStep3Region');
+      if (s3Reg) s3Reg.textContent = `${s3}`;
+    }
+
+    function updateWalkthrough() {
+      const reg = document.getElementById('walkthroughRegion');
+      if (reg) reg.textContent = state.primaryRegion;
+      const name = document.getElementById('walkthroughTemplateName');
+      if (name) name.textContent = state.templateName;
+    }
+
+    function generateScript() {
+      const apiSnippet = state.enableApis ? `
+echo ">>> 1. Ensuring Required Google Cloud APIs are enabled..."
+gcloud services enable \\
+  aiplatform.googleapis.com \\
+  compute.googleapis.com \\
+  bigquery.googleapis.com \\
+  storage.googleapis.com \\
+  orgpolicy.googleapis.com \\
+  --project="\${PROJECT_ID}"
+` : '';
+
+      const vpcSnippet = state.ensureDefaultVpc ? `
+echo ">>> 2. Ensuring Default Auto-Mode VPC exists (Colab requires default VPC)..."
+if ! gcloud compute networks describe default --project="\${PROJECT_ID}" >/dev/null 2>&1; then
+  echo "Creating default auto-mode VPC network..."
+  gcloud compute networks create default --subnet-mode=auto --project="\${PROJECT_ID}"
+else
+  echo "[OK] Default VPC network exists."
+fi
+` : '';
+
+      const secureBootFlag = state.disableSecureBoot ? '--no-shielded-secure-boot' : '';
+
+      let script = `#!/usr/bin/env bash
+# ==============================================================================
+# colab-workbench-setup.sh — Interactive GPU Slice Setup
+# ==============================================================================
+# Target SKU:     ${state.selectedSlice}
+# Primary Region: ${state.primaryRegion}
+# Template Name:  ${state.templateName}
+# Description:    Prepares project APIs, creates default network if missing,
+#                 and provisions Colab Enterprise / Vertex AI Workbench runtime
+#                 templates targeting interactive GPU slices.
+# ==============================================================================
+set -euo pipefail
+
+PROJECT_ID="\${PROJECT_ID:-${state.projectId}}"
+PRIMARY_REGION="${state.primaryRegion}"
+TEMPLATE_NAME="${state.templateName}"
+DISPLAY_NAME="${state.displayName}"
+MACHINE_TYPE="${state.selectedSlice}"
+DISK_SIZE="${state.diskSize}"
+DISK_TYPE="${state.diskType}"
+
+echo "========================================================================"
+echo " GCP Colab Enterprise & Vertex Workbench Preflight"
+echo " Project:       \${PROJECT_ID}"
+echo " Primary:       \${PRIMARY_REGION}"
+echo " Template SKU:  \${MACHINE_TYPE}"
+echo " Template Name: \${TEMPLATE_NAME}"
+echo "========================================================================"
+${apiSnippet}${vpcSnippet}
+echo ">>> 3. Creating Colab Enterprise Runtime Template (\${TEMPLATE_NAME})..."
+if gcloud beta ai notebook-runtime-templates describe "\${TEMPLATE_NAME}" --project="\${PROJECT_ID}" --location="\${PRIMARY_REGION}" >/dev/null 2>&1; then
+  echo "[OK] Runtime template \${TEMPLATE_NAME} already exists in \${PRIMARY_REGION}."
+else
+  gcloud beta ai notebook-runtime-templates create "\${TEMPLATE_NAME}" \\
+    --project="\${PROJECT_ID}" \\
+    --location="\${PRIMARY_REGION}" \\
+    --display-name="\${DISPLAY_NAME}" \\
+    --machine-type="\${MACHINE_TYPE}" \\
+    --network="projects/\${PROJECT_ID}/global/networks/default" \\
+    --boot-disk-size-gb="\${DISK_SIZE}" \\
+    --boot-disk-type="\${DISK_TYPE}" \\
+    ${secureBootFlag}
+  echo "[SUCCESS] Created runtime template \${TEMPLATE_NAME} in \${PRIMARY_REGION}."
+fi
+
+echo
+echo "========================================================================"
+echo " Setup Completed!"
+echo " 1. Open Colab Enterprise in your browser:"
+echo "    https://console.cloud.google.com/vertex-ai/colab/notebooks?project=\${PROJECT_ID}"
+echo " 2. Set Region to: \${PRIMARY_REGION}"
+echo " 3. Click 'Create runtime' -> Select template '\${TEMPLATE_NAME}'"
+echo " 4. If \${PRIMARY_REGION} reports capacity stockout, follow fallback order:"
+echo "    - Step A: us-east5   (Template with \${MACHINE_TYPE})"
+echo "    - Step B: us-central1 (Template with \${MACHINE_TYPE})"
+echo "    - Step C: us-central1 (Template with g2-standard-8 / L4)"
+echo "========================================================================"
+`;
+
+      document.getElementById('codeOutput').textContent = script;
+      updateCodeLineCount();
+    }
+
+    function updateCodeLineCount() {
+      const code = document.getElementById('codeOutput').textContent;
+      const lines = code.split('\n').length;
+      const el = document.getElementById('codeLineCount');
+      if (el) el.textContent = `${lines} lines`;
+    }
+
+    // Horizontal Panel Resizing & Width Presets
+    const containerEl = document.getElementById('tab-configurator');
+    const leftPanelEl = document.getElementById('leftPanel');
+    const rightPanelEl = document.getElementById('rightPanel');
+    const dragDividerEl = document.getElementById('dragDivider');
+    const btnWidths = document.querySelectorAll('.btn-width');
+    const codePreEl = document.getElementById('codePre');
+    const btnToggleWrap = document.getElementById('btnToggleWrap');
+
+    function setWidthMode(mode) {
+      btnWidths.forEach(b => {
+        if (b.dataset.width === mode) {
+          b.classList.add('bg-slate-700/60', 'text-slate-200');
+          b.classList.remove('text-muted-custom');
+        } else {
+          b.classList.remove('bg-slate-700/60', 'text-slate-200');
+          b.classList.add('text-muted-custom');
+        }
+      });
+
+      if (mode === 'full') {
+        if (leftPanelEl) leftPanelEl.style.display = 'none';
+        if (dragDividerEl) dragDividerEl.style.display = 'none';
+      } else {
+        if (leftPanelEl) {
+          leftPanelEl.style.display = '';
+          leftPanelEl.style.width = mode === 'wide' ? '28%' : '42%';
+        }
+        if (dragDividerEl) dragDividerEl.style.display = '';
+      }
+    }
+
+    btnWidths.forEach(btn => {
+      btn.addEventListener('click', () => {
+        setWidthMode(btn.dataset.width);
+      });
+    });
+
+    // Draggable Splitter
+    if (dragDividerEl && containerEl && leftPanelEl) {
+      let isDragging = false;
+      let startX = 0;
+      let startWidth = 0;
+
+      dragDividerEl.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.clientX;
+        startWidth = leftPanelEl.getBoundingClientRect().width;
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const containerWidth = containerEl.getBoundingClientRect().width;
+        const dx = e.clientX - startX;
+        const newWidth = Math.max(280, Math.min(containerWidth - 360, startWidth + dx));
+        const pct = (newWidth / containerWidth) * 100;
+        leftPanelEl.style.width = `${pct}%`;
+
+        btnWidths.forEach(b => {
+          b.classList.remove('bg-slate-700/60', 'text-slate-200');
+          b.classList.add('text-muted-custom');
+        });
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (isDragging) {
+          isDragging = false;
+          document.body.style.cursor = '';
+          document.body.style.userSelect = '';
+        }
+      });
+    }
+
+    // Line Wrap Toggle
+    if (btnToggleWrap && codePreEl) {
+      let isWrapped = false;
+      btnToggleWrap.addEventListener('click', () => {
+        isWrapped = !isWrapped;
+        const wrapIcon = document.getElementById('wrapIcon');
+        const wrapText = document.getElementById('wrapText');
+        if (isWrapped) {
+          codePreEl.classList.add('whitespace-pre-wrap', 'break-words');
+          codePreEl.classList.remove('whitespace-pre');
+          wrapText.textContent = 'Wrapped';
+          wrapIcon.textContent = '↵';
+          btnToggleWrap.classList.add('border-amber-500', 'text-amber-400');
+        } else {
+          codePreEl.classList.remove('whitespace-pre-wrap', 'break-words');
+          codePreEl.classList.add('whitespace-pre');
+          wrapText.textContent = 'No Wrap';
+          wrapIcon.textContent = '↔';
+          btnToggleWrap.classList.remove('border-amber-500', 'text-amber-400');
+        }
+      });
+    }
+
+    // Input event listeners
+    document.getElementById('paramPrimaryRegion').addEventListener('change', (e) => {
+      state.primaryRegion = e.target.value;
+      updateLadderUI();
+      updateWalkthrough();
+      generateScript();
+    });
+
+    ['paramProjectId', 'paramTemplateName', 'paramDisplayName', 'paramDiskSize', 'paramDiskType'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', () => {
+          state.projectId = document.getElementById('paramProjectId').value;
+          state.templateName = document.getElementById('paramTemplateName').value;
+          state.displayName = document.getElementById('paramDisplayName').value;
+          state.diskSize = document.getElementById('paramDiskSize').value;
+          state.diskType = document.getElementById('paramDiskType').value;
+          updateWalkthrough();
+          generateScript();
+        });
+      }
+    });
+
+    document.getElementById('optEnableApis').addEventListener('change', (e) => {
+      state.enableApis = e.target.checked;
+      generateScript();
+    });
+
+    document.getElementById('optEnsureDefaultVpc').addEventListener('change', (e) => {
+      state.ensureDefaultVpc = e.target.checked;
+      generateScript();
+    });
+
+    document.getElementById('optDisableSecureBoot').addEventListener('change', (e) => {
+      state.disableSecureBoot = e.target.checked;
+      generateScript();
+    });
+
+    // Copy Button
+    document.getElementById('btnCopyScript').addEventListener('click', () => {
+      const code = document.getElementById('codeOutput').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        const btnText = document.getElementById('copyBtnText');
+        btnText.textContent = 'Copied to Clipboard!';
+        setTimeout(() => { btnText.textContent = 'Copy Script'; }, 2000);
+      });
+    });
+
+    // Download Button
+    document.getElementById('btnDownloadScript').addEventListener('click', () => {
+      const code = document.getElementById('codeOutput').textContent;
+      const fileName = document.getElementById('generatedFileName').textContent;
+      const blob = new Blob([code], { type: 'text/x-sh' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => {
+          b.classList.remove('border-amber-500', 'text-amber-400');
+          b.classList.add('border-transparent', 'text-muted-custom');
+        });
+        btn.classList.add('border-amber-500', 'text-amber-400');
+        btn.classList.remove('border-transparent', 'text-muted-custom');
+
+        const tab = btn.dataset.tab;
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+        document.getElementById(`tab-${tab}`).classList.remove('hidden');
+      });
+    });
+
+    // Dark/Light Theme toggle
+    function initTheme() {
+      const savedTheme = localStorage.getItem('gcp_theme');
+      if (savedTheme === 'light') {
+        document.body.classList.add('light');
+        document.getElementById('themeIcon').textContent = '🌙';
+        document.getElementById('themeText').textContent = 'Dark';
+      }
+    }
+    initTheme();
+
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      document.body.classList.toggle('light');
+      const isLight = document.body.classList.contains('light');
+      document.getElementById('themeIcon').textContent = isLight ? '🌙' : '☀️';
+      document.getElementById('themeText').textContent = isLight ? 'Dark' : 'Light';
+      localStorage.setItem('gcp_theme', isLight ? 'light' : 'dark');
+    });
+
+    // Fallback Ladder Interactive Simulator
+    document.getElementById('btnSimulateLadder').addEventListener('click', () => {
+      const log = document.getElementById('simLadderLog');
+      log.innerHTML = '';
+      function addSimLog(msg, color = 'text-slate-300') {
+        const div = document.createElement('div');
+        div.className = color;
+        div.textContent = msg;
+        log.appendChild(div);
+        log.scrollTop = log.scrollHeight;
+      }
+
+      addSimLog(`[Sim] Researcher requesting runtime with template: ${state.templateName}...`, 'text-sky-300');
+      addSimLog(`[Sim] Checking Step 1: ${state.primaryRegion} (${state.selectedSlice})...`);
+
+      const rand = Math.random();
+      setTimeout(() => {
+        if (rand > 0.45) {
+          addSimLog(`[Sim] ✅ GRANTED: ${state.primaryRegion} allocated 1x ${state.selectedSlice}!`, 'text-emerald-400 font-bold');
+          addSimLog(`[Sim] Notebook session live in 62 seconds.`, 'text-slate-400');
+        } else {
+          addSimLog(`[Sim] ⚠️ ZONE_RESOURCE_POOL_EXHAUSTED in ${state.primaryRegion}`, 'text-amber-400');
+          addSimLog(`[Sim] Walking ladder -> Step 2: us-east5 (${state.selectedSlice})...`, 'text-sky-400');
+          setTimeout(() => {
+            addSimLog(`[Sim] ✅ GRANTED: us-east5 allocated 1x ${state.selectedSlice}!`, 'text-emerald-400 font-bold');
+            addSimLog(`[Sim] Seamless failover completed. No job failure.`, 'text-slate-400');
+          }, 800);
+        }
+      }, 700);
+    });
+
+    // Initial boot
+    renderSliceOptions();
+    updateLadderUI();
+    updateWalkthrough();
+    generateScript();
+  </script>
+</body>
+</html>

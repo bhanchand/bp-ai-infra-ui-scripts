@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Cloud AI Infrastructure UI Suite</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    code, pre { font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen antialiased flex flex-col">
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-slate-900/60 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
+          <i data-lucide="cpu" class="w-6 h-6 text-white"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+            bp-ai-infra-ui-scripts
+            <span class="text-xs px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 font-mono font-medium">v1.0</span>
+          </h1>
+          <p class="text-xs text-slate-400">Google Cloud AI Hypercomputer & Infrastructure Interactive Tool Suite</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="relative hidden sm:block">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+          <input 
+            type="text" 
+            id="searchInput"
+            placeholder="Filter tools..." 
+            class="pl-9 pr-4 py-1.5 text-xs rounded-lg bg-slate-800 border border-slate-700 focus:outline-none focus:border-blue-500 text-slate-200 placeholder-slate-400 w-64"
+            oninput="filterTools()"
+          >
+        </div>
+        <a 
+          href="https://github.com/bhanchand/bp-ai-infra-ui-scripts" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          class="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition"
+        >
+          <i data-lucide="github" class="w-4 h-4"></i>
+          <span>GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-6 w-full">
+    <div class="rounded-2xl bg-gradient-to-r from-blue-950/40 via-indigo-950/30 to-purple-950/40 border border-slate-800 p-8 shadow-2xl relative overflow-hidden">
+      <div class="absolute -right-20 -top-20 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="max-w-3xl relative z-10">
+        <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-medium mb-3">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Standalone Interactive Single-Page Architect Tools
+        </div>
+        <h2 class="text-3xl font-extrabold tracking-tight text-white mb-2">
+          GCP AI & HPC Infrastructure Portal
+        </h2>
+        <p class="text-sm text-slate-300 leading-relaxed">
+          Interactive web tools designed for AI infrastructure engineers, ML platform architects, and scientific researchers. Configure Cluster Toolkit blueprints, simulate DWS capacity spray strategies, design Colab Enterprise runtimes, mirror scientific data, and architect enterprise identity federation.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Grid of Tools -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="toolsGrid">
+      
+      <!-- Card 1: Cluster Toolkit UI -->
+      <div class="tool-card group rounded-xl bg-slate-900 border border-slate-800 hover:border-blue-500/50 p-6 flex flex-col justify-between transition-all hover:shadow-xl hover:shadow-blue-500/5 hover:-translate-y-0.5">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-105 transition">
+              <i data-lucide="layers" class="w-5 h-5"></i>
+            </div>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">Cluster Toolkit</span>
+          </div>
+          <h3 class="text-base font-semibold text-white mb-1 group-hover:text-blue-400 transition">Cluster Toolkit Blueprint Generator</h3>
+          <p class="text-xs text-slate-400 leading-relaxed mb-4">
+            Visual configurator for Slurm, GKE AI Hypercompute, and Cloud Batch blueprints. Configures hardware shapes (ANY_SINGLE_ZONE TPU guardrails), Lustre/Parallelstore storage, and OS Login networking.
+          </p>
+        </div>
+        <div>
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">Slurm</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">GKE</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">Lustre</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">TPU v5p/v6e</span>
+          </div>
+          <a href="cluster-toolkit-ui.html" class="inline-flex items-center justify-between w-full px-3.5 py-2 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-500 text-white transition">
+            <span>Launch Tool</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 2: Flex Spray Generator -->
+      <div class="tool-card group rounded-xl bg-slate-900 border border-slate-800 hover:border-sky-500/50 p-6 flex flex-col justify-between transition-all hover:shadow-xl hover:shadow-sky-500/5 hover:-translate-y-0.5">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center group-hover:scale-105 transition">
+              <i data-lucide="zap" class="w-5 h-5"></i>
+            </div>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">DWS Flex</span>
+          </div>
+          <h3 class="text-base font-semibold text-white mb-1 group-hover:text-sky-400 transition">DWS Flex-Spray Script Architect</h3>
+          <p class="text-xs text-slate-400 leading-relaxed mb-4">
+            Generates automated multi-zone capacity spray scripts for DWS Flex-Start. Concurrently submits requests across regions and automatically cancels trailing losers when capacity is secured.
+          </p>
+        </div>
+        <div>
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">DWS Flex</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">H100 / A100</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">Bash Generator</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <a href="flex-spray.html" class="inline-flex items-center justify-center px-3 py-2 text-xs font-semibold rounded-lg bg-sky-600 hover:bg-sky-500 text-white transition">
+              <span>flex-spray</span>
+            </a>
+            <a href="gpu-spray-generator.html" class="inline-flex items-center justify-center px-3 py-2 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">
+              <span>gpu-spray</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: DWS Reservation Architect -->
+      <div class="tool-card group rounded-xl bg-slate-900 border border-slate-800 hover:border-emerald-500/50 p-6 flex flex-col justify-between transition-all hover:shadow-xl hover:shadow-emerald-500/5 hover:-translate-y-0.5">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center group-hover:scale-105 transition">
+              <i data-lucide="calendar-clock" class="w-5 h-5"></i>
+            </div>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">Capacity Planning</span>
+          </div>
+          <h3 class="text-base font-semibold text-white mb-1 group-hover:text-emerald-400 transition">DWS Flex Reservation Architect</h3>
+          <p class="text-xs text-slate-400 leading-relaxed mb-4">
+            Plans and generates reservation blueprints for Slurm and GKE with Dynamic Workload Scheduler. Calculates slot alignment, preemption strategies, and queue parameters.
+          </p>
+        </div>
+        <div>
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">Reservations</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">Slurm</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">GKE Kueue</span>
+          </div>
+          <a href="dws-reservation.html" class="inline-flex items-center justify-between w-full px-3.5 py-2 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition">
+            <span>Launch Tool</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 4: Colab Enterprise & Vertex AI Workbench -->
+      <div class="tool-card group rounded-xl bg-slate-900 border border-slate-800 hover:border-amber-500/50 p-6 flex flex-col justify-between transition-all hover:shadow-xl hover:shadow-amber-500/5 hover:-translate-y-0.5">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center group-hover:scale-105 transition">
+              <i data-lucide="book-open" class="w-5 h-5"></i>
+            </div>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">Vertex AI</span>
+          </div>
+          <h3 class="text-base font-semibold text-white mb-1 group-hover:text-amber-400 transition">Colab Enterprise & Workbench Architect</h3>
+          <p class="text-xs text-slate-400 leading-relaxed mb-4">
+            Configure Colab Enterprise runtimes and Vertex AI Workbench instances with dedicated GPU shapes, custom container images, VPC networking, and persistent data volume attachments.
+          </p>
+        </div>
+        <div>
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">Colab Enterprise</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">Workbench</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">NVIDIA GPUs</span>
+          </div>
+          <a href="colab-workbench.html" class="inline-flex items-center justify-between w-full px-3.5 py-2 text-xs font-semibold rounded-lg bg-amber-600 hover:bg-amber-500 text-white transition">
+            <span>Launch Tool</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 5: Fast Science Builder -->
+      <div class="tool-card group rounded-xl bg-slate-900 border border-slate-800 hover:border-purple-500/50 p-6 flex flex-col justify-between transition-all hover:shadow-xl hover:shadow-purple-500/5 hover:-translate-y-0.5">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center group-hover:scale-105 transition">
+              <i data-lucide="flask-conical" class="w-5 h-5"></i>
+            </div>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">Landing Zone</span>
+          </div>
+          <h3 class="text-base font-semibold text-white mb-1 group-hover:text-purple-400 transition">Fast Science Landing Zone Builder</h3>
+          <p class="text-xs text-slate-400 leading-relaxed mb-4">
+            Automates the architecture and deployment of research computing landing zones on Google Cloud. Produces production-ready Terraform, VPC security policies, and IAM configurations.
+          </p>
+        </div>
+        <div>
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">Terraform</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">Security / Compliance</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">VPC SC</span>
+          </div>
+          <a href="fast-science-builder.html" class="inline-flex items-center justify-between w-full px-3.5 py-2 text-xs font-semibold rounded-lg bg-purple-600 hover:bg-purple-500 text-white transition">
+            <span>Launch Tool</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 6: Fast Science Datasets -->
+      <div class="tool-card group rounded-xl bg-slate-900 border border-slate-800 hover:border-cyan-500/50 p-6 flex flex-col justify-between transition-all hover:shadow-xl hover:shadow-cyan-500/5 hover:-translate-y-0.5">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center group-hover:scale-105 transition">
+              <i data-lucide="database" class="w-5 h-5"></i>
+            </div>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">Data Hub</span>
+          </div>
+          <h3 class="text-base font-semibold text-white mb-1 group-hover:text-cyan-400 transition">Fast Science Datasets Workbench</h3>
+          <p class="text-xs text-slate-400 leading-relaxed mb-4">
+            Scientific datasets ingestion and mirroring orchestrator. Generates Storage Transfer Service jobs and gcloud scripts to mirror AlphaFold, TCGA, PDB, and Cryo-EM datasets to GCS.
+          </p>
+        </div>
+        <div>
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">STS Transfer</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">AlphaFold / PDB</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">GCS Buckets</span>
+          </div>
+          <a href="fast-science-datasets.html" class="inline-flex items-center justify-between w-full px-3.5 py-2 text-xs font-semibold rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white transition">
+            <span>Launch Tool</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 7: Cloud Identity vs WIF -->
+      <div class="tool-card group rounded-xl bg-slate-900 border border-slate-800 hover:border-rose-500/50 p-6 flex flex-col justify-between transition-all hover:shadow-xl hover:shadow-rose-500/5 hover:-translate-y-0.5 md:col-span-2 lg:col-span-3">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center group-hover:scale-105 transition">
+              <i data-lucide="shield-check" class="w-5 h-5"></i>
+            </div>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">Identity & Access</span>
+          </div>
+          <h3 class="text-base font-semibold text-white mb-1 group-hover:text-rose-400 transition">Google Cloud Identity vs. Workforce Identity Federation (WIF) Architect</h3>
+          <p class="text-xs text-slate-400 leading-relaxed mb-4 max-w-4xl">
+            In-depth architectural comparison, decision tree, and step-by-step configuration generator between Google Cloud Identity and Workforce Identity Federation (WIF). Generate OIDC/SAML configurations, STS token exchange flows, CEL attribute mappings, and least-privilege IAM policies.
+          </p>
+        </div>
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2 border-t border-slate-800/80">
+          <div class="flex flex-wrap gap-1.5">
+            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">SAML 2.0 / OIDC</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">Entra ID & Okta</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">WIF Pools & Providers</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">CEL Attribute Mappings</span>
+          </div>
+          <a href="gcp-identity.html" class="inline-flex items-center justify-center gap-2 px-5 py-2 text-xs font-semibold rounded-lg bg-rose-600 hover:bg-rose-500 text-white transition">
+            <span>Launch Identity Architect</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800 py-6 text-center text-xs text-slate-500 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <p>© Google Cloud AI Infrastructure Enablement Tools</p>
+      <p class="font-mono text-[11px] text-slate-400">Repository: bp-ai-infra-ui-scripts</p>
+    </div>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+
+    function filterTools() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const cards = document.querySelectorAll('.tool-card');
+      cards.forEach(card => {
+        const text = card.innerText.toLowerCase();
+        card.style.display = text.includes(q) ? 'flex' : 'none';
+      });
+    }
+  </script>
+</body>
+</html>

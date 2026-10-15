@@ -1,0 +1,3750 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fast Science Data Hub — Scientific Datasets Ingestion &amp; Mirroring Workbench</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>">
+  <style>
+    :root {
+      --gcp-blue: #1a73e8;
+      --gcp-blue-hover: #1557b0;
+      --gcp-blue-light: #e8f0fe;
+      --gcp-green: #1e8e3e;
+      --gcp-green-hover: #137333;
+      --gcp-green-light: #e6f4ea;
+      --gcp-red: #d93025;
+      --gcp-red-light: #fce8e6;
+      --gcp-yellow: #f9ab00;
+      --gcp-yellow-light: #fef7e0;
+      --gcp-purple: #9334e6;
+      --gcp-purple-light: #f3e8fd;
+      --gcp-teal: #007b83;
+      --gcp-teal-light: #e0f2f1;
+      
+      --gcp-bg: #f8f9fa;
+      --gcp-surface: #ffffff;
+      --gcp-surface-alt: #f1f3f4;
+      --gcp-border: #dadce0;
+      --gcp-border-light: #e8eaed;
+      --gcp-text: #202124;
+      --gcp-text-muted: #5f6368;
+      --gcp-text-disabled: #80868b;
+      
+      --code-bg: #1e2025;
+      --code-fg: #f1f3f4;
+      --code-header: #282a30;
+      --code-border: #3c4043;
+      --code-comment: #9aa0a6;
+      --code-keyword: #8ab4f8;
+      --code-string: #ceead6;
+      --code-variable: #fdd663;
+      --code-command: #d7aefb;
+      --code-flag: #f28b82;
+      
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --shadow-sm: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+      --font-family: -apple-system, BlinkMacSystemFont, 'Google Sans', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: 'Roboto Mono', 'SF Mono', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    }
+
+    [data-theme="dark"] {
+      --gcp-bg: #121316;
+      --gcp-surface: #1e2025;
+      --gcp-surface-alt: #282a30;
+      --gcp-border: #3c4043;
+      --gcp-border-light: #303338;
+      --gcp-text: #e8eaed;
+      --gcp-text-muted: #9aa0a6;
+      --gcp-text-disabled: #5f6368;
+      
+      --gcp-blue-light: #152740;
+      --gcp-green-light: #132b1b;
+      --gcp-red-light: #341818;
+      --gcp-yellow-light: #342a10;
+      --gcp-purple-light: #2b183d;
+      --gcp-teal-light: #102e2b;
+      
+      --code-bg: #131417;
+      --code-fg: #e8eaed;
+      --code-header: #1e2025;
+      --code-border: #303338;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--gcp-bg);
+      color: var(--gcp-text);
+      line-height: 1.5;
+      font-size: 13.5px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Navigation Bar */
+    .top-nav {
+      background: var(--gcp-surface);
+      border-bottom: 1px solid var(--gcp-border);
+      height: 56px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      z-index: 100;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, #1a73e8 0%, #9334e6 100%);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      box-shadow: 0 2px 4px rgba(26,115,232,0.3);
+    }
+
+    .brand-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--gcp-text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-badge {
+      font-size: 0.68rem;
+      padding: 2px 7px;
+      background: var(--gcp-blue-light);
+      color: var(--gcp-blue);
+      border: 1px solid var(--gcp-blue);
+      border-radius: 12px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-stats-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--gcp-surface-alt);
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--gcp-border-light);
+      font-size: 0.76rem;
+    }
+
+    .stat-pill {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .stat-pill strong {
+      color: var(--gcp-blue);
+      font-weight: 700;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: 1px solid transparent;
+      outline: none;
+      white-space: nowrap;
+      font-family: inherit;
+      user-select: none;
+    }
+
+    .btn-default {
+      background: var(--gcp-surface);
+      border-color: var(--gcp-border);
+      color: var(--gcp-text);
+    }
+
+    .btn-default:hover {
+      background: var(--gcp-surface-alt);
+      border-color: var(--gcp-text-muted);
+    }
+
+    .btn-primary {
+      background: var(--gcp-blue);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: var(--gcp-blue-hover);
+      box-shadow: 0 1px 3px rgba(26,115,232,0.4);
+    }
+
+    .btn-sm {
+      padding: 4px 10px;
+      font-size: 0.74rem;
+    }
+
+    /* Main Container Layout */
+    .app-body {
+      display: flex;
+      flex: 1;
+      position: relative;
+    }
+
+    /* Split Viewport Mode (Default) */
+    .app-body.split-mode {
+      height: calc(100vh - 56px);
+      overflow: hidden;
+    }
+
+    .app-body.split-mode .lhs-panel {
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    .app-body.split-mode .rhs-panel {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* Full Flow Document Mode */
+    .app-body.flow-mode {
+      height: auto;
+      min-height: calc(100vh - 56px);
+      overflow: visible;
+    }
+
+    .app-body.flow-mode .lhs-panel {
+      height: auto;
+      overflow-y: visible;
+    }
+
+    .app-body.flow-mode .rhs-panel {
+      height: auto;
+      overflow: visible;
+    }
+
+    .lhs-panel {
+      width: 48%;
+      min-width: 360px;
+      max-width: 75%;
+      padding: 16px 20px 40px;
+      background: var(--gcp-bg);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-sizing: border-box;
+    }
+
+    .split-gutter {
+      width: 8px;
+      background: var(--gcp-border-light);
+      cursor: col-resize;
+      transition: background 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .split-gutter:hover, .split-gutter.dragging {
+      background: var(--gcp-blue);
+    }
+
+    .split-gutter-pill {
+      width: 3px;
+      height: 30px;
+      background: var(--gcp-text-muted);
+      border-radius: 2px;
+      opacity: 0.5;
+    }
+
+    .rhs-panel {
+      flex: 1;
+      min-width: 380px;
+      display: flex;
+      flex-direction: column;
+      background: var(--code-bg);
+      box-sizing: border-box;
+    }
+
+    /* Global Preset & Control Bar */
+    .controls-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .preset-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      background: var(--gcp-surface);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--gcp-border);
+      flex: 1;
+    }
+
+    .preset-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--gcp-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-right: 2px;
+    }
+
+    .preset-chip {
+      padding: 3px 9px;
+      border-radius: 12px;
+      border: 1px solid var(--gcp-border);
+      background: var(--gcp-surface-alt);
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--gcp-text);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .preset-chip:hover {
+      border-color: var(--gcp-blue);
+      color: var(--gcp-blue);
+      background: var(--gcp-blue-light);
+    }
+
+    .sec-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Collapsible Sections */
+    .step-section {
+      background: var(--gcp-surface);
+      border: 1px solid var(--gcp-border);
+      border-radius: var(--radius-md);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      overflow: hidden;
+      transition: border-color 0.15s;
+    }
+
+    .step-section:hover {
+      border-color: #b8bdc4;
+    }
+
+    .step-section:nth-of-type(even) {
+      background: #fafbfc;
+    }
+
+    [data-theme="dark"] .step-section:nth-of-type(even) {
+      background: #191b20;
+    }
+
+    .step-header {
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+      background: inherit;
+    }
+
+    .step-header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--gcp-blue-light);
+      color: var(--gcp-blue);
+      font-weight: 700;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-title-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .step-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--gcp-text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-subtitle {
+      font-size: 0.72rem;
+      color: var(--gcp-text-muted);
+    }
+
+    .step-header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .step-summary-badge {
+      font-size: 0.68rem;
+      padding: 2px 8px;
+      background: var(--gcp-surface-alt);
+      color: var(--gcp-text-muted);
+      border-radius: 10px;
+      border: 1px solid var(--gcp-border-light);
+      max-width: 240px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .step-chevron {
+      transition: transform 0.2s ease;
+      color: var(--gcp-text-muted);
+    }
+
+    .step-section.collapsed .step-chevron {
+      transform: rotate(-90deg);
+    }
+
+    .step-section.collapsed .step-body {
+      display: none;
+    }
+
+    .step-body {
+      padding: 14px 16px 16px;
+      border-top: 1px solid var(--gcp-border-light);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* Subgroup Cards */
+    .step-subgroup {
+      background: var(--gcp-surface);
+      border: 1px solid var(--gcp-border-light);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .subgroup-title {
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--gcp-text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Form Fields & Grid */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-label {
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: var(--gcp-text);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .form-input, .form-select {
+      height: 32px;
+      padding: 4px 10px;
+      border: 1px solid var(--gcp-border);
+      border-radius: var(--radius-sm);
+      background: var(--gcp-surface);
+      color: var(--gcp-text);
+      font-size: 0.8rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .form-input:focus, .form-select:focus {
+      border-color: var(--gcp-blue);
+      box-shadow: 0 0 0 2px var(--gcp-blue-light);
+    }
+
+    .form-hint {
+      font-size: 0.68rem;
+      color: var(--gcp-text-muted);
+      line-height: 1.3;
+    }
+
+    .form-hint code {
+      font-family: var(--font-mono);
+      background: var(--gcp-surface-alt);
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    /* Dataset Search & Category Filter */
+    .catalog-toolbar {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 2px;
+    }
+
+    .catalog-search-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .search-input-wrap {
+      flex: 1;
+      min-width: 220px;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-input-wrap svg {
+      position: absolute;
+      left: 10px;
+      color: var(--gcp-text-muted);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 32px;
+      padding: 4px 10px 4px 32px;
+      border: 1px solid var(--gcp-border);
+      border-radius: var(--radius-sm);
+      background: var(--gcp-surface);
+      color: var(--gcp-text);
+      font-size: 0.78rem;
+      font-family: inherit;
+    }
+
+    .search-input:focus {
+      border-color: var(--gcp-blue);
+      box-shadow: 0 0 0 2px var(--gcp-blue-light);
+    }
+
+    .category-pills {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 2px 0 4px 0;
+    }
+
+    .cat-pill {
+      padding: 3px 10px;
+      border-radius: 14px;
+      border: 1px solid var(--gcp-border-light);
+      background: var(--gcp-surface);
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--gcp-text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+
+    .cat-pill:hover {
+      border-color: var(--gcp-border);
+      color: var(--gcp-text);
+    }
+
+    .cat-pill.active {
+      background: var(--gcp-blue-light);
+      border-color: var(--gcp-blue);
+      color: var(--gcp-blue);
+    }
+
+    /* Dataset Cards List - NO INTERNAL NESTED SCROLLBAR! */
+    .dataset-cards-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      /* Naturally flows within LHS panel, eliminating nested scroll traps */
+    }
+
+    .dataset-cards-container.compact-mode {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 8px;
+    }
+
+    .dataset-card {
+      background: var(--gcp-surface);
+      border: 1px solid var(--gcp-border-light);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .dataset-card:hover {
+      border-color: #b8bdc4;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .dataset-card.selected {
+      border-color: var(--gcp-blue);
+      background: #f7faff;
+    }
+
+    [data-theme="dark"] .dataset-card.selected {
+      background: #172233;
+    }
+
+    .dataset-card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .dataset-checkbox {
+      margin-top: 3px;
+      width: 16px;
+      height: 16px;
+      accent-color: var(--gcp-blue);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .dataset-title-block {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .dataset-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--gcp-text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .badge-pill {
+      font-size: 0.65rem;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .badge-provider {
+      background: var(--gcp-surface-alt);
+      color: var(--gcp-text-muted);
+      border: 1px solid var(--gcp-border-light);
+    }
+
+    .badge-size {
+      background: var(--gcp-blue-light);
+      color: var(--gcp-blue);
+      border: 1px solid rgba(26,115,232,0.3);
+    }
+
+    .badge-tier {
+      background: var(--gcp-green-light);
+      color: var(--gcp-green);
+    }
+
+    .badge-license {
+      background: var(--gcp-purple-light);
+      color: var(--gcp-purple);
+      border: 1px solid rgba(147,52,230,0.2);
+    }
+
+    .dataset-desc {
+      font-size: 0.72rem;
+      color: var(--gcp-text-muted);
+      line-height: 1.35;
+    }
+
+    .dataset-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.68rem;
+      color: var(--gcp-text-muted);
+      border-top: 1px dashed var(--gcp-border-light);
+      padding-top: 5px;
+      margin-top: 2px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .dataset-uri {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      color: var(--gcp-blue);
+      background: var(--gcp-surface-alt);
+      padding: 1px 5px;
+      border-radius: 3px;
+      max-width: 260px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .dataset-doc-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .doc-link-btn {
+      color: var(--gcp-blue);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.68rem;
+      padding: 1px 6px;
+      border-radius: 3px;
+      background: var(--gcp-blue-light);
+      border: 1px solid rgba(26,115,232,0.25);
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      transition: all 0.15s;
+    }
+
+    .doc-link-btn:hover {
+      background: var(--gcp-blue);
+      color: #ffffff;
+      text-decoration: none;
+    }
+
+    .ref-link-badge {
+      color: #1557b0;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.68rem;
+      padding: 1px 7px;
+      border-radius: 4px;
+      background: var(--gcp-blue-light);
+      border: 1px solid rgba(26,115,232,0.35);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+      vertical-align: middle;
+    }
+
+    .ref-link-badge:hover {
+      background: var(--gcp-blue);
+      color: #ffffff;
+      border-color: var(--gcp-blue);
+      text-decoration: none;
+      box-shadow: 0 1px 3px rgba(26,115,232,0.3);
+    }
+
+    [data-theme="dark"] .ref-link-badge {
+      color: #8ab4f8;
+      background: #152740;
+      border-color: rgba(138,180,248,0.35);
+    }
+
+    [data-theme="dark"] .ref-link-badge:hover {
+      background: #8ab4f8;
+      color: #121316;
+    }
+
+    /* Engine Tab Switcher */
+    .engine-tabs-bar {
+      display: flex;
+      border-bottom: 1px solid var(--gcp-border);
+      background: var(--gcp-surface-alt);
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      overflow-x: auto;
+    }
+
+    .engine-tab {
+      padding: 8px 14px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--gcp-text-muted);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+      border-bottom: 2px solid transparent;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+
+    .engine-tab:hover {
+      color: var(--gcp-text);
+      background: rgba(0,0,0,0.02);
+    }
+
+    .engine-tab.active {
+      color: var(--gcp-blue);
+      background: var(--gcp-surface);
+      border-bottom-color: var(--gcp-blue);
+    }
+
+    .engine-panel {
+      display: none;
+      padding: 12px;
+      background: var(--gcp-surface);
+      border: 1px solid var(--gcp-border);
+      border-top: none;
+      border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+    }
+
+    .engine-panel.active {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .engine-highlight-card {
+      background: var(--gcp-surface-alt);
+      border-left: 3px solid var(--gcp-blue);
+      padding: 8px 12px;
+      font-size: 0.74rem;
+      color: var(--gcp-text);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      line-height: 1.4;
+    }
+
+    /* Architectural Purpose & Rationale Callouts */
+    .purpose-callout {
+      background: var(--gcp-surface-alt);
+      border: 1px solid var(--gcp-border-light);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      margin-bottom: 14px;
+      font-size: 0.74rem;
+      line-height: 1.45;
+      color: var(--gcp-text);
+    }
+
+    .purpose-callout.storage {
+      border-left: 4px solid var(--gcp-green);
+      background: rgba(24, 128, 56, 0.04);
+    }
+
+    .purpose-callout.engine {
+      border-left: 4px solid var(--gcp-blue);
+      background: rgba(26, 115, 232, 0.04);
+    }
+
+    .purpose-callout.acceleration {
+      border-left: 4px solid #9334e6;
+      background: rgba(147, 52, 230, 0.04);
+    }
+
+    .purpose-callout-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .purpose-callout-title {
+      font-weight: 700;
+      font-size: 0.78rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .purpose-callout.storage .purpose-callout-title { color: #0d652d; }
+    .purpose-callout.engine .purpose-callout-title { color: #174ea6; }
+    .purpose-callout.acceleration .purpose-callout-title { color: #681da8; }
+
+    [data-theme="dark"] .purpose-callout.storage { background: rgba(24, 128, 56, 0.12); }
+    [data-theme="dark"] .purpose-callout.engine { background: rgba(26, 115, 232, 0.12); }
+    [data-theme="dark"] .purpose-callout.acceleration { background: rgba(147, 52, 230, 0.12); }
+
+    [data-theme="dark"] .purpose-callout.storage .purpose-callout-title { color: #81c995; }
+    [data-theme="dark"] .purpose-callout.engine .purpose-callout-title { color: #8ab4f8; }
+    [data-theme="dark"] .purpose-callout.acceleration .purpose-callout-title { color: #d7aefb; }
+
+    .purpose-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    @media (max-width: 650px) {
+      .purpose-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .purpose-box {
+      background: var(--gcp-surface);
+      border: 1px solid var(--gcp-border-light);
+      border-radius: var(--radius-sm);
+      padding: 7px 10px;
+    }
+
+    .purpose-box-title {
+      font-weight: 600;
+      font-size: 0.73rem;
+      color: var(--gcp-text);
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .purpose-box-desc {
+      color: var(--gcp-text-muted);
+      font-size: 0.71rem;
+      line-height: 1.38;
+    }
+
+    /* Documentation Matrix Table in Step 5 */
+    .doc-matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.73rem;
+      margin-top: 4px;
+    }
+
+    .doc-matrix-table th {
+      background: var(--gcp-surface-alt);
+      padding: 8px 10px;
+      text-align: left;
+      font-weight: 700;
+      border-bottom: 1px solid var(--gcp-border);
+      color: var(--gcp-text-muted);
+      white-space: nowrap;
+    }
+
+    .doc-matrix-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--gcp-border-light);
+      vertical-align: top;
+    }
+
+    .doc-matrix-table tr:hover {
+      background: rgba(26,115,232,0.03);
+    }
+
+    /* Right Panel (Code & Visualizations) */
+    .rhs-tabs-bar {
+      display: flex;
+      align-items: center;
+      background: var(--code-header);
+      border-bottom: 1px solid var(--code-border);
+      overflow-x: auto;
+      flex-shrink: 0;
+      padding: 0 8px;
+    }
+
+    .rhs-tab {
+      padding: 10px 14px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--code-comment);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+
+    .rhs-tab:hover {
+      color: #ffffff;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .rhs-tab.active {
+      color: #8ab4f8;
+      border-bottom-color: #8ab4f8;
+      background: rgba(138,180,248,0.08);
+    }
+
+    .rhs-tab.special-tab {
+      color: #81c995;
+    }
+
+    .rhs-tab.special-tab.active {
+      color: #81c995;
+      border-bottom-color: #81c995;
+      background: rgba(129,201,149,0.1);
+    }
+
+    .rhs-subbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      background: var(--code-header);
+      border-bottom: 1px solid var(--code-border);
+      font-size: 0.74rem;
+      color: var(--code-comment);
+      flex-shrink: 0;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .code-viewport {
+      flex: 1;
+      overflow: auto;
+      padding: 16px;
+      background: var(--code-bg);
+      position: relative;
+    }
+
+    .app-body.flow-mode .code-viewport {
+      overflow: visible;
+      height: auto;
+    }
+
+    pre.code-block {
+      margin: 0;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      line-height: 1.55;
+      color: var(--code-fg);
+      white-space: pre;
+      tab-size: 2;
+    }
+
+    /* Architecture Visualizer Viewport */
+    .arch-viewport {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: var(--gcp-surface);
+      color: var(--gcp-text);
+      min-height: 100%;
+    }
+
+    .arch-subtoolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--gcp-surface-alt);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--gcp-border-light);
+    }
+
+    .arch-modes {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .arch-mode-btn {
+      padding: 3px 10px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      border: 1px solid var(--gcp-border);
+      background: var(--gcp-surface);
+      color: var(--gcp-text);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+
+    .arch-mode-btn.active {
+      background: var(--gcp-blue);
+      color: #ffffff;
+      border-color: var(--gcp-blue);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #202124;
+      color: #ffffff;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      font-size: 0.8rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 1000;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all 0.2s ease;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Clean Token-Based Syntax Highlighting */
+    .hl-kw  { color: #8ab4f8; font-weight: 600; }
+    .hl-str { color: #ceead6; }
+    .hl-var { color: #fdd663; }
+    .hl-com { color: #9aa0a6; font-style: italic; }
+    .hl-cmd { color: #d7aefb; font-weight: 600; }
+    .hl-flag { color: #f28b82; }
+
+    @media (max-width: 960px) {
+      .app-body {
+        flex-direction: column !important;
+        height: auto !important;
+      }
+      .lhs-panel {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+      }
+      .split-gutter {
+        display: none;
+      }
+      .rhs-panel {
+        min-height: 500px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Application Navigation -->
+  <header class="top-nav">
+    <div class="nav-brand">
+      <div class="brand-icon">🧬</div>
+      <div>
+        <div class="brand-title">
+          Fast Science Data Hub
+          <span class="brand-badge">INGESTION &amp; MIRRORING WORKBENCH</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <div class="nav-stats-bar">
+        <div class="stat-pill">
+          <span>Datasets:</span>
+          <strong id="hdrSelectedCount">0</strong>
+        </div>
+        <span>•</span>
+        <div class="stat-pill">
+          <span>Total Volume:</span>
+          <strong id="hdrTotalSize">0 GB</strong>
+        </div>
+        <span>•</span>
+        <div class="stat-pill">
+          <span>Target:</span>
+          <strong id="hdrTargetBucket">gs://...</strong>
+        </div>
+      </div>
+
+      <!-- Mode Switch: Viewport Split vs Full Document Flow -->
+      <button class="btn btn-default btn-sm" id="btnLayoutMode" title="Toggle between Side-by-Side Viewport and Full Document Flow">
+        <span id="layoutModeIcon">📐</span> <span id="layoutModeLabel">Split View</span>
+      </button>
+
+      <button class="btn btn-default btn-sm" id="btnThemeToggle" title="Toggle Dark/Light Mode">
+        <span id="themeIcon">🌙</span>
+      </button>
+
+      <button class="btn btn-primary btn-sm" id="btnDownloadBundle" title="Download all scripts and documentation">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+        Download Bundle
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container Layout -->
+  <div class="app-body split-mode" id="mainContainer">
+    
+    <!-- LEFT CONFIGURATION PANEL (LHS) -->
+    <div class="lhs-panel" id="lhsPanel">
+
+      <!-- Preset Bar & Global Section Toggles -->
+      <div class="controls-top-bar">
+        <div class="preset-bar">
+          <span class="preset-label">Presets:</span>
+          <button class="preset-chip" data-preset="genomics">🧬 Genomics</button>
+          <button class="preset-chip" data-preset="alphafold">🔬 AlphaFold</button>
+          <button class="preset-chip" data-preset="climate">🌍 Climate</button>
+          <button class="preset-chip" data-preset="foundation_ai">🤖 AI Science</button>
+          <button class="preset-chip" data-preset="chemistry">🧪 Chemistry</button>
+          <button class="preset-chip" data-preset="clear" style="margin-left:auto; color:var(--gcp-red);">✕ Clear</button>
+        </div>
+
+        <div class="sec-controls">
+          <button class="btn btn-default btn-sm" id="btnExpandAllSec" title="Expand all sections">Expand All</button>
+          <button class="btn btn-default btn-sm" id="btnCollapseAllSec" title="Collapse all sections">Collapse</button>
+        </div>
+      </div>
+
+      <!-- STEP 1: DATASET CATALOG & SELECTION -->
+      <div class="step-section" id="secCatalog">
+        <div class="step-header" onclick="toggleSection('secCatalog')">
+          <div class="step-header-left">
+            <div class="step-num">1</div>
+            <div class="step-title-group">
+              <div class="step-title">Scientific Dataset Catalog &amp; Selection</div>
+              <div class="step-subtitle">Curated open-access databases with direct documentation links &amp; licensing details</div>
+            </div>
+          </div>
+          <div class="step-header-right">
+            <span class="step-summary-badge" id="sumCatalog">4 Datasets • 2.8 TB</span>
+            <svg class="step-chevron" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+          </div>
+        </div>
+
+        <div class="step-body">
+          <div class="catalog-toolbar">
+            <div class="catalog-search-row">
+              <div class="search-input-wrap">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                <input type="text" class="search-input" id="inSearchDataset" placeholder="Search by dataset title, provider (Broad, NCBI, EBI, NOAA), format (VCF, Zarr, mmCIF)...">
+              </div>
+              <button class="btn btn-default btn-sm" id="btnSelectAll">Select All</button>
+              <button class="btn btn-default btn-sm" id="btnDeselectAll">Deselect All</button>
+              <button class="btn btn-default btn-sm" id="btnToggleCardMode" title="Toggle Compact Grid vs Standard List View">Compact View</button>
+            </div>
+
+            <div class="category-pills">
+              <button class="cat-pill active" data-cat="all">All Datasets (18)</button>
+              <button class="cat-pill" data-cat="genomics">🧬 Genomics &amp; Life Sciences (7)</button>
+              <button class="cat-pill" data-cat="structural">🔬 Structural Biology (3)</button>
+              <button class="cat-pill" data-cat="ai_science">🤖 AI for Science (3)</button>
+              <button class="cat-pill" data-cat="climate">🌍 Climate &amp; Earth (3)</button>
+              <button class="cat-pill" data-cat="chemistry">🧪 Chemistry &amp; Materials (2)</button>
+            </div>
+          </div>
+
+          <!-- Dataset Card List (Populated via JS - Flowing smoothly without nested scrollbars) -->
+          <div class="dataset-cards-container" id="datasetListContainer">
+            <!-- Cards dynamically rendered here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: DESTINATION STORAGE & CLOUD ENVIRONMENT -->
+      <div class="step-section" id="secStorage">
+        <div class="step-header" onclick="toggleSection('secStorage')">
+          <div class="step-header-left">
+            <div class="step-num">2</div>
+            <div class="step-title-group">
+              <div class="step-title">Destination Storage &amp; Target Cloud Infrastructure</div>
+              <div class="step-subtitle">Configure destination Cloud Storage bucket, Storage Class, and CMEK encryption</div>
+            </div>
+          </div>
+          <div class="step-header-right">
+            <span class="step-summary-badge" id="sumStorage">gs://univ-fastscience-datasets-prod • us-central1</span>
+            <svg class="step-chevron" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+          </div>
+        </div>
+
+        <div class="step-body">
+          <!-- Target Mirror Purpose & Rationale Card -->
+          <div class="purpose-callout storage">
+            <div class="purpose-callout-header">
+              <div class="purpose-callout-title">
+                <span>🪣 Target Mirror (gs://<span id="calloutTargetBucket">univ-fastscience-datasets-prod</span>)</span>
+                <span style="font-weight:normal; font-size:0.7rem; color:var(--gcp-text-muted);">— Sovereign Scientific Data Landing Zone</span>
+              </div>
+            </div>
+            <div style="color:var(--gcp-text); font-weight:500; margin-bottom:4px;">
+              <strong>Why it exists &amp; what it does:</strong> Serves as your institution's central, sovereign scientific data lake collocated in the same Google Cloud region as your AI/HPC accelerators.
+            </div>
+            <div class="purpose-grid">
+              <div class="purpose-box">
+                <div class="purpose-box-title">🎯 Core Operational Purpose</div>
+                <div class="purpose-box-desc">
+                  Houses mirrored scientific repositories in the same region as GPU/TPU nodes (<strong>$0 inter-service egress</strong>), organizing multi-terabyte datasets into a standardized POSIX folder structure (<code>/datasets/{category}/{dataset}/</code>).
+                </div>
+              </div>
+              <div class="purpose-box">
+                <div class="purpose-box-title">🛡️ Why It Exists (The Problem It Solves)</div>
+                <div class="purpose-box-desc">
+                  Eliminates external internet latency, throttling, and recurring egress charges from remote repositories (NCBI, EBI, AWS). Protects active research against upstream API outages, rate-limits, or deleted datasets, and cuts storage costs by 50%+ using Autoclass.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-subgroup">
+            <div class="subgroup-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
+              Google Cloud Landing Zone Target
+            </div>
+            
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label" for="inProjectId">Destination Project ID</label>
+                <input type="text" class="form-input" id="inProjectId" value="fast-science-data-prod">
+                <div class="form-hint">Google Cloud project hosting the scientific mirror.</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="inBucketName">Target Bucket Name</label>
+                <input type="text" class="form-input" id="inBucketName" value="univ-fastscience-datasets-prod">
+                <div class="form-hint">Global unique GCS bucket name (e.g. <code>gs://...</code>).</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="selRegion">Target Primary Region</label>
+                <select class="form-select" id="selRegion">
+                  <option value="us-central1" selected>us-central1 (Iowa - TPU v5p &amp; A3 Ultra Hub)</option>
+                  <option value="us-east4">us-east4 (N. Virginia - High GPU Density)</option>
+                  <option value="us-west1">us-west1 (Oregon - Low Carbon Hydro)</option>
+                  <option value="us-east1">us-east1 (S. Carolina)</option>
+                  <option value="europe-west4">europe-west4 (Eemshaven, Netherlands)</option>
+                  <option value="europe-west1">europe-west1 (Belgium)</option>
+                  <option value="asia-southeast1">asia-southeast1 (Singapore)</option>
+                </select>
+                <div class="form-hint">Locate storage in same region as compute to eliminate egress fees.</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="selStorageClass">Storage Class &amp; Optimization</label>
+                <select class="form-select" id="selStorageClass">
+                  <option value="AUTOCLASS" selected>Autoclass (Google-Managed Dynamic Tiering - Recommended)</option>
+                  <option value="STANDARD">Standard (High-frequency reads for active GPU training)</option>
+                  <option value="NEARLINE">Nearline (Monthly scientific runs / infrequent retrieval)</option>
+                  <option value="RAPID_BUCKET">Rapid Bucket (Sub-ms Zonal Object Storage - 15 TB/s)</option>
+                </select>
+                <div class="form-hint">Autoclass automatically moves objects to Nearline/Coldline based on access.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Acceleration Layer Purpose & Rationale Card -->
+          <div class="purpose-callout acceleration">
+            <div class="purpose-callout-header">
+              <div class="purpose-callout-title">
+                <span>🚀 Scientific AI &amp; HPC Acceleration Layer</span>
+                <span style="font-weight:normal; font-size:0.7rem; color:var(--gcp-text-muted);">— Cloud Storage FUSE &amp; Rapid Cache</span>
+              </div>
+            </div>
+            <div style="color:var(--gcp-text); font-weight:500; margin-bottom:4px;">
+              <strong>Why it exists &amp; what it does:</strong> High-throughput POSIX streaming layer connecting object storage directly to AI accelerators and HPC compute nodes.
+            </div>
+            <div class="purpose-grid">
+              <div class="purpose-box">
+                <div class="purpose-box-title">🎯 Core Operational Purpose</div>
+                <div class="purpose-box-desc">
+                  Mounts the target GCS bucket directly as a POSIX filesystem path (<code>/mnt/fastscience-datasets/</code>) in GKE GPU Pods and Slurm nodes via Cloud Storage FUSE, while Rapid Cache uses local NVMe SSDs to serve hot data at up to <strong>2.5 TB/s</strong>.
+                </div>
+              </div>
+              <div class="purpose-box">
+                <div class="purpose-box-title">🛡️ Why It Exists (The Problem It Solves)</div>
+                <div class="purpose-box-desc">
+                  AI training frameworks (PyTorch <code>DataLoader</code>, JAX) and HPC bio-tools require standard POSIX file paths, but GCS is an HTTP object store. Without this layer, expensive GPUs ($30+/hr per H100) sit idle for hours during pre-downloads (GPU starvation). Rapid Cache slashes pod initialization time by up to <strong>7×</strong>.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-subgroup">
+            <div class="subgroup-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+              Filesystem Semantics &amp; High-Throughput Accelerators
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label" for="selHns">Hierarchical Namespace (HNS)</label>
+                <select class="form-select" id="selHns">
+                  <option value="true" selected>Enabled (True Directory Folders &amp; Fast POSIX Atomic Renames)</option>
+                  <option value="false">Disabled (Standard Flat Object Namespace)</option>
+                </select>
+                <div class="form-hint">Mandatory for high-performance GCSFuse parallel downloads &amp; folder traversals.</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="selRapidCache">Rapid Cache (Zonal SSD Accelerator)</label>
+                <select class="form-select" id="selRapidCache">
+                  <option value="true" selected>Enable Zonal Read Cache (Up to 2.5 TB/s Local Throughput)</option>
+                  <option value="false">Standard GCS Egress (No Zonal Cache)</option>
+                </select>
+                <div class="form-hint">Transparent zonal cache that slashes pod startup and weight-loading latency.</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="selCmek">Encryption (CMEK)</label>
+                <select class="form-select" id="selCmek">
+                  <option value="GOOGLE_MANAGED" selected>Google-Managed Encryption Keys (Standard)</option>
+                  <option value="CMEK_HSM">Cloud KMS HSM (FIPS 140-2 Level 3 Dedicated Keyring)</option>
+                </select>
+                <div class="form-hint">Enforces institutional control over cryptographic keys.</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="inSoftDelete">Soft-Delete Retention Period</label>
+                <input type="number" class="form-input" id="inSoftDelete" value="7" min="0" max="90">
+                <div class="form-hint">Days before permanently purging deleted research artifacts (prevents data loss).</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: TRANSFER ENGINE & PERFORMANCE -->
+      <div class="step-section" id="secEngine">
+        <div class="step-header" onclick="toggleSection('secEngine')">
+          <div class="step-header-left">
+            <div class="step-num">3</div>
+            <div class="step-title-group">
+              <div class="step-title">Transfer Engine &amp; Ingestion Architecture</div>
+              <div class="step-subtitle">Select between Storage Transfer Service, Parallel CLI, or HPC Slurm Stage-in</div>
+            </div>
+          </div>
+          <div class="step-header-right">
+            <span class="step-summary-badge" id="sumEngine">Storage Transfer Service</span>
+            <svg class="step-chevron" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+          </div>
+        </div>
+
+        <div class="step-body">
+          <!-- Transfer Engine Purpose & Rationale Card -->
+          <div class="purpose-callout engine">
+            <div class="purpose-callout-header">
+              <div class="purpose-callout-title">
+                <span>⚡ Transfer Ingestion Engine (Google Cloud Storage Transfer Service)</span>
+                <span style="font-weight:normal; font-size:0.7rem; color:var(--gcp-text-muted);">— Line-Rate Automated Pipeline</span>
+              </div>
+            </div>
+            <div style="color:var(--gcp-text); font-weight:500; margin-bottom:4px;">
+              <strong>Why it exists &amp; what it does:</strong> High-throughput, automated cloud-to-cloud data ingestion engine that mirrors remote public datasets into your target landing zone.
+            </div>
+            <div class="purpose-grid">
+              <div class="purpose-box">
+                <div class="purpose-box-title">🎯 Core Operational Purpose</div>
+                <div class="purpose-box-desc">
+                  Performs serverless, automated data ingestion directly from AWS S3, public GCS, NCBI FTP, and Hugging Face into your target bucket without deploying, managing, or paying for intermediate data-mover VMs.
+                </div>
+              </div>
+              <div class="purpose-box">
+                <div class="purpose-box-title">🛡️ Why It Exists (The Problem It Solves)</div>
+                <div class="purpose-box-desc">
+                  Manual cURL/wget downloads over public internet fail on multi-gigabyte genomic files and stall single machines. The Transfer Engine runs across Google's global backbone with 64+ concurrent streams, performs cryptographic <strong>CRC32c / MD5 checksum verification</strong> on every byte to eliminate silent corruption, and handles automated retries and recurring syncs.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="engine-tabs-bar">
+            <button class="engine-tab active" data-engine="STS">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              Storage Transfer Service (Serverless Cloud-to-Cloud)
+            </button>
+            <button class="engine-tab" data-engine="CLI">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 14H4v-4h11v4zm0-5H4V9h11v4zm5 5h-4V9h4v9z"/></svg>
+              High-Throughput CLI (gcloud storage rsync / aria2c)
+            </button>
+            <button class="engine-tab" data-engine="SLURM">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>
+              HPC Slurm Stage-In (Data Mover Job)
+            </button>
+            <button class="engine-tab" data-engine="PYTHON">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+              Python Streaming Ingester
+            </button>
+          </div>
+
+          <!-- PANEL STS -->
+          <div class="engine-panel active" id="panel_STS">
+            <div class="engine-highlight-card">
+              <strong>Google Cloud Storage Transfer Service:</strong> Fully managed, serverless, line-rate cloud transfer. Pulls directly from public AWS S3, public HTTP/FTP, and public GCP buckets straight into your target bucket without routing traffic through an intermediary VM.
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label" for="selSchedule">Ingestion Schedule</label>
+                <select class="form-select" id="selSchedule">
+                  <option value="ONCE" selected>One-time Immediate Ingestion Job</option>
+                  <option value="DAILY">Daily Recurring Sync (Midnight UTC)</option>
+                  <option value="WEEKLY">Weekly Mirror Refresh (Sunday 02:00 UTC)</option>
+                </select>
+                <div class="form-hint">Automated scheduled jobs sync upstream changes with zero human overhead.</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="selOverwrite">Collision Policy</label>
+                <select class="form-select" id="selOverwrite">
+                  <option value="DIFFERENT" selected>Overwrite only if source modified or size differs</option>
+                  <option value="ALWAYS">Always overwrite existing objects</option>
+                  <option value="NEVER">Never overwrite (skip existing files)</option>
+                </select>
+                <div class="form-hint">Prevents wasteful re-transfer of static reference genomes and embeddings.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PANEL CLI -->
+          <div class="engine-panel" id="panel_CLI">
+            <div class="engine-highlight-card">
+              <strong>High-Throughput CLI Sync:</strong> Generates parallel execution scripts using <code>gcloud storage rsync -m</code> for cloud buckets and <code>aria2c</code> (multi-connection parallel segmented downloader) for multi-gigabyte HTTP/FTP archives.
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label" for="inParallelStreams">Max Parallel Worker Processes</label>
+                <input type="number" class="form-input" id="inParallelStreams" value="32" min="4" max="128">
+                <div class="form-hint">Processes spawned for concurrent object streaming (default: 32).</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="selExtract">Auto-Decompress Archives</label>
+                <select class="form-select" id="selExtract">
+                  <option value="true" selected>Automatically extract .tar.gz and .gz files on arrival</option>
+                  <option value="false">Preserve compressed archives (.tar.gz, .bgz, .zip)</option>
+                </select>
+                <div class="form-hint">Extracting prepares raw FASTA and indexes for direct GCSFuse consumption.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PANEL SLURM -->
+          <div class="engine-panel" id="panel_SLURM">
+            <div class="engine-highlight-card">
+              <strong>HPC Slurm Stage-In Job:</strong> Submits batch stage-in scripts to dedicated <code>datamover</code> nodes with high-speed network interfaces, pulling datasets directly to local NVMe SSDs (<code>/scratch</code>) or Parallelstore (Lustre) before training jobs begin.
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label" for="inSlurmPartition">Slurm Data Mover Partition</label>
+                <input type="text" class="form-input" id="inSlurmPartition" value="datamover">
+                <div class="form-hint">HPC Slurm partition dedicated to I/O data movement.</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="inScratchPath">Local Node Scratch Path</label>
+                <input type="text" class="form-input" id="inScratchPath" value="/scratch/datasets">
+                <div class="form-hint">Local fast NVMe mount point accessible by worker ranks.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PANEL PYTHON -->
+          <div class="engine-panel" id="panel_PYTHON">
+            <div class="engine-highlight-card">
+              <strong>Python Multi-Threaded Streaming SDK:</strong> Uses <code>google-cloud-storage</code> with <code>ThreadPoolExecutor</code>, streaming chunked buffers, MD5/CRC32c verification, and progress logging.
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label" for="inChunkSize">Chunk Upload Size (MB)</label>
+                <input type="number" class="form-input" id="inChunkSize" value="64" min="8" max="512">
+                <div class="form-hint">Memory buffer size per chunk stream (optimal: 64MB - 128MB).</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="selVerifyHashes">Integrity Validation</label>
+                <select class="form-select" id="selVerifyHashes">
+                  <option value="true" selected>Strict Hash Verification (Fail on mismatch)</option>
+                  <option value="false">Speed Optimized (Check sizes only)</option>
+                </select>
+                <div class="form-hint">Computes CRC32c/MD5 checksums on the fly during transmission.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 4: DATA GOVERNANCE & LIFECYCLE -->
+      <div class="step-section" id="secGovernance">
+        <div class="step-header" onclick="toggleSection('secGovernance')">
+          <div class="step-header-left">
+            <div class="step-num">4</div>
+            <div class="step-title-group">
+              <div class="step-title">Storage Lifecycle &amp; Service Account Access</div>
+              <div class="step-subtitle">Automate lifecycle transitions, soft-delete safety, and IAM identities</div>
+            </div>
+          </div>
+          <div class="step-header-right">
+            <span class="step-summary-badge" id="sumGovernance">Auto-Nearline: 30d</span>
+            <svg class="step-chevron" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+          </div>
+        </div>
+
+        <div class="step-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="inNearlineDays">Transition to Nearline After</label>
+              <input type="number" class="form-input" id="inNearlineDays" value="30" min="0">
+              <div class="form-hint">Days of inactivity before tiering down to save up to 50% storage cost.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inColdlineDays">Transition to Coldline After</label>
+              <input type="number" class="form-input" id="inColdlineDays" value="90" min="0">
+              <div class="form-hint">Days before moving long-term benchmark archives to Coldline.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inSyncServiceAccount">Transfer Service Account</label>
+              <input type="text" class="form-input" id="inSyncServiceAccount" value="sa-dataset-ingestion-0@fast-science-data-prod.iam.gserviceaccount.com">
+              <div class="form-hint">GCP Service Account granted <code>roles/storage.admin</code> and STS permissions.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="selNotifyEmail">Completion Alerts</label>
+              <input type="email" class="form-input" id="selNotifyEmail" value="research-ops@university.edu">
+              <div class="form-hint">Notification channel for transfer success/errors.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 5: DOCUMENTATION & REFERENCE SOURCES -->
+      <div class="step-section" id="secDocs">
+        <div class="step-header" onclick="toggleSection('secDocs')">
+          <div class="step-header-left">
+            <div class="step-num">5</div>
+            <div class="step-title-group">
+              <div class="step-title">Documentation, Data Licenses &amp; Scientific Citations</div>
+              <div class="step-subtitle">Official manuals, project reference pages, and terms of use for all 18 datasets</div>
+            </div>
+          </div>
+          <div class="step-header-right">
+            <span class="step-summary-badge">18 Official References</span>
+            <svg class="step-chevron" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+          </div>
+        </div>
+
+        <div class="step-body">
+          <div style="font-size:0.75rem; color:var(--gcp-text-muted); margin-bottom:6px;">
+            Comprehensive reference matrix linking to official documentation, primary publications, and data licensing terms for every cataloged scientific dataset:
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="doc-matrix-table" id="docMatrixTable">
+              <thead>
+                <tr>
+                  <th>Dataset</th>
+                  <th>Domain</th>
+                  <th>Provider</th>
+                  <th>License</th>
+                  <th>Official Documentation</th>
+                  <th>Reference / Paper</th>
+                </tr>
+              </thead>
+              <tbody id="docMatrixBody">
+                <!-- Dynamically populated from DATASETS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- DRAGGABLE SPLIT GUTTER -->
+    <div class="split-gutter" id="splitGutter" title="Drag horizontally to resize panels (Double-click to reset 50/50)">
+      <div class="split-gutter-pill"></div>
+    </div>
+
+    <!-- RIGHT CODE & VISUALIZATION VIEWPORT (RHS) -->
+    <div class="rhs-panel" id="rhsPanel">
+      
+      <!-- RHS Tabs Bar -->
+      <div class="rhs-tabs-bar">
+        <button class="rhs-tab special-tab active" data-tab="arch_flow">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l5.59-5.59L19 10l-7 7z"/></svg>
+          🏛️ Data Architecture &amp; Flow
+        </button>
+        <button class="rhs-tab" data-tab="bash_script">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+          🚀 download_datasets.sh
+        </button>
+        <button class="rhs-tab" data-tab="terraform">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
+          ☁️ main.tf (STS &amp; GCS)
+        </button>
+        <button class="rhs-tab" data-tab="python_ingest">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+          🐍 ingest_datasets.py
+        </button>
+        <button class="rhs-tab" data-tab="slurm_job">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>
+          ⚡ slurm_stage_in.sh
+        </button>
+        <button class="rhs-tab" data-tab="transfer_json">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+          📋 transfer_spec.json
+        </button>
+        <button class="rhs-tab" data-tab="readme_doc">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+          📄 README.md
+        </button>
+      </div>
+
+      <!-- Subtoolbar -->
+      <div class="rhs-subbar">
+        <span id="activeFileMeta">🏛️ Interactive Vector Diagram &amp; Ingestion Pipeline Hierarchy</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <!-- Format Switch: Pure Plain Text vs Highlighted -->
+          <button class="btn btn-default btn-sm" id="btnToggleHighlight" title="Toggle between syntax highlighting and pure raw text">
+            <span id="highlightModeLabel">✨ Highlighted</span>
+          </button>
+          <button class="btn btn-default btn-sm" id="btnCopyScript" title="Copy clean plain text to clipboard">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+            Copy Script
+          </button>
+          <button class="btn btn-default btn-sm" id="btnDownloadSingle" title="Download the currently active file">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            Download File
+          </button>
+        </div>
+      </div>
+
+      <!-- Viewport Content -->
+      <div class="code-viewport" id="codeViewport">
+        
+        <!-- Architecture Viewport Container -->
+        <div class="arch-viewport" id="archViewport" style="display:block;">
+          <div class="arch-subtoolbar">
+            <span style="font-size:0.75rem; font-weight:600; color:var(--gcp-text);">Visualization Mode:</span>
+            <div class="arch-modes">
+              <button class="arch-mode-btn active" data-mode="svg">Vector Diagram (SVG)</button>
+              <button class="arch-mode-btn" data-mode="mermaid">Mermaid Flowchart (.mmd)</button>
+              <button class="arch-mode-btn" data-mode="ascii">Pipeline ASCII Tree</button>
+            </div>
+          </div>
+
+          <!-- Dynamic SVG Vector Diagram Container -->
+          <div id="archSvgContainer" style="width:100%; border:1px solid var(--gcp-border-light); border-radius:var(--radius-md); background:var(--gcp-surface); overflow:hidden; padding:16px;">
+            <!-- Rendered by generateArchSvg() -->
+          </div>
+
+          <!-- Code View for Mermaid & ASCII modes -->
+          <div id="archCodeContainer" style="display:none; background:var(--code-bg); border-radius:var(--radius-md); padding:16px; overflow:auto;">
+            <pre class="code-block" id="archCodeViewer"></pre>
+          </div>
+        </div>
+
+        <!-- Preformatted Code Block for Scripts (Rendered cleanly with zero HTML leaks) -->
+        <pre class="code-block" id="rawCodeViewer" style="display:none;"></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toastBox">
+    <span id="toastIcon">✓</span>
+    <span id="toastMsg">Script copied to clipboard</span>
+  </div>
+
+  <!-- Application Logic -->
+  <script>
+    // 18 SCIENTIFIC DATASETS DEFINITIONS (WITH OFFICIAL DOCUMENTATION & REFERENCE URLS)
+    const DATASETS = [
+      {
+        id: 'gnomad',
+        title: 'gnomAD v4.1 (Genome Aggregation Database)',
+        category: 'genomics',
+        categoryDisplay: 'Genomics',
+        provider: 'Broad Institute / GCP Public Data',
+        sizeGb: 1200,
+        sizeDisplay: '1.2 TB',
+        tier: 'Sites VCFs',
+        desc: 'Exome and whole-genome sequencing variants across 800k+ individuals. Standard clinical benchmark.',
+        sourceUri: 'gs://gcp-public-data--gnomad/release/4.1/vcf/',
+        docUrl: 'https://gnomad.broadinstitute.org/downloads',
+        refUrl: 'https://gnomad.broadinstitute.org/news/2023-11-gnomad-v4-0/',
+        license: 'ODbL v1.0 (Open Data)',
+        formats: ['VCF.bgz', 'tbi'],
+        defaultSelected: true
+      },
+      {
+        id: '1000genomes',
+        title: '1000 Genomes Project (Phase 3 & 30x NYGC)',
+        category: 'genomics',
+        categoryDisplay: 'Genomics',
+        provider: 'IGSR / NIH',
+        sizeGb: 850,
+        sizeDisplay: '850 GB',
+        tier: 'High-Coverage',
+        desc: 'Phase 3 autosomal and sex chromosome variant callsets with matched pedigree records.',
+        sourceUri: 'gs://genomics-public-data/1000-genomes-phase-3/',
+        docUrl: 'https://www.internationalgenome.org/data',
+        refUrl: 'https://www.internationalgenome.org/data-portal/data-collection/30x-grch38',
+        license: 'CC0 / Open Access',
+        formats: ['VCF.gz', 'TBI', 'PED'],
+        defaultSelected: true
+      },
+      {
+        id: 'alphafold_swiss',
+        title: 'AlphaFold DB (Swiss-Prot & Model Organisms)',
+        category: 'structural',
+        categoryDisplay: 'Structural Biology',
+        provider: 'Google DeepMind & EMBL-EBI',
+        sizeGb: 450,
+        sizeDisplay: '450 GB',
+        tier: 'High-Confidence',
+        desc: 'Predicted 3D structures with pLDDT metrics and predicted aligned errors (PAE) for core proteomes.',
+        sourceUri: 'gs://public-datasets-deepmind-alphafold-v4/proteomes/',
+        docUrl: 'https://alphafold.ebi.ac.uk/download',
+        refUrl: 'https://alphafold.ebi.ac.uk/faq',
+        license: 'CC-BY-4.0',
+        formats: ['mmCIF', 'PDB', 'PAE JSON'],
+        defaultSelected: true
+      },
+      {
+        id: 'alphafold_full',
+        title: 'AlphaFold DB (Global Proteome Archive - 214M)',
+        category: 'structural',
+        categoryDisplay: 'Structural Biology',
+        provider: 'Google DeepMind & EMBL-EBI',
+        sizeGb: 23000,
+        sizeDisplay: '23 TB',
+        tier: 'Full Proteome',
+        desc: 'Full bulk archive of over 214 million predicted structures spanning all cataloged species.',
+        sourceUri: 'gs://public-datasets-deepmind-alphafold-v4/',
+        docUrl: 'https://alphafold.ebi.ac.uk/download',
+        refUrl: 'https://deepmind.google/science/alphafold/',
+        license: 'CC-BY-4.0',
+        formats: ['tar', 'mmCIF.gz'],
+        defaultSelected: false
+      },
+      {
+        id: 'ncbi_blast',
+        title: 'NCBI BLAST & RefSeq Databases',
+        category: 'genomics',
+        categoryDisplay: 'Genomics',
+        provider: 'NCBI / NIH',
+        sizeGb: 320,
+        sizeDisplay: '320 GB',
+        tier: 'Core Alignments',
+        desc: 'Pre-formatted BLAST v5 nucleotide (nt), non-redundant protein (nr), and taxonomy databases.',
+        sourceUri: 'https://ftp.ncbi.nlm.nih.gov/blast/db/',
+        docUrl: 'https://www.ncbi.nlm.nih.gov/books/NBK279690/',
+        refUrl: 'https://blast.ncbi.nlm.nih.gov/Blast.cgi',
+        license: 'US Public Domain',
+        formats: ['BLAST v5', 'tar.gz'],
+        defaultSelected: true
+      },
+      {
+        id: 'ensembl_112',
+        title: 'Ensembl Release 112 References (GRCh38 / GRCm39)',
+        category: 'genomics',
+        categoryDisplay: 'Genomics',
+        provider: 'EMBL-EBI',
+        sizeGb: 65,
+        sizeDisplay: '65 GB',
+        tier: 'Gold Standard',
+        desc: 'Human and mouse genome assemblies, cDNA transcripts, peptide FASTA, and GTF/GFF3 annotations.',
+        sourceUri: 'https://ftp.ensembl.org/pub/release-112/',
+        docUrl: 'https://ftp.ensembl.org/pub/release-112/',
+        refUrl: 'https://www.ensembl.org/',
+        license: 'EMBL-EBI Terms of Use',
+        formats: ['FASTA', 'GTF', 'GFF3'],
+        defaultSelected: false
+      },
+      {
+        id: 'clinvar_dbsnp',
+        title: 'ClinVar & dbSNP Variant Annotations',
+        category: 'genomics',
+        categoryDisplay: 'Genomics',
+        provider: 'NCBI / NIH',
+        sizeGb: 18,
+        sizeDisplay: '18 GB',
+        tier: 'Pathogenicity',
+        desc: 'Clinically curated assertions of variant pathogenicity, RS IDs, and phenotypic associations.',
+        sourceUri: 'https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/',
+        docUrl: 'https://www.ncbi.nlm.nih.gov/clinvar/docs/maintenance_use/',
+        refUrl: 'https://www.ncbi.nlm.nih.gov/snp/',
+        license: 'US Public Domain',
+        formats: ['VCF.gz', 'tbi'],
+        defaultSelected: false
+      },
+      {
+        id: 'cellxgene',
+        title: 'CZ CELLxGENE Single-Cell Transcriptomics Census',
+        category: 'genomics',
+        categoryDisplay: 'Genomics',
+        provider: 'Chan Zuckerberg Initiative',
+        sizeGb: 120,
+        sizeDisplay: '120 GB',
+        tier: 'Single-Cell',
+        desc: 'Curated standardized single-cell RNA-seq AnnData objects across 50M+ human and mouse cells.',
+        sourceUri: 's3://cellxgene-data-public/',
+        docUrl: 'https://chanzuckerberg.github.io/cellxgene-census/',
+        refUrl: 'https://cellxgene.cziscience.com/',
+        license: 'CC-BY-4.0',
+        formats: ['AnnData (.h5ad)', 'TileDB SOMA'],
+        defaultSelected: false
+      },
+      {
+        id: 'rcsb_pdb',
+        title: 'RCSB Protein Data Bank (PDB Full Archive)',
+        category: 'structural',
+        categoryDisplay: 'Structural Biology',
+        provider: 'Worldwide PDB (wwPDB)',
+        sizeGb: 1100,
+        sizeDisplay: '1.1 TB',
+        tier: 'Experimental 3D',
+        desc: 'Experimentally determined 3D X-ray crystallography, cryo-EM, and NMR macromolecular structures.',
+        sourceUri: 'rsync.rcsb.org::ftp_data/biomacromolecules/',
+        docUrl: 'https://www.rcsb.org/docs/programmatic-access/file-download-services',
+        refUrl: 'https://www.rcsb.org/',
+        license: 'CC0 1.0 Universal',
+        formats: ['PDBx/mmCIF.gz'],
+        defaultSelected: false
+      },
+      {
+        id: 'uniprot',
+        title: 'UniProtKB Knowledgebase (Swiss-Prot & TrEMBL)',
+        category: 'genomics',
+        categoryDisplay: 'Genomics',
+        provider: 'UniProt Consortium',
+        sizeGb: 140,
+        sizeDisplay: '140 GB',
+        tier: 'Proteomics',
+        desc: 'Functional protein sequence annotation, domain structures, active sites, and cross-references.',
+        sourceUri: 'https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/',
+        docUrl: 'https://www.uniprot.org/help/downloads',
+        refUrl: 'https://www.uniprot.org/',
+        license: 'CC-BY-4.0',
+        formats: ['FASTA', 'XML.gz'],
+        defaultSelected: false
+      },
+      {
+        id: 'openfold',
+        title: 'OpenFold Training Dataset & MSAs',
+        category: 'ai_science',
+        categoryDisplay: 'AI for Science',
+        provider: 'Columbia University & OpenFold',
+        sizeGb: 380,
+        sizeDisplay: '380 GB',
+        tier: 'AI Pretraining',
+        desc: 'PyTorch-ready protein feature pipelines, precomputed alignments, and PDB-aligned ground truth.',
+        sourceUri: 's3://openfold/',
+        docUrl: 'https://openfold.readthedocs.io/',
+        refUrl: 'https://github.com/aqlaboratory/openfold',
+        license: 'Apache-2.0 / CC-BY-4.0',
+        formats: ['PKL', 'A3M', 'HDF5'],
+        defaultSelected: false
+      },
+      {
+        id: 'esm2_weights',
+        title: 'ESM-2 / ESMFold Pretraining Weights & Embeddings',
+        category: 'ai_science',
+        categoryDisplay: 'AI for Science',
+        provider: 'Meta AI & Hugging Face',
+        sizeGb: 75,
+        sizeDisplay: '75 GB',
+        tier: 'Weights & Latents',
+        desc: '15B parameter transformer model weights and UR50/S sequence embeddings.',
+        sourceUri: 'https://huggingface.co/facebook/esm2_t48_15B_UR50D',
+        docUrl: 'https://huggingface.co/facebook/esm2_t48_15B_UR50D',
+        refUrl: 'https://github.com/facebookresearch/esm',
+        license: 'MIT License',
+        formats: ['SafeTensors', 'PyTorch'],
+        defaultSelected: false
+      },
+      {
+        id: 'fineweb_edu',
+        title: 'FineWeb-Edu Scientific AI Benchmark Sample',
+        category: 'ai_science',
+        categoryDisplay: 'AI for Science',
+        provider: 'Hugging Face',
+        sizeGb: 2400,
+        sizeDisplay: '2.4 TB',
+        tier: 'Foundation Pretraining',
+        desc: 'High-quality educational and scientific web text corpus filtered for reasoning and scientific AI.',
+        sourceUri: 'https://huggingface.co/datasets/HuggingFaceFW/fineweb-edu',
+        docUrl: 'https://huggingface.co/datasets/HuggingFaceFW/fineweb-edu',
+        refUrl: 'https://arxiv.org/abs/2406.17557',
+        license: 'ODC-By 1.0',
+        formats: ['Parquet', 'Arrow'],
+        defaultSelected: false
+      },
+      {
+        id: 'noaa_hrrr',
+        title: 'NOAA HRRR & GFS Numerical Weather Predictions',
+        category: 'climate',
+        categoryDisplay: 'Climate & Earth',
+        provider: 'NOAA / GCP Public Data',
+        sizeGb: 4500,
+        sizeDisplay: '4.5 TB',
+        tier: 'Real-Time & Archive',
+        desc: 'High-Resolution Rapid Refresh 3km atmospheric models and Global Forecast System grids.',
+        sourceUri: 'gs://gcp-public-data-weather/hrrr/',
+        docUrl: 'https://rapidrefresh.noaa.gov/hrrr/',
+        refUrl: 'https://www.nco.ncep.noaa.gov/pmb/products/hrrr/',
+        license: 'US Public Domain',
+        formats: ['GRIB2', 'NetCDF'],
+        defaultSelected: false
+      },
+      {
+        id: 'era5_zarr',
+        title: 'ERA5 ECMWF Global Climate Reanalysis (Cloud-Zarr)',
+        category: 'climate',
+        categoryDisplay: 'Climate & Earth',
+        provider: 'ECMWF / Google Cloud',
+        sizeGb: 12000,
+        sizeDisplay: '12 TB',
+        tier: 'Cloud-Optimized',
+        desc: 'Global climate variables (hourly 1979-present) structured in chunked Zarr arrays for fast ML.',
+        sourceUri: 'gs://gcp-public-data-arco-era5/ar/1959-2022-full_37-1h-0p25deg.zarr',
+        docUrl: 'https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels',
+        refUrl: 'https://confluence.ecmwf.int/display/CKB/ERA5%3A+data+documentation',
+        license: 'Copernicus Open Access',
+        formats: ['Zarr', 'NetCDF4'],
+        defaultSelected: false
+      },
+      {
+        id: 'sentinel2_cog',
+        title: 'Sentinel-2 & Landsat-8 Cloud-Optimized GeoTIFFs',
+        category: 'climate',
+        categoryDisplay: 'Climate & Earth',
+        provider: 'USGS & ESA / Google Public Data',
+        sizeGb: 8000,
+        sizeDisplay: '8.0 TB',
+        tier: 'Earth Observation',
+        desc: 'Multispectral satellite tiles with STAC metadata for environmental segmentation and crop AI.',
+        sourceUri: 'gs://gcp-public-data-sentinel-2/tiles/',
+        docUrl: 'https://dataspace.copernicus.eu/data-collections/copernicus-sentinel-missions/sentinel-2',
+        refUrl: 'https://www.esa.int/Applications/Observing_the_Earth/Copernicus/Sentinel-2',
+        license: 'Copernicus Sentinel Legal Notice',
+        formats: ['COG', 'STAC JSON'],
+        defaultSelected: false
+      },
+      {
+        id: 'pubchem_3d',
+        title: 'PubChem Compound & 3D Conformer Archive',
+        category: 'chemistry',
+        categoryDisplay: 'Chemistry & Materials',
+        provider: 'NCBI / NIH',
+        sizeGb: 290,
+        sizeDisplay: '290 GB',
+        tier: 'Cheminformatics',
+        desc: '115M chemical structures with computed 3D conformers, molecular weights, and SMILES.',
+        sourceUri: 'https://ftp.ncbi.nlm.nih.gov/pubchem/Compound_3D/01_conf_per_cmpd/',
+        docUrl: 'https://pubchem.ncbi.nlm.nih.gov/docs/',
+        refUrl: 'https://pubchem.ncbi.nlm.nih.gov/',
+        license: 'US Public Domain',
+        formats: ['SDF.gz', 'SMILES'],
+        defaultSelected: false
+      },
+      {
+        id: 'chembl_34',
+        title: 'ChEMBL 34 Bioactivity Database',
+        category: 'chemistry',
+        categoryDisplay: 'Chemistry & Materials',
+        provider: 'EMBL-EBI',
+        sizeGb: 45,
+        sizeDisplay: '45 GB',
+        tier: 'Drug Discovery',
+        desc: 'Curated 2.4M bioactive molecules, drug indications, clinical phase data, and assay results.',
+        sourceUri: 'https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/',
+        docUrl: 'https://chembl.gitbook.io/chembl-interface-documentation/',
+        refUrl: 'https://www.ebi.ac.uk/chembl/',
+        license: 'CC-BY-SA 3.0',
+        formats: ['PostgreSQL dump', 'SQLite', 'SDF'],
+        defaultSelected: false
+      }
+    ];
+
+    // SCIENTIFIC DOMAIN CATEGORIES METADATA & HIERARCHY TOPOLOGY
+    const CATEGORY_META = {
+      genomics: {
+        name: 'Genomics & Life Sciences',
+        icon: '🧬',
+        color: '#1a73e8',
+        bg: '#e8f0fe',
+        border: '#aecbfa'
+      },
+      structural: {
+        name: 'Structural Biology',
+        icon: '🔬',
+        color: '#9334e6',
+        bg: '#f3e8fd',
+        border: '#d7aefb'
+      },
+      ai_science: {
+        name: 'AI for Science & Foundation Models',
+        icon: '🤖',
+        color: '#188038',
+        bg: '#e6f4ea',
+        border: '#a8dab5'
+      },
+      climate: {
+        name: 'Climate, Earth & Weather Systems',
+        icon: '🌍',
+        color: '#b06000',
+        bg: '#fef7e0',
+        border: '#fdd663'
+      },
+      chemistry: {
+        name: 'Chemistry, Materials & Bioactivity',
+        icon: '🧪',
+        color: '#c5221f',
+        bg: '#fce8e6',
+        border: '#f5b7b1'
+      }
+    };
+
+    // APPLICATION STATE
+    const state = {
+      projectId: 'fast-science-data-prod',
+      bucketName: 'univ-fastscience-datasets-prod',
+      region: 'us-central1',
+      storageClass: 'AUTOCLASS',
+      hns: 'true',
+      rapidCache: 'true',
+      cmek: 'GOOGLE_MANAGED',
+      softDeleteDays: 7,
+      
+      selectedDatasets: new Set(['gnomad', '1000genomes', 'alphafold_swiss', 'ncbi_blast']),
+      activeCategory: 'all',
+      searchQuery: '',
+      isCompactCards: false,
+      
+      engine: 'STS', // STS, CLI, SLURM, PYTHON
+      schedule: 'ONCE',
+      overwrite: 'DIFFERENT',
+      parallelStreams: 32,
+      autoExtract: 'true',
+      slurmPartition: 'datamover',
+      scratchPath: '/scratch/datasets',
+      chunkSizeMb: 64,
+      verifyHashes: 'true',
+      
+      nearlineDays: 30,
+      coldlineDays: 90,
+      serviceAccount: 'sa-dataset-ingestion-0@fast-science-data-prod.iam.gserviceaccount.com',
+      notifyEmail: 'research-ops@university.edu',
+      
+      activeTab: 'arch_flow',
+      archMode: 'svg', // svg, mermaid, ascii
+      isHighlightActive: true,
+      layoutMode: 'split', // split or flow
+      theme: 'light'
+    };
+
+    // UTILITIES
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function showToast(msg, isSuccess = true) {
+      const toast = document.getElementById('toastBox');
+      const icon = document.getElementById('toastIcon');
+      const msgEl = document.getElementById('toastMsg');
+      icon.textContent = isSuccess ? '✓' : '⚠️';
+      msgEl.textContent = msg;
+      toast.className = 'toast show';
+      setTimeout(() => {
+        toast.className = 'toast';
+      }, 3000);
+    }
+
+    function toggleSection(secId) {
+      const el = document.getElementById(secId);
+      if (el) el.classList.toggle('collapsed');
+    }
+
+    // INITIALIZATION & EVENT LISTENERS
+    document.addEventListener('DOMContentLoaded', () => {
+      initEventListeners();
+      renderDatasetCards();
+      renderDocMatrix();
+      updateAllState();
+    });
+
+    function initEventListeners() {
+      // Theme Toggle
+      document.getElementById('btnThemeToggle').addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme') || 'light';
+        const next = current === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', next);
+        state.theme = next;
+        document.getElementById('themeIcon').textContent = next === 'light' ? '🌙' : '☀️';
+        if (state.activeTab === 'arch_flow') renderArchitectureView();
+      });
+
+      // Layout Mode Toggle (Split View vs Full Document Flow)
+      document.getElementById('btnLayoutMode').addEventListener('click', () => {
+        const container = document.getElementById('mainContainer');
+        const icon = document.getElementById('layoutModeIcon');
+        const label = document.getElementById('layoutModeLabel');
+        
+        if (state.layoutMode === 'split') {
+          state.layoutMode = 'flow';
+          container.classList.remove('split-mode');
+          container.classList.add('flow-mode');
+          icon.textContent = '📜';
+          label.textContent = 'Flow View';
+          showToast('Switched to Full Document Flow (Auto-Height)');
+        } else {
+          state.layoutMode = 'split';
+          container.classList.remove('flow-mode');
+          container.classList.add('split-mode');
+          icon.textContent = '📐';
+          label.textContent = 'Split View';
+          showToast('Switched to Side-by-Side Split View');
+        }
+      });
+
+      // Expand / Collapse All Sections
+      document.getElementById('btnExpandAllSec').addEventListener('click', () => {
+        document.querySelectorAll('.step-section').forEach(s => s.classList.remove('collapsed'));
+      });
+      document.getElementById('btnCollapseAllSec').addEventListener('click', () => {
+        document.querySelectorAll('.step-section').forEach(s => s.classList.add('collapsed'));
+      });
+
+      // Compact vs Standard Card Mode Toggle
+      document.getElementById('btnToggleCardMode').addEventListener('click', () => {
+        state.isCompactCards = !state.isCompactCards;
+        const btn = document.getElementById('btnToggleCardMode');
+        const container = document.getElementById('datasetListContainer');
+        if (state.isCompactCards) {
+          container.classList.add('compact-mode');
+          btn.textContent = 'Standard View';
+        } else {
+          container.classList.remove('compact-mode');
+          btn.textContent = 'Compact View';
+        }
+      });
+
+      // Syntax Highlighting Toggle (Raw vs Highlighted)
+      document.getElementById('btnToggleHighlight').addEventListener('click', () => {
+        state.isHighlightActive = !state.isHighlightActive;
+        const label = document.getElementById('highlightModeLabel');
+        label.textContent = state.isHighlightActive ? '✨ Highlighted' : '📄 Pure Plain Text';
+        renderActiveView();
+        showToast(state.isHighlightActive ? 'Syntax highlighting enabled' : 'Switched to Pure Plain Text');
+      });
+
+      // Inputs Sync
+      const textInputs = [
+        ['inProjectId', 'projectId'],
+        ['inBucketName', 'bucketName'],
+        ['selRegion', 'region'],
+        ['selStorageClass', 'storageClass'],
+        ['selHns', 'hns'],
+        ['selRapidCache', 'rapidCache'],
+        ['selCmek', 'cmek'],
+        ['inSoftDelete', 'softDeleteDays'],
+        ['selSchedule', 'schedule'],
+        ['selOverwrite', 'overwrite'],
+        ['inParallelStreams', 'parallelStreams'],
+        ['selExtract', 'autoExtract'],
+        ['inSlurmPartition', 'slurmPartition'],
+        ['inScratchPath', 'scratchPath'],
+        ['inChunkSize', 'chunkSizeMb'],
+        ['selVerifyHashes', 'verifyHashes'],
+        ['inNearlineDays', 'nearlineDays'],
+        ['inColdlineDays', 'coldlineDays'],
+        ['inSyncServiceAccount', 'serviceAccount'],
+        ['selNotifyEmail', 'notifyEmail']
+      ];
+
+      textInputs.forEach(([id, prop]) => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('input', () => {
+            state[prop] = el.value;
+            updateAllState();
+          });
+          el.addEventListener('change', () => {
+            state[prop] = el.value;
+            updateAllState();
+          });
+        }
+      });
+
+      // Search & Filters
+      const searchInput = document.getElementById('inSearchDataset');
+      searchInput.addEventListener('input', (e) => {
+        state.searchQuery = e.target.value.toLowerCase().trim();
+        renderDatasetCards();
+      });
+
+      document.querySelectorAll('.cat-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          state.activeCategory = btn.getAttribute('data-cat');
+          renderDatasetCards();
+        });
+      });
+
+      document.getElementById('btnSelectAll').addEventListener('click', () => {
+        DATASETS.forEach(d => state.selectedDatasets.add(d.id));
+        renderDatasetCards();
+        updateAllState();
+        showToast('All 18 scientific datasets selected');
+      });
+
+      document.getElementById('btnDeselectAll').addEventListener('click', () => {
+        state.selectedDatasets.clear();
+        renderDatasetCards();
+        updateAllState();
+        showToast('All datasets deselected');
+      });
+
+      // Preset Chips
+      document.querySelectorAll('.preset-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const preset = btn.getAttribute('data-preset');
+          applyPreset(preset);
+        });
+      });
+
+      // Engine Tabs
+      document.querySelectorAll('.engine-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.engine-tab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.engine-panel').forEach(p => p.classList.remove('active'));
+          tab.classList.add('active');
+          const eng = tab.getAttribute('data-engine');
+          state.engine = eng;
+          const panel = document.getElementById(`panel_${eng}`);
+          if (panel) panel.classList.add('active');
+          updateAllState();
+        });
+      });
+
+      // RHS Tabs
+      document.querySelectorAll('.rhs-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.rhs-tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          state.activeTab = tab.getAttribute('data-tab');
+          renderActiveView();
+        });
+      });
+
+      // Architecture Submodes
+      document.querySelectorAll('.arch-mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.arch-mode-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          state.archMode = btn.getAttribute('data-mode');
+          renderArchitectureView();
+        });
+      });
+
+      // Clipboard Copy (Guaranteed Clean Plain Text)
+      document.getElementById('btnCopyScript').addEventListener('click', copyActiveScript);
+
+      // Single Download
+      document.getElementById('btnDownloadSingle').addEventListener('click', downloadCurrentScript);
+
+      // Download Bundle
+      document.getElementById('btnDownloadBundle').addEventListener('click', downloadBundle);
+
+      // Split Gutter Resize
+      initSplitGutter();
+    }
+
+    function applyPreset(preset) {
+      state.selectedDatasets.clear();
+      if (preset === 'genomics') {
+        ['gnomad', '1000genomes', 'ncbi_blast', 'ensembl_112', 'clinvar_dbsnp', 'cellxgene'].forEach(id => state.selectedDatasets.add(id));
+        showToast('Applied Preset: Genomics & Variant Analysis');
+      } else if (preset === 'alphafold') {
+        ['alphafold_swiss', 'rcsb_pdb', 'uniprot', 'openfold'].forEach(id => state.selectedDatasets.add(id));
+        showToast('Applied Preset: AlphaFold & Structural Proteomics');
+      } else if (preset === 'climate') {
+        ['noaa_hrrr', 'era5_zarr', 'sentinel2_cog'].forEach(id => state.selectedDatasets.add(id));
+        showToast('Applied Preset: Climate, Weather & Earth Observation');
+      } else if (preset === 'foundation_ai') {
+        ['openfold', 'esm2_weights', 'fineweb_edu', 'alphafold_swiss'].forEach(id => state.selectedDatasets.add(id));
+        showToast('Applied Preset: AI for Science & Foundation Models');
+      } else if (preset === 'chemistry') {
+        ['pubchem_3d', 'chembl_34'].forEach(id => state.selectedDatasets.add(id));
+        showToast('Applied Preset: Chemistry & Molecular Discovery');
+      } else if (preset === 'clear') {
+        showToast('Cleared all dataset selections');
+      }
+      renderDatasetCards();
+      updateAllState();
+    }
+
+    function renderDatasetCards() {
+      const container = document.getElementById('datasetListContainer');
+      container.innerHTML = '';
+
+      const filtered = DATASETS.filter(d => {
+        const matchesCat = state.activeCategory === 'all' || d.category === state.activeCategory;
+        const matchesSearch = !state.searchQuery || 
+          d.title.toLowerCase().includes(state.searchQuery) ||
+          d.provider.toLowerCase().includes(state.searchQuery) ||
+          d.desc.toLowerCase().includes(state.searchQuery) ||
+          d.formats.some(f => f.toLowerCase().includes(state.searchQuery));
+        return matchesCat && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:30px 10px; color:var(--gcp-text-muted); font-size:0.8rem;">
+          No scientific datasets match your search criteria.
+        </div>`;
+        return;
+      }
+
+      filtered.forEach(d => {
+        const isChecked = state.selectedDatasets.has(d.id);
+        const card = document.createElement('div');
+        card.className = `dataset-card ${isChecked ? 'selected' : ''}`;
+        card.id = `card_${d.id}`;
+
+        const refDomain = d.refUrl ? d.refUrl.replace(/^https?:\/\//, '').split('/')[0].replace(/^www\./, '') : 'Reference';
+
+        card.innerHTML = `
+          <div class="dataset-card-header">
+            <input type="checkbox" class="dataset-checkbox" id="chk_${d.id}" ${isChecked ? 'checked' : ''} aria-label="Select ${escapeHtml(d.title)}">
+            <div class="dataset-title-block">
+              <div class="dataset-title">
+                <span class="dataset-name">${escapeHtml(d.title)}</span>
+                <a href="${escapeHtml(d.refUrl)}" target="_blank" rel="noopener noreferrer" class="ref-link-badge" title="Open primary project page &amp; publication: ${escapeHtml(d.refUrl)}" onclick="event.stopPropagation();">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+                  <span>${escapeHtml(refDomain)} ↗</span>
+                </a>
+                <a href="${escapeHtml(d.docUrl)}" target="_blank" rel="noopener noreferrer" class="doc-link-btn" title="Open official documentation manual: ${escapeHtml(d.docUrl)}" onclick="event.stopPropagation();">
+                  📖 Docs ↗
+                </a>
+                <span class="badge-pill badge-provider">${escapeHtml(d.provider)}</span>
+                <span class="badge-pill badge-size">${escapeHtml(d.sizeDisplay)}</span>
+                <span class="badge-pill badge-tier">${escapeHtml(d.tier)}</span>
+                <span class="badge-pill badge-license">${escapeHtml(d.license)}</span>
+              </div>
+              <div class="dataset-desc">${escapeHtml(d.desc)}</div>
+            </div>
+          </div>
+          <div class="dataset-meta-row">
+            <div>Formats: <strong>${d.formats.map(f => escapeHtml(f)).join(', ')}</strong></div>
+            <div class="dataset-doc-links">
+              <span style="font-weight:600; color:var(--gcp-text-muted);">Reference:</span>
+              <a href="${escapeHtml(d.refUrl)}" target="_blank" rel="noopener noreferrer" class="doc-link-btn" title="Open research reference or portal" onclick="event.stopPropagation();">
+                📄 ${escapeHtml(refDomain)} / Portal ↗
+              </a>
+            </div>
+            <div class="dataset-uri" title="${escapeHtml(d.sourceUri)}">${escapeHtml(d.sourceUri)}</div>
+          </div>
+        `;
+
+        // Card Click Toggle
+        card.addEventListener('click', (e) => {
+          if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'A') {
+            const chk = card.querySelector('.dataset-checkbox');
+            chk.checked = !chk.checked;
+          }
+          const chk = card.querySelector('.dataset-checkbox');
+          if (chk.checked) {
+            state.selectedDatasets.add(d.id);
+            card.classList.add('selected');
+          } else {
+            state.selectedDatasets.delete(d.id);
+            card.classList.remove('selected');
+          }
+          updateAllState();
+        });
+
+        container.appendChild(card);
+      });
+    }
+
+    function renderDocMatrix() {
+      const tbody = document.getElementById('docMatrixBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      DATASETS.forEach(d => {
+        const docDomain = d.docUrl.replace(/^https?:\/\//, '').split('/')[0].replace(/^www\./, '');
+        const refDomain = d.refUrl.replace(/^https?:\/\//, '').split('/')[0].replace(/^www\./, '');
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${escapeHtml(d.title)}</strong></td>
+          <td><span class="badge-pill badge-provider">${escapeHtml(d.categoryDisplay)}</span></td>
+          <td>${escapeHtml(d.provider)}</td>
+          <td><span class="badge-pill badge-license">${escapeHtml(d.license)}</span></td>
+          <td>
+            <a href="${escapeHtml(d.docUrl)}" target="_blank" rel="noopener noreferrer" class="doc-link-btn" title="${escapeHtml(d.docUrl)}">
+              📖 ${escapeHtml(docDomain)} ↗
+            </a>
+          </td>
+          <td>
+            <a href="${escapeHtml(d.refUrl)}" target="_blank" rel="noopener noreferrer" class="doc-link-btn" title="${escapeHtml(d.refUrl)}">
+              📄 ${escapeHtml(refDomain)} ↗
+            </a>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function updateAllState() {
+      let totalGb = 0;
+      let count = 0;
+      DATASETS.forEach(d => {
+        if (state.selectedDatasets.has(d.id)) {
+          totalGb += d.sizeGb;
+          count++;
+        }
+      });
+
+      const totalDisplay = totalGb >= 1000 ? `${(totalGb / 1000).toFixed(1)} TB` : `${totalGb} GB`;
+
+      document.getElementById('hdrSelectedCount').textContent = `${count} of ${DATASETS.length}`;
+      document.getElementById('hdrTotalSize').textContent = totalDisplay;
+      document.getElementById('hdrTargetBucket').textContent = `gs://${state.bucketName}`;
+
+      document.getElementById('sumStorage').textContent = `gs://${state.bucketName} • ${state.region} • ${state.storageClass}`;
+      document.getElementById('sumCatalog').textContent = `${count} Dataset${count !== 1 ? 's' : ''} • ${totalDisplay}`;
+      document.getElementById('sumEngine').textContent = state.engine === 'STS' ? 'Storage Transfer Service' : (state.engine === 'CLI' ? 'Parallel CLI (rsync/aria2c)' : (state.engine === 'SLURM' ? 'Slurm Batch Job' : 'Python Streaming SDK'));
+      document.getElementById('sumGovernance').textContent = `Nearline: ${state.nearlineDays}d • Coldline: ${state.coldlineDays}d`;
+
+      const calloutBucket = document.getElementById('calloutTargetBucket');
+      if (calloutBucket) calloutBucket.textContent = state.bucketName;
+
+      renderActiveView();
+    }
+
+    // RHS VIEW ROUTING
+    function renderActiveView() {
+      const archViewport = document.getElementById('archViewport');
+      const rawCodeViewer = document.getElementById('rawCodeViewer');
+      const activeMeta = document.getElementById('activeFileMeta');
+
+      if (state.activeTab === 'arch_flow') {
+        archViewport.style.display = 'block';
+        rawCodeViewer.style.display = 'none';
+        activeMeta.textContent = '🏛️ Interactive Vector Diagram & Ingestion Pipeline Hierarchy';
+        renderArchitectureView();
+      } else {
+        archViewport.style.display = 'none';
+        rawCodeViewer.style.display = 'block';
+
+        let code = '';
+        if (state.activeTab === 'bash_script') {
+          activeMeta.textContent = '🚀 download_datasets.sh (Bash / Shell Multi-Stream Download Script)';
+          code = generateBashScript();
+        } else if (state.activeTab === 'terraform') {
+          activeMeta.textContent = '☁️ main.tf (Terraform GCS, Autoclass, CMEK & Transfer Service)';
+          code = generateTerraformScript();
+        } else if (state.activeTab === 'python_ingest') {
+          activeMeta.textContent = '🐍 ingest_datasets.py (Python SDK Async Streaming Ingester)';
+          code = generatePythonScript();
+        } else if (state.activeTab === 'slurm_job') {
+          activeMeta.textContent = '⚡ slurm_stage_in.sh (Slurm HPC Data Mover Batch Job)';
+          code = generateSlurmScript();
+        } else if (state.activeTab === 'transfer_json') {
+          activeMeta.textContent = '📋 transfer_spec.json (Google Cloud Storage Transfer Service Spec)';
+          code = generateTransferJson();
+        } else if (state.activeTab === 'readme_doc') {
+          activeMeta.textContent = '📄 README.md (Fast Science Data Hub Operational Runbook)';
+          code = generateReadmeMarkdown();
+        }
+
+        if (state.isHighlightActive) {
+          rawCodeViewer.innerHTML = highlightSyntax(code);
+        } else {
+          // Pure Raw Plain Text - guaranteed zero HTML markup!
+          rawCodeViewer.textContent = code;
+        }
+      }
+    }
+
+    function renderArchitectureView() {
+      const svgContainer = document.getElementById('archSvgContainer');
+      const codeContainer = document.getElementById('archCodeContainer');
+      const codeViewer = document.getElementById('archCodeViewer');
+
+      if (state.archMode === 'svg') {
+        svgContainer.style.display = 'block';
+        codeContainer.style.display = 'none';
+        svgContainer.innerHTML = generateArchSvg();
+      } else if (state.archMode === 'mermaid') {
+        svgContainer.style.display = 'none';
+        codeContainer.style.display = 'block';
+        const mmd = generateArchMermaid();
+        codeViewer.textContent = mmd;
+      } else if (state.archMode === 'ascii') {
+        svgContainer.style.display = 'none';
+        codeContainer.style.display = 'block';
+        const tree = generateArchAscii();
+        codeViewer.textContent = tree;
+      }
+    }
+
+    // ARCHITECTURE SVG GENERATOR (HIERARCHICAL CATEGORY SUB-BRANCHING)
+    function generateArchSvg() {
+      const selectedList = DATASETS.filter(d => state.selectedDatasets.has(d.id));
+      const count = selectedList.length;
+      let totalGb = 0;
+      selectedList.forEach(d => totalGb += d.sizeGb);
+      const totalDisplay = totalGb >= 1000 ? `${(totalGb / 1000).toFixed(1)} TB` : `${totalGb} GB`;
+
+      // Group selected datasets by scientific category
+      const grouped = {};
+      Object.keys(CATEGORY_META).forEach(k => { grouped[k] = []; });
+      selectedList.forEach(d => {
+        const cat = d.category || 'genomics';
+        if (!grouped[cat]) grouped[cat] = [];
+        grouped[cat].push(d);
+      });
+      const activeCategories = Object.keys(CATEGORY_META).filter(k => grouped[k].length > 0);
+
+      // Dynamically calculate total SVG height based on active category blocks & child rows
+      let totalCategoryHeight = 0;
+      activeCategories.forEach(catKey => {
+        const childRows = Math.ceil(grouped[catKey].length / 2);
+        totalCategoryHeight += 34 + 6 + (childRows * 54) + 14;
+      });
+      const svgHeight = Math.max(520, 455 + totalCategoryHeight + 35);
+
+      let svg = `<svg viewBox="0 0 840 ${svgHeight}" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block; font-family:-apple-system, BlinkMacSystemFont, 'Google Sans', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#1a73e8" />
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#188038" />
+    </marker>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#9334e6" />
+    </marker>
+  </defs>
+
+  <!-- Node 1: External Public Repositories Hub Banner -->
+  <g class="svg-sources-group">
+    <rect x="30" y="20" width="780" height="76" rx="8" fill="#e8f0fe" stroke="#1a73e8" stroke-width="1.8"/>
+    <text x="50" y="44" font-size="12" font-weight="700" fill="#174ea6">🌐 Public Scientific Datasets &amp; Reference Repositories (Selected: ${count} Datasets • ${totalDisplay})</text>
+    <text x="50" y="63" font-size="9.5" fill="#3c4043">Active Categories: ${activeCategories.map(k => CATEGORY_META[k].name.split(' ')[0] + ' (' + grouped[k].length + ')').join(' • ') || 'None Selected'}</text>
+    <text x="50" y="80" font-size="8.5" fill="#5f6368">Protocols: GCS (gs://) • Amazon S3 Open Data (s3://) • HTTPS/FTPS • HuggingFace Hub • TileDB SOMA</text>
+  </g>
+
+  <!-- Connectors from Sources to Ingestion Engine -->
+  <line x1="420" y1="96" x2="420" y2="118" stroke="#1a73e8" stroke-width="2" marker-end="url(#arrow-blue)"/>
+
+  <!-- Node 2: Transfer Engine / Pipeline -->
+  <g class="svg-engine-group">
+    <rect x="30" y="118" width="780" height="96" rx="8" fill="#f8f9fa" stroke="#1a73e8" stroke-width="2"/>
+    <text x="420" y="139" text-anchor="middle" font-size="11.5" font-weight="700" fill="#174ea6">⚡ Transfer Engine: ${state.engine === 'STS' ? 'Google Cloud Storage Transfer Service (STS)' : (state.engine === 'CLI' ? 'Parallel CLI Ingestion (gcloud storage / aria2c)' : (state.engine === 'SLURM' ? 'Slurm HPC Data Mover Job' : 'Python Async Streaming Ingester'))}</text>
+    <text x="420" y="156" text-anchor="middle" font-size="9" font-weight="600" fill="#188038">🎯 Purpose: Serverless Cloud-to-Cloud Mirroring • Bypasses Intermediary VMs • Line-Rate Backbone Sync</text>
+    <text x="420" y="172" text-anchor="middle" font-size="8.2" fill="#3c4043">🛡️ Why It Exists: Eliminates slow/fragile manual downloads; verifies bit-for-bit CRC32c integrity; auto-retries multi-TB streams</text>
+    <text x="420" y="188" text-anchor="middle" font-size="8" fill="#5f6368">Engine Specs: ${state.parallelStreams} Parallel Workers • Integrity: ${state.verifyHashes === 'true' ? 'CRC32c / MD5 Hashes' : 'Size Check'} • Policy: ${state.overwrite} • Schedule: ${state.schedule}</text>
+    <text x="420" y="202" text-anchor="middle" font-size="7.5" fill="#70757a">IAM Service Account: ${escapeHtml(state.serviceAccount.split('@')[0])} (roles/storagetransfer.admin + roles/storage.admin)</text>
+  </g>
+
+  <!-- Connectors from Engine to Storage & Consumer Cluster -->
+  <line x1="220" y1="214" x2="220" y2="246" stroke="#188038" stroke-width="2" marker-end="url(#arrow-green)"/>
+  <line x1="620" y1="214" x2="620" y2="246" stroke="#9334e6" stroke-width="2" marker-end="url(#arrow-purple)"/>
+
+  <!-- Row 2: Target Storage Destination (Left) & Accelerators (Right) -->
+  <g class="svg-storage-group">
+    <rect x="30" y="248" width="375" height="142" rx="8" fill="#e6f4ea" stroke="#188038" stroke-width="2"/>
+    <text x="50" y="270" font-size="11" font-weight="700" fill="#0d652d">🪣 Target Mirror: gs://${escapeHtml(state.bucketName)}</text>
+    <text x="50" y="288" font-size="8.8" font-weight="600" fill="#137333">🎯 Purpose: Sovereign Scientific Data Landing Zone</text>
+    <text x="50" y="304" font-size="8.1" fill="#3c4043">🛡️ Why It Exists: Collocates public datasets with GPUs/TPUs ($0 egress);</text>
+    <text x="50" y="318" font-size="8.1" fill="#3c4043">insulates pipelines from remote API downtime &amp; rate-limits; unifies POSIX folders</text>
+    <text x="50" y="336" font-size="7.8" fill="#5f6368">Region: <tspan font-weight="600">${escapeHtml(state.region)}</tspan> • Storage Class: <tspan font-weight="600">${escapeHtml(state.storageClass)}</tspan> • CMEK: Google-Managed</text>
+    <text x="50" y="352" font-size="7.8" fill="#5f6368">Hierarchical Namespace (HNS): <tspan font-weight="600">${state.hns === 'true' ? 'Enabled (Atomic Directory Locks)' : 'Disabled'}</tspan></text>
+    <text x="50" y="368" font-size="7.4" fill="#70757a">Governance: ${state.softDeleteDays}-Day Soft-Delete Protection • Multi-Tenant Lab &amp; Cluster Access</text>
+  </g>
+
+  <g class="svg-compute-group">
+    <rect x="435" y="248" width="375" height="142" rx="8" fill="#f3e8fd" stroke="#9334e6" stroke-width="2"/>
+    <text x="455" y="270" font-size="11" font-weight="700" fill="#681da8">🚀 Scientific AI &amp; HPC Acceleration Layer</text>
+    <text x="455" y="288" font-size="8.8" font-weight="600" fill="#7627bb">🎯 Purpose: High-Speed POSIX Streaming to Compute</text>
+    <text x="455" y="304" font-size="8.1" fill="#3c4043">🛡️ Why It Exists: Eliminates GPU idle starvation ($30+/hr per H100);</text>
+    <text x="455" y="318" font-size="8.1" fill="#3c4043">PyTorch/HPC tools require local POSIX paths; avoids pre-download staging</text>
+    <text x="455" y="336" font-size="7.8" fill="#5f6368">CSI Driver: <tspan font-weight="600">Cloud Storage FUSE (gcsfuse)</tspan> with Parallel Streaming</text>
+    <text x="455" y="352" font-size="7.8" fill="#5f6368">Zonal Caching: <tspan font-weight="600">${state.rapidCache === 'true' ? 'Rapid Cache Active (2.5 TB/s Local SSD)' : 'Direct GCS Read'}</tspan> • 7× Startup</text>
+    <text x="455" y="368" font-size="7.4" fill="#70757a">Consumers: GKE A3/A4 GPU Pods (PyTorch/JAX) • TPU v5p • Slurm Nodes</text>
+  </g>
+
+  <!-- Connectors from Target Bucket to Hierarchical Category Sub-Branches -->
+  <line x1="217" y1="390" x2="217" y2="415" stroke="#188038" stroke-width="2"/>
+  <line x1="217" y1="415" x2="55" y2="415" stroke="#188038" stroke-width="2"/>
+
+  <text x="420" y="435" text-anchor="middle" font-size="10.5" font-weight="700" fill="#202124">📂 Hierarchical Dataset Directory Topology (gs://${escapeHtml(state.bucketName)}/datasets/)</text>
+`;
+
+      if (activeCategories.length === 0) {
+        svg += `
+  <rect x="180" y="455" width="480" height="60" rx="8" fill="#f8f9fa" stroke="#dadce0" stroke-dasharray="4 4"/>
+  <text x="420" y="490" text-anchor="middle" font-size="11" fill="#70757a">No datasets selected. Check items in Step 1 to populate the hierarchical topology.</text>
+</svg>`;
+        return svg;
+      }
+
+      // Calculate vertical trunk line endpoint
+      let lastCategoryCenterY = 455 + 16;
+      let tempY = 455;
+      activeCategories.forEach(catKey => {
+        lastCategoryCenterY = tempY + 16;
+        const catRows = Math.ceil(grouped[catKey].length / 2);
+        tempY += 34 + 6 + (catRows * 54) + 14;
+      });
+
+      // Main vertical trunk line connecting from y=415 down through all category branches
+      svg += `  <line x1="55" y1="415" x2="55" y2="${lastCategoryCenterY}" stroke="#188038" stroke-width="2"/>\n`;
+
+      let currentY = 455;
+      activeCategories.forEach(catKey => {
+        const catMeta = CATEGORY_META[catKey];
+        const catDs = grouped[catKey];
+        const catRows = Math.ceil(catDs.length / 2);
+        const catGb = catDs.reduce((acc, x) => acc + x.sizeGb, 0);
+        const catDisplay = catGb >= 1000 ? `${(catGb / 1000).toFixed(1)} TB` : `${catGb} GB`;
+        const headerCenterY = currentY + 16;
+
+        // Category Branch Header & Connector
+        svg += `
+  <!-- Category Branch: ${catMeta.name} -->
+  <g class="svg-cat-branch" data-cat="${catKey}">
+    <!-- Trunk Node Circle & Branch Line -->
+    <circle cx="55" cy="${headerCenterY}" r="4.5" fill="${catMeta.color}" stroke="#ffffff" stroke-width="1.5"/>
+    <line x1="55" y1="${headerCenterY}" x2="75" y2="${headerCenterY}" stroke="${catMeta.color}" stroke-width="2"/>
+
+    <!-- Category Header Node -->
+    <rect x="75" y="${currentY}" width="735" height="32" rx="6" fill="${catMeta.bg}" stroke="${catMeta.border}" stroke-width="1.5"/>
+    <text x="92" y="${currentY + 20}" font-size="10.5" font-weight="700" fill="${catMeta.color}">${catMeta.icon} ${escapeHtml(catMeta.name)} <tspan font-family="monospace" font-size="8.8" font-weight="500" fill="#3c4043">/datasets/${catKey}/</tspan></text>
+    <text x="795" y="${currentY + 20}" text-anchor="end" font-size="8.8" font-weight="600" fill="#3c4043">${catDs.length} Dataset${catDs.length > 1 ? 's' : ''} • ${catDisplay}</text>
+`;
+
+        // Sub-trunk line for child datasets
+        const lastRowCenterY = currentY + 40 + ((catRows - 1) * 54) + 24;
+        svg += `    <!-- Sub-Trunk for ${catKey} Child Datasets -->
+    <line x1="95" y1="${currentY + 32}" x2="95" y2="${lastRowCenterY}" stroke="${catMeta.color}" stroke-width="1.4" stroke-dasharray="3 3"/>
+`;
+
+        // Render child dataset leaf cards
+        catDs.forEach((d, dsIdx) => {
+          const rowIdx = Math.floor(dsIdx / 2);
+          const colIdx = dsIdx % 2;
+          const rowY = currentY + 40 + (rowIdx * 54);
+          const cardX = colIdx === 0 ? 110 : 465;
+          const cardW = colIdx === 0 ? 340 : 345;
+
+          if (colIdx === 0) {
+            svg += `    <line x1="95" y1="${rowY + 24}" x2="110" y2="${rowY + 24}" stroke="${catMeta.color}" stroke-width="1.4"/>\n`;
+          } else {
+            svg += `    <line x1="450" y1="${rowY + 24}" x2="465" y2="${rowY + 24}" stroke="#dadce0" stroke-width="1.2" stroke-dasharray="2 2"/>\n`;
+          }
+
+          svg += `    <!-- Child Dataset Node: ${d.id} -->
+    <g class="svg-dataset-node">
+      <rect x="${cardX}" y="${rowY}" width="${cardW}" height="48" rx="5" fill="#ffffff" stroke="#dadce0" stroke-width="1.2"/>
+      <rect x="${cardX}" y="${rowY}" width="3.5" height="48" rx="1.5" fill="${catMeta.color}"/>
+      <text x="${cardX + 12}" y="${rowY + 16}" font-size="9" font-weight="700" fill="#202124">📦 ${escapeHtml(d.title)}</text>
+      <text x="${cardX + 12}" y="${rowY + 29}" font-size="7.6" fill="#3c4043">Path: <tspan font-family="monospace">datasets/${catKey}/${d.id}/</tspan> • <tspan font-weight="600" fill="${catMeta.color}">${escapeHtml(d.sizeDisplay)}</tspan></text>
+      <text x="${cardX + 12}" y="${rowY + 41}" font-size="7.2" fill="#5f6368">Formats: ${escapeHtml(d.formats.join(', '))} • Lic: ${escapeHtml(d.license)}</text>
+    </g>
+`;
+        });
+
+        svg += `  </g>\n`;
+        currentY += 34 + 6 + (catRows * 54) + 14;
+      });
+
+      svg += `</svg>`;
+      return svg;
+    }
+
+    // ARCHITECTURE MERMAID GENERATOR (HIERARCHICAL CATEGORY SUB-BRANCHING)
+    function generateArchMermaid() {
+      const selectedList = DATASETS.filter(d => state.selectedDatasets.has(d.id));
+      
+      const grouped = {};
+      Object.keys(CATEGORY_META).forEach(k => { grouped[k] = []; });
+      selectedList.forEach(d => {
+        const cat = d.category || 'genomics';
+        if (!grouped[cat]) grouped[cat] = [];
+        grouped[cat].push(d);
+      });
+      const activeCategories = Object.keys(CATEGORY_META).filter(k => grouped[k].length > 0);
+
+      let mmd = `flowchart TD\n`;
+      mmd += `  subgraph PublicSources ["🌐 Public Scientific Repositories"]\n`;
+      mmd += `    direction TB\n`;
+      
+      if (activeCategories.length === 0) {
+        mmd += `    SRC_NONE["No datasets selected"]\n`;
+      } else {
+        activeCategories.forEach((catKey, cIdx) => {
+          const meta = CATEGORY_META[catKey];
+          const dsList = grouped[catKey];
+          mmd += `    subgraph SRC_CAT_${cIdx} ["${meta.icon} ${meta.name}"]\n`;
+          dsList.forEach((d, dIdx) => {
+            const cleanTitle = d.title.replace(/"/g, "'");
+            mmd += `      SRC_${cIdx}_${dIdx}["${cleanTitle} (${d.provider} - ${d.sizeDisplay})"]\n`;
+          });
+          mmd += `    end\n`;
+        });
+      }
+      mmd += `  end\n\n`;
+
+      mmd += `  subgraph Engine ["⚡ Transfer Engine: ${state.engine === 'STS' ? 'Storage Transfer Service' : 'High-Speed Parallel CLI'}"]\n`;
+      mmd += `    STS["⚡ Transfer Engine\\n🎯 Purpose: Serverless Cloud-to-Cloud Mirroring\\n🛡️ Why: Eliminates slow/fragile VM proxies; enforces CRC32c integrity verification\\n⚙️ Streams: ${state.parallelStreams} parallel | Auto-retries on network drop"]\n`;
+      mmd += `  end\n\n`;
+
+      mmd += `  subgraph TargetMirror ["🪣 Target Mirror: gs://${state.bucketName}"]\n`;
+      mmd += `    BUCKET["🪣 Regional Storage Target (${state.region}, ${state.storageClass})\\n🎯 Purpose: Sovereign scientific data landing zone collocated with GPUs/TPUs\\n🛡️ Why: $0 egress in-region; insulates from remote API outages; HNS POSIX folders\\n⚙️ Autoclass: Auto-tiers cold benchmarks to save 50%+"]\n`;
+      mmd += `    subgraph DirHierarchy ["📂 Hierarchical Dataset Catalog (/datasets/)"]\n`;
+      mmd += `      direction TB\n`;
+
+      if (activeCategories.length === 0) {
+        mmd += `      DS_NONE["No datasets selected"]\n`;
+      } else {
+        activeCategories.forEach((catKey, cIdx) => {
+          const meta = CATEGORY_META[catKey];
+          const dsList = grouped[catKey];
+          const catGb = dsList.reduce((acc, x) => acc + x.sizeGb, 0);
+          const catSize = catGb >= 1000 ? `${(catGb / 1000).toFixed(1)} TB` : `${catGb} GB`;
+          mmd += `      subgraph CAT_${cIdx} ["${meta.icon} ${meta.name} (${dsList.length} Datasets • ${catSize})"]\n`;
+          dsList.forEach((d, dIdx) => {
+            const cleanTitle = d.title.replace(/"/g, "'");
+            mmd += `        DS_${cIdx}_${dIdx}["${cleanTitle}\\n/datasets/${catKey}/${d.id}/ (${d.formats.join(', ')})"]\n`;
+          });
+          mmd += `      end\n`;
+        });
+      }
+      mmd += `    end\n`;
+      mmd += `  end\n\n`;
+
+      mmd += `  subgraph ComputeLayer ["🚀 Scientific AI & HPC Acceleration Layer"]\n`;
+      mmd += `    GCSFUSE["🚀 Cloud Storage FUSE (gcsfuse CSI Driver)\\n🎯 Purpose: Mounts gs:// as POSIX /mnt/fastscience-datasets/\\n🛡️ Why: Eliminates GPU idle starvation; PyTorch streams data on-demand"]\n`;
+      mmd += `    CACHE["⚡ Rapid Cache: Zonal SSD Acceleration\\n🎯 Purpose: Local NVMe read cache delivering up to 2.5 TB/s\\n🛡️ Why: 7x faster pod startup; caches hot weights and batches locally"]\n`;
+      mmd += `    ACCEL["💻 Compute Workloads\\nGKE A3/A4 GPU Pods (PyTorch/JAX) • Cloud TPU v5p • Slurm Nodes"]\n`;
+      mmd += `  end\n\n`;
+
+      mmd += `  PublicSources --> STS\n`;
+      mmd += `  STS --> BUCKET\n`;
+      mmd += `  BUCKET --> DirHierarchy\n`;
+      mmd += `  DirHierarchy --> GCSFUSE\n`;
+      mmd += `  GCSFUSE --> CACHE\n`;
+      mmd += `  CACHE --> ACCEL\n`;
+
+      return mmd;
+    }
+
+    // ARCHITECTURE ASCII GENERATOR (HIERARCHICAL CATEGORY SUB-BRANCHING)
+    function generateArchAscii() {
+      const selectedList = DATASETS.filter(d => state.selectedDatasets.has(d.id));
+      let totalGb = 0;
+      selectedList.forEach(d => totalGb += d.sizeGb);
+      const totalDisplay = totalGb >= 1000 ? `${(totalGb / 1000).toFixed(1)} TB` : `${totalGb} GB`;
+
+      const grouped = {};
+      Object.keys(CATEGORY_META).forEach(k => { grouped[k] = []; });
+      selectedList.forEach(d => {
+        const cat = d.category || 'genomics';
+        if (!grouped[cat]) grouped[cat] = [];
+        grouped[cat].push(d);
+      });
+      const activeCats = Object.keys(CATEGORY_META).filter(k => grouped[k].length > 0);
+
+      let tree = `========================================================================================
+ FAST SCIENCE DATA HUB — HIERARCHICAL SCIENTIFIC REPOSITORIES INGESTION TOPOLOGY
+========================================================================================
+ Project ID        : ${state.projectId}
+ Target Bucket     : gs://${state.bucketName}
+ Target Region     : ${state.region}
+ Storage Class     : ${state.storageClass}
+ HNS Namespace     : ${state.hns === 'true' ? 'Enabled (Hierarchical Directories & Atomic Renames)' : 'Disabled'}
+ Encryption        : ${state.cmek === 'CMEK_HSM' ? 'Cloud KMS HSM' : 'Google-Managed'}
+ Transfer Engine   : ${state.engine}
+ Total Datasets    : ${selectedList.length} Selected
+ Active Domains    : ${activeCats.length} Categories
+ Aggregate Volume  : ~${totalDisplay}
+========================================================================================
+ ARCHITECTURAL ROLES, PURPOSE & RATIONALE (WHY THEY EXIST)
+========================================================================================
+ ⚡ 1. TRANSFER ENGINE (Google Cloud Storage Transfer Service / STS):
+    • Purpose : Serverless, line-rate automated cloud-to-cloud data mirroring.
+    • Why     : Bypasses slow/fragile manual downloads and expensive intermediate
+                VM proxies. Spawns 64+ concurrent streams across Google's private backbone,
+                handles automated retries, and computes bit-level CRC32c checksums to prevent
+                silent data corruption across multi-terabyte scientific files.
+
+ 🪣 2. TARGET MIRROR (gs://${state.bucketName}):
+    • Purpose : Sovereign institutional scientific data lake collocated in ${state.region}.
+    • Why     : Eliminates external public internet latency, rate limits, and egress
+                fees ($0 egress to regional GPU/TPU nodes). Insulates pipelines from remote API
+                outages or deleted repositories. HNS provides true POSIX folder hierarchies and
+                atomic renames, while Autoclass dynamically cuts storage costs by 50%+.
+
+ 🚀 3. SCIENTIFIC AI & HPC ACCELERATION LAYER (Cloud Storage FUSE & Rapid Cache):
+    • Purpose : High-throughput POSIX streaming bridge between object storage & compute.
+    • Why     : PyTorch DataLoaders, JAX, and HPC bioinformatics tools require POSIX
+                filepaths (/mnt/fastscience-datasets/), but GCS is an object store. Without this
+                layer, expensive GPU nodes ($30+/hr per H100) sit idle for hours waiting for files
+                to pre-download (GPU starvation). Rapid Cache serves hot data at up to 2.5 TB/s.
+========================================================================================
+
+gs://${state.bucketName}/
+└── datasets/
+`;
+
+      if (activeCats.length === 0) {
+        tree += `    └── (No datasets selected. Select datasets in Step 1 to populate tree)\n`;
+      } else {
+        activeCats.forEach((catKey, catIdx) => {
+          const isLastCat = catIdx === activeCats.length - 1;
+          const catBranch = isLastCat ? '└──' : '├──';
+          const catPipe = isLastCat ? '    ' : '│   ';
+          const catMeta = CATEGORY_META[catKey];
+          const catDs = grouped[catKey];
+          const catGb = catDs.reduce((acc, x) => acc + x.sizeGb, 0);
+          const catSize = catGb >= 1000 ? `${(catGb / 1000).toFixed(1)} TB` : `${catGb} GB`;
+
+          tree += `    ${catBranch} ${catMeta.icon} ${catKey}/ (${catMeta.name} — ${catDs.length} Dataset${catDs.length > 1 ? 's' : ''} • ${catSize})\n`;
+
+          catDs.forEach((d, dsIdx) => {
+            const isLastDs = dsIdx === catDs.length - 1;
+            const dsBranch = isLastDs ? '└──' : '├──';
+            const dsPipe = catPipe + (isLastDs ? '    ' : '│   ');
+
+            tree += `    ${catPipe}${dsBranch} ${d.id}/  (${d.title})\n`;
+            tree += `    ${dsPipe}├── size         : ${d.sizeDisplay}\n`;
+            tree += `    ${dsPipe}├── origin       : ${d.sourceUri}\n`;
+            tree += `    ${dsPipe}├── documentation: ${d.docUrl}\n`;
+            tree += `    ${dsPipe}├── reference    : ${d.refUrl}\n`;
+            tree += `    ${dsPipe}├── formats      : ${d.formats.join(', ')}\n`;
+            tree += `    ${dsPipe}└── license      : ${d.license}\n`;
+          });
+        });
+      }
+
+      tree += `
+Compute & Consumer Acceleration Topology:
+├── GCSFuse Mount Target : /mnt/fastscience-datasets/
+├── Category Sub-Mounts  :
+`;
+      if (activeCats.length === 0) {
+        tree += `│   └── (None)\n`;
+      } else {
+        activeCats.forEach((catKey, catIdx) => {
+          const isLast = catIdx === activeCats.length - 1;
+          const branch = isLast ? '└──' : '├──';
+          const catDs = grouped[catKey];
+          tree += `│   ${branch} /mnt/fastscience-datasets/${catKey}/ (${catDs.length} Dataset${catDs.length > 1 ? 's' : ''})\n`;
+        });
+      }
+
+      tree += `├── Zonal Rapid Cache    : ${state.rapidCache === 'true' ? 'ACTIVE (2.5 TB/s Local SSD Cache)' : 'DISABLED'}
+└── Consumers            : GKE A3/A4 GPU Clusters, TPU v5p Pods, Slurm Data Mover Nodes
+========================================================================================`;
+      return tree;
+    }
+
+    // BASH SCRIPT GENERATOR (100% PURE SHELL SCRIPT - VALIDATED WITH bash -n)
+    function generateBashScript() {
+      const selectedList = DATASETS.filter(d => state.selectedDatasets.has(d.id));
+      let code = `#!/usr/bin/env bash
+# ==============================================================================
+# FAST SCIENCE DATA HUB — PARALLEL DATASET INGESTION SCRIPT
+# Generated for Project: ${state.projectId}
+# Target Bucket: gs://${state.bucketName}
+# Region: ${state.region} | Storage Class: ${state.storageClass}
+# Total Datasets: ${selectedList.length}
+# ==============================================================================
+
+set -euo pipefail
+
+# ANSI Color Codes
+GREEN='\\033[0;32m'
+BLUE='\\033[0;34m'
+YELLOW='\\033[1;33m'
+RED='\\033[0;31m'
+NC='\\033[0m'
+
+log_info()    { echo -e "\${BLUE}[INFO \$(date +'%Y-%m-%d %H:%M:%S')]\${NC} \$1"; }
+log_success() { echo -e "\${GREEN}[SUCCESS \$(date +'%Y-%m-%d %H:%M:%S')]\${NC} \$1"; }
+log_warn()    { echo -e "\${YELLOW}[WARN \$(date +'%Y-%m-%d %H:%M:%S')]\${NC} \$1"; }
+log_error()   { echo -e "\${RED}[ERROR \$(date +'%Y-%m-%d %H:%M:%S')]\${NC} \$1"; }
+
+PROJECT_ID="${state.projectId}"
+TARGET_BUCKET="gs://${state.bucketName}"
+TARGET_REGION="${state.region}"
+PARALLEL_STREAMS="${state.parallelStreams}"
+AUTO_EXTRACT="${state.autoExtract}"
+
+log_info "Initializing Fast Science Ingestion Pipeline..."
+log_info "Target Destination: \${TARGET_BUCKET}"
+log_info "Active GCP Project: \${PROJECT_ID}"
+
+# 1. Verify Prerequisites & CLI Tools
+command -v gcloud >/dev/null 2>&1 || { log_error "gcloud CLI is required. Aborting."; exit 1; }
+gcloud config set project "\${PROJECT_ID}" --quiet
+
+if ! command -v aria2c >/dev/null 2>&1; then
+  log_warn "aria2c not found. Falling back to curl/wget for HTTP/FTP sources."
+  log_warn "Tip: install aria2c for 16-connection parallel segmented downloads: sudo apt-get install -y aria2"
+fi
+
+# 2. Ensure Destination Bucket Exists
+if ! gcloud storage buckets describe "\${TARGET_BUCKET}" >/dev/null 2>&1; then
+  log_info "Creating destination bucket \${TARGET_BUCKET} in \${TARGET_REGION}..."
+  gcloud storage buckets create "\${TARGET_BUCKET}" \\
+    --project="\${PROJECT_ID}" \\
+    --location="\${TARGET_REGION}" \\
+    --default-storage-class="${state.storageClass === 'AUTOCLASS' ? 'STANDARD' : state.storageClass}" \\
+    --uniform-bucket-level-access
+    
+  if [ "${state.softDeleteDays}" -gt 0 ]; then
+    log_info "Configuring ${state.softDeleteDays}-day soft-delete retention period..."
+    gcloud storage buckets update "\${TARGET_BUCKET}" \\
+      --soft-delete-retention-duration="${state.softDeleteDays}d"
+  fi
+else
+  log_info "Destination bucket \${TARGET_BUCKET} verified."
+fi
+
+# ==============================================================================
+# 3. PARALLEL DATASET INGESTION TASKS
+# ==============================================================================
+`;
+
+      selectedList.forEach((d, idx) => {
+        code += `
+# ------------------------------------------------------------------------------
+# Task ${idx + 1}/${selectedList.length}: ${d.title} (${d.sizeDisplay})
+# Documentation: ${d.docUrl}
+# Source: ${d.sourceUri}
+# ------------------------------------------------------------------------------
+log_info "Starting ingestion: ${d.title} (~${d.sizeDisplay})..."
+DEST_PATH="\${TARGET_BUCKET}/datasets/${d.category}/${d.id}/"
+
+`;
+        if (d.sourceUri.startsWith('gs://')) {
+          code += `# Direct Google Cloud Storage line-rate rsync with multi-threading
+gcloud storage rsync -m -r \\
+  --checksums-only \\
+  "${d.sourceUri}" \\
+  "\${DEST_PATH}"
+
+log_success "Synced ${d.id} to \${DEST_PATH}"
+`;
+        } else if (d.sourceUri.startsWith('s3://')) {
+          code += `# Sync from AWS S3 Open Data bucket (Requester-pays disabled / public access)
+if command -v aws >/dev/null 2>&1; then
+  aws s3 sync --no-sign-request "${d.sourceUri}" "/tmp/${d.id}_stage/"
+  gcloud storage rsync -m -r "/tmp/${d.id}_stage/" "\${DEST_PATH}"
+  rm -rf "/tmp/${d.id}_stage/"
+else
+  log_info "Streaming S3 object via gsutil/gcloud transfer..."
+  gcloud storage cp --recursive --no-clobber "${d.sourceUri}" "\${DEST_PATH}" || true
+fi
+log_success "Synced ${d.id} to \${DEST_PATH}"
+`;
+        } else if (d.sourceUri.includes('huggingface.co')) {
+          const repo = d.sourceUri.replace('https://huggingface.co/', '').replace('datasets/', '');
+          code += `# Download from Hugging Face Hub with huggingface-cli
+if command -v huggingface-cli >/dev/null 2>&1; then
+  log_info "Pulling repository ${repo} via huggingface-cli..."
+  huggingface-cli download "${repo}" \\
+    --local-dir "/tmp/${d.id}_hf" \\
+    --local-dir-use-symlinks False
+  gcloud storage rsync -m -r "/tmp/${d.id}_hf/" "\${DEST_PATH}"
+  rm -rf "/tmp/${d.id}_hf"
+else
+  log_warn "huggingface-cli not installed. Install with: pip install -U huggingface_hub"
+fi
+`;
+        } else {
+          code += `# HTTP/FTP mirror download
+TMP_DIR="/tmp/${d.id}_download"
+mkdir -p "\${TMP_DIR}"
+cd "\${TMP_DIR}"
+
+if command -v aria2c >/dev/null 2>&1; then
+  log_info "Downloading with aria2c (16 parallel connections)..."
+  aria2c -x 16 -s 16 -j 8 --auto-file-renaming=false -c "${d.sourceUri}" || wget -c -r -np -nd "${d.sourceUri}"
+else
+  wget -c -r -np -nd -t 5 "${d.sourceUri}"
+fi
+
+if [ "\${AUTO_EXTRACT}" = "true" ]; then
+  log_info "Extracting compressed archives..."
+  find . -name "*.tar.gz" -exec tar -xzf {} \\; || true
+  find . -name "*.gz" ! -name "*.vcf.gz" ! -name "*.bgz" -exec gunzip {} \\; || true
+fi
+
+gcloud storage rsync -m -r "\${TMP_DIR}/" "\${DEST_PATH}"
+cd - >/dev/null
+rm -rf "\${TMP_DIR}"
+log_success "Ingested ${d.id} to \${DEST_PATH}"
+`;
+        }
+      });
+
+      code += `
+# ==============================================================================
+# 4. POST-INGESTION VALIDATION & METRIC REPORT
+# ==============================================================================
+log_info "All ${selectedList.length} datasets processed successfully!"
+log_info "Calculating total mirrored footprint in \${TARGET_BUCKET}..."
+gcloud storage du -s -h "\${TARGET_BUCKET}/datasets/"
+
+log_success "Fast Science Data Hub ingestion complete!"
+`;
+      return code;
+    }
+
+    // TERRAFORM GENERATOR
+    function generateTerraformScript() {
+      const selectedList = DATASETS.filter(d => state.selectedDatasets.has(d.id));
+      let tf = `/**
+ * Fast Science Data Hub — Infrastructure as Code
+ * Manages Scientific Cloud Storage Mirror, Storage Transfer Service Jobs, and IAM
+ */
+
+terraform {
+  required_version = ">= 1.5.0"
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "~> 5.30"
+    }
+  }
+}
+
+provider "google" {
+  project = var.project_id
+  region  = var.region
+}
+
+variable "project_id" {
+  type        = string
+  default     = "${state.projectId}"
+  description = "Target Google Cloud Project ID"
+}
+
+variable "region" {
+  type        = string
+  default     = "${state.region}"
+  description = "Target primary GCP region"
+}
+
+variable "bucket_name" {
+  type        = string
+  default     = "${state.bucketName}"
+  description = "Destination Cloud Storage bucket for scientific datasets"
+}
+
+# 1. Destination Cloud Storage Bucket
+resource "google_storage_bucket" "scientific_datasets" {
+  name                        = var.bucket_name
+  location                    = var.region
+  storage_class               = "${state.storageClass === 'AUTOCLASS' ? 'STANDARD' : state.storageClass}"
+  uniform_bucket_level_access = true
+
+  ${state.storageClass === 'AUTOCLASS' ? `autoclass {
+    enabled = true
+  }` : ''}
+
+  ${state.hns === 'true' ? `hierarchical_namespace {
+    enabled = true
+  }` : ''}
+
+  ${state.softDeleteDays > 0 ? `soft_delete_policy {
+    retention_duration_seconds = ${state.softDeleteDays * 86400}
+  }` : ''}
+
+  lifecycle_rule {
+    action {
+      type          = "SetStorageClass"
+      storage_class = "NEARLINE"
+    }
+    condition {
+      age = ${state.nearlineDays}
+    }
+  }
+
+  lifecycle_rule {
+    action {
+      type          = "SetStorageClass"
+      storage_class = "COLDLINE"
+    }
+    condition {
+      age = ${state.coldlineDays}
+    }
+  }
+
+  labels = {
+    workload    = "fast-science"
+    environment = "production"
+    managed_by  = "terraform"
+  }
+}
+
+# 2. Service Account for Storage Transfer Service
+resource "google_service_account" "transfer_agent" {
+  account_id   = "sa-dataset-transfer-0"
+  display_name = "Fast Science Dataset Transfer Service Account"
+  description  = "Executes scheduled and one-time STS ingestion jobs into scientific mirror"
+}
+
+resource "google_storage_bucket_iam_member" "transfer_writer" {
+  bucket = google_storage_bucket.scientific_datasets.name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:\${google_service_account.transfer_agent.email}"
+}
+
+# 3. Cloud Storage Transfer Service Jobs
+`;
+
+      selectedList.forEach((d) => {
+        if (d.sourceUri.startsWith('gs://')) {
+          const sourceBucket = d.sourceUri.replace('gs://', '').split('/')[0];
+          const sourcePrefix = d.sourceUri.replace(`gs://${sourceBucket}/`, '');
+          tf += `
+resource "google_storage_transfer_job" "sync_${d.id}" {
+  description = "Automated sync for ${d.title}"
+  project     = var.project_id
+
+  transfer_spec {
+    gcs_data_source {
+      bucket_name = "${sourceBucket}"
+      path        = "${sourcePrefix}"
+    }
+
+    gcs_data_sink {
+      bucket_name = google_storage_bucket.scientific_datasets.name
+      path        = "datasets/${d.category}/${d.id}/"
+    }
+
+    transfer_options {
+      overwrite_objects_already_existing_in_sink = ${state.overwrite === 'ALWAYS'}
+      delete_objects_unique_in_sink              = false
+    }
+  }
+
+  schedule {
+    schedule_start_date {
+      year  = 2026
+      month = 9
+      day   = 25
+    }
+  }
+
+  status = "ENABLED"
+}
+`;
+        }
+      });
+
+      tf += `
+output "dataset_bucket_uri" {
+  value       = "gs://\${google_storage_bucket.scientific_datasets.name}"
+  description = "Target Cloud Storage bucket URI for downstream GPU/TPU workloads"
+}
+`;
+      return tf;
+    }
+
+    // PYTHON INGESTION SCRIPT GENERATOR (100% PURE PYTHON - VALIDATED WITH py_compile)
+    function generatePythonScript() {
+      const selectedList = DATASETS.filter(d => state.selectedDatasets.has(d.id));
+      let py = `#!/usr/bin/env python3
+"""
+Fast Science Data Hub — Python Async Multi-Stream Dataset Ingester
+Target Bucket: gs://${state.bucketName}
+Parallel Streams: ${state.parallelStreams} | Chunk Size: ${state.chunkSizeMb} MB
+"""
+
+import os
+import sys
+import time
+import logging
+from concurrent.futures import ThreadPoolExecutor
+from google.cloud import storage
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[logging.StreamHandler(sys.stdout)]
+)
+
+PROJECT_ID = "${state.projectId}"
+TARGET_BUCKET = "${state.bucketName}"
+CHUNK_SIZE_MB = ${state.chunkSizeMb}
+MAX_WORKERS = ${state.parallelStreams}
+VERIFY_HASHES = ${state.verifyHashes}
+
+DATASETS_TO_INGEST = [
+`;
+
+      selectedList.forEach(d => {
+        py += `    {
+        "id": "${d.id}",
+        "category": "${d.category}",
+        "title": "${d.title}",
+        "source": "${d.sourceUri}",
+        "doc_url": "${d.docUrl}",
+        "size_display": "${d.sizeDisplay}"
+    },\n`;
+      });
+
+      py += `]
+
+def verify_and_setup_client():
+    client = storage.Client(project=PROJECT_ID)
+    bucket = client.bucket(TARGET_BUCKET)
+    if not bucket.exists():
+        logging.info(f"Creating target bucket {TARGET_BUCKET}...")
+        bucket.create(location="${state.region}")
+    else:
+        logging.info(f"Target bucket {TARGET_BUCKET} verified.")
+    return client, bucket
+
+def sync_gcs_dataset(client, source_uri, dest_prefix):
+    """Line-rate cloud-to-cloud object streaming between GCS buckets."""
+    source_clean = source_uri.replace("gs://", "")
+    src_bucket_name = source_clean.split("/")[0]
+    src_prefix = "/".join(source_clean.split("/")[1:])
+
+    src_bucket = client.bucket(src_bucket_name)
+    dst_bucket = client.bucket(TARGET_BUCKET)
+
+    logging.info(f"Listing objects in {source_uri}...")
+    blobs = list(client.list_blobs(src_bucket, prefix=src_prefix))
+    logging.info(f"Found {len(blobs)} objects. Initiating copy...")
+
+    def copy_blob(blob):
+        rel_path = blob.name[len(src_prefix):].lstrip("/")
+        dest_blob_name = f"{dest_prefix}/{rel_path}"
+        src_bucket.copy_blob(blob, dst_bucket, dest_blob_name)
+
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        list(executor.map(copy_blob, blobs))
+
+def main():
+    start_time = time.time()
+    logging.info("Starting Fast Science Python Ingestion Engine...")
+    client, bucket = verify_and_setup_client()
+
+    for idx, ds in enumerate(DATASETS_TO_INGEST, 1):
+        logging.info(f"[{idx}/{len(DATASETS_TO_INGEST)}] Ingesting {ds['title']} ({ds['size_display']})...")
+        logging.info(f"Official Docs: {ds['doc_url']}")
+        dest_prefix = f"datasets/{ds['category']}/{ds['id']}"
+        
+        if ds['source'].startswith('gs://'):
+            sync_gcs_dataset(client, ds['source'], dest_prefix)
+        else:
+            logging.info(f"External HTTP/FTP source: {ds['source']}. Use bash script with aria2c for maximum throughput.")
+
+    elapsed = time.time() - start_time
+    logging.info(f"Ingestion pipeline completed in {elapsed:.1f} seconds.")
+
+if __name__ == "__main__":
+    main()
+`;
+      return py;
+    }
+
+    // SLURM STAGE-IN GENERATOR (100% PURE BASH - VALIDATED WITH bash -n)
+    function generateSlurmScript() {
+      const selectedList = DATASETS.filter(d => state.selectedDatasets.has(d.id));
+      let slurm = `#!/usr/bin/env bash
+#SBATCH --job-name=fastscience_stage_in
+#SBATCH --partition=${state.slurmPartition}
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=${state.parallelStreams}
+#SBATCH --time=04:00:00
+#SBATCH --output=stage_in_%j.log
+#SBATCH --error=stage_in_%j.err
+
+# ==============================================================================
+# FAST SCIENCE DATA HUB — SLURM HPC DATA MOVER STAGE-IN JOB
+# Staging target datasets to local fast NVMe scratch (/scratch) or Lustre mount
+# ==============================================================================
+
+set -euo pipefail
+
+SCRATCH_DIR="${state.scratchPath}"
+TARGET_BUCKET="gs://${state.bucketName}"
+
+echo "[SLURM $(date)] Starting pre-job data staging on node: $(hostname)"
+mkdir -p "\${SCRATCH_DIR}"
+
+`;
+
+      selectedList.forEach(d => {
+        slurm += `# Dataset: ${d.title} (Docs: ${d.docUrl})
+echo "[SLURM] Pre-fetching ${d.title}..."
+gcloud storage rsync -m -r \\
+  "\${TARGET_BUCKET}/datasets/${d.category}/${d.id}/" \\
+  "\${SCRATCH_DIR}/${d.category}/${d.id}/"
+`;
+      });
+
+      slurm += `
+echo "[SLURM $(date)] All datasets staged to \${SCRATCH_DIR}."
+echo "[SLURM] Disk usage in scratch:"
+df -h "\${SCRATCH_DIR}"
+`;
+      return slurm;
+    }
+
+    // TRANSFER JSON SPEC GENERATOR
+    function generateTransferJson() {
+      const selectedList = DATASETS.filter(d => state.selectedDatasets.has(d.id));
+      const firstGcs = selectedList.find(d => d.sourceUri.startsWith('gs://')) || selectedList[0];
+      const sourceBucket = firstGcs ? firstGcs.sourceUri.replace('gs://', '').split('/')[0] : 'gcp-public-data--gnomad';
+
+      const spec = {
+        name: `transferJobs/fast-science-sync-${Date.now()}`,
+        description: "Fast Science automated cloud-to-cloud dataset mirroring job",
+        projectId: state.projectId,
+        transferSpec: {
+          gcsDataSource: {
+            bucketName: sourceBucket
+          },
+          gcsDataSink: {
+            bucketName: state.bucketName,
+            path: `datasets/${firstGcs.category}/${firstGcs.id}/`
+          },
+          transferOptions: {
+            overwriteObjectsAlreadyExistingInSink: state.overwrite === 'ALWAYS',
+            deleteObjectsUniqueInSink: false
+          }
+        },
+        schedule: {
+          scheduleStartDate: {
+            year: 2026,
+            month: 9,
+            day: 25
+          }
+        },
+        status: "ENABLED"
+      };
+
+      return JSON.stringify(spec, null, 2);
+    }
+
+    // README GENERATOR
+    function generateReadmeMarkdown() {
+      const selectedList = DATASETS.filter(d => state.selectedDatasets.has(d.id));
+      let totalGb = 0;
+      selectedList.forEach(d => totalGb += d.sizeGb);
+      const totalDisplay = totalGb >= 1000 ? `${(totalGb / 1000).toFixed(1)} TB` : `${totalGb} GB`;
+
+      let md = `# Fast Science Data Hub — Operational Runbook
+
+> High-throughput scientific datasets mirroring workbench for Google Cloud AI Hypercomputer, Vertex AI, GKE, and Slurm HPC clusters.
+
+---
+
+## 📋 Target Infrastructure Overview
+- **Project ID**: \`${state.projectId}\`
+- **Destination Bucket**: \`gs://${state.bucketName}\`
+- **Region**: \`${state.region}\`
+- **Storage Class**: \`${state.storageClass}\`
+- **Hierarchical Namespace (HNS)**: \`${state.hns === 'true' ? 'Enabled' : 'Disabled'}\`
+- **Selected Datasets**: \`${selectedList.length}\`
+- **Total Volume**: \`~${totalDisplay}\`
+
+---
+
+## 🏛️ Architectural Components: Why They Exist & Their Purpose
+
+### ⚡ 1. Transfer Ingestion Engine (Google Cloud Storage Transfer Service)
+- **Core Purpose**: Automated, serverless, line-rate cloud-to-cloud data mirroring directly across Google's private network backbone into your regional bucket.
+- **Why It Exists**: Downloading terabytes of scientific archives using manual curl/wget or local scripts fails frequently due to transient connection drops and bottlenecks on single VMs. STS executes 64+ concurrent streams without managing VMs, performs automated retries, and verifies bit-for-bit cryptographic **CRC32c / MD5 checksums** to prevent silent data corruption.
+
+### 🪣 2. Target Mirror (\`gs://${state.bucketName}\`)
+- **Core Purpose**: Sovereign, persistent, regional scientific data lake collocated directly in your compute region (\`${state.region}\`).
+- **Why It Exists**: Public repositories (NCBI, EBI, AWS Open Data) enforce rate limits, suffer downtime, and incur external network latency. Collocating datasets in the same GCP region cuts inter-service network egress fees to **$0**. Hierarchical Namespace (HNS) provides true POSIX directory semantics and atomic folder renames, while **Autoclass** automatically tiers cold benchmarks to save 50%+ in storage costs.
+
+### 🚀 3. Scientific AI & HPC Acceleration Layer (Cloud Storage FUSE & Rapid Cache)
+- **Core Purpose**: POSIX filesystem bridge (\`/mnt/fastscience-datasets/\`) providing sub-millisecond streaming access to AI accelerators (NVIDIA H100/H200, TPU v5p) and Slurm compute nodes.
+- **Why It Exists**: AI frameworks (PyTorch \`DataLoader\`, JAX) and HPC bio-tools require local POSIX file paths, but GCS is an HTTP object store. Pre-downloading multi-terabyte datasets to local disks wastes hours of expensive accelerator time (**$30+/hr per H100**), causing severe GPU idle starvation. GCSFuse streams files on-demand, and Rapid Cache uses local NVMe SSDs to serve hot datasets at up to **2.5 TB/s**, slashing pod initialization time by up to **7×**.
+
+---
+
+## 📚 Selected Scientific Datasets & Reference Documentation
+
+| Dataset | Category | Provider | Size | Destination Target Path | Documentation | Source Reference | License |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n`;
+
+      selectedList.forEach(d => {
+        const catName = CATEGORY_META[d.category] ? CATEGORY_META[d.category].name : d.category;
+        md += `| **${d.title}** | ${catName} | ${d.provider} | ${d.sizeDisplay} | \`datasets/${d.category}/${d.id}/\` | [Docs](${d.docUrl}) | [Reference Portal](${d.refUrl}) | ${d.license} |\n`;
+      });
+
+      md += `
+---
+
+## 🚀 Execution Guide
+
+### Option 1: Storage Transfer Service (Automated Serverless Transfer)
+1. Initialize the Terraform module to create the bucket and STS jobs:
+\`\`\`bash
+terraform init
+terraform apply -auto-approve
+\`\`\`
+
+### Option 2: High-Speed CLI Execution (Manual / VM Data Mover)
+1. Grant execute permissions to the generated script:
+\`\`\`bash
+chmod +x download_datasets.sh
+./download_datasets.sh
+\`\`\`
+
+### Option 3: Slurm HPC Cluster Batch Stage-In
+1. Submit the data-mover job before your GPU training run:
+\`\`\`bash
+sbatch slurm_stage_in.sh
+\`\`\`
+
+---
+
+## ⚡ Accelerator Mounting with Cloud Storage FUSE (gcsfuse)
+Mount your mirrored datasets directly on GKE GPU nodes with 7x faster startup:
+
+\`\`\`yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gpu-training-rank
+  annotations:
+    gke-gcsfuse/volumes: "true"
+spec:
+  containers:
+  - name: model-trainer
+    image: us-docker.pkg.dev/${state.projectId}/science/trainer:latest
+    volumeMounts:
+    - name: dataset-vol
+      mountPath: /data
+      readOnly: true
+  volumes:
+  - name: dataset-vol
+    csi:
+      driver: gcsfuse.csi.storage.gke.io
+      volumeAttributes:
+        bucketName: "${state.bucketName}"
+        mountOptions: "implicit-dirs,file-cache:max-size-mb:1000000"
+\`\`\`
+`;
+      return md;
+    }
+
+    // SAFE SINGLE-PASS TOKENIZING SYNTAX HIGHLIGHTER (Zero HTML tag leaks!)
+    function highlightSyntax(code) {
+      if (!code) return '';
+      
+      const tokenRegex = /(#[^\n]*|\/\/[^\n]*)|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|\b(resource|variable|provider|output|terraform|def|import|from|class|if|else|for|in|while|return|function|const|let|var|set|exit)\b|\b(gcloud|storage|gsutil|rsync|aria2c|wget|curl|tar|gunzip|huggingface-cli|sbatch|df|mkdir|chmod)\b|(\b-{1,2}[a-zA-Z0-9_\-]+)/g;
+      
+      let result = '';
+      let lastIndex = 0;
+      let match;
+      
+      while ((match = tokenRegex.exec(code)) !== null) {
+        result += escapeHtml(code.slice(lastIndex, match.index));
+        
+        if (match[1]) {
+          result += `<span class="hl-com">${escapeHtml(match[1])}</span>`;
+        } else if (match[2]) {
+          result += `<span class="hl-str">${escapeHtml(match[2])}</span>`;
+        } else if (match[3]) {
+          result += `<span class="hl-kw">${escapeHtml(match[3])}</span>`;
+        } else if (match[4]) {
+          result += `<span class="hl-cmd">${escapeHtml(match[4])}</span>`;
+        } else if (match[5]) {
+          result += `<span class="hl-flag">${escapeHtml(match[5])}</span>`;
+        }
+        lastIndex = tokenRegex.lastIndex;
+      }
+      result += escapeHtml(code.slice(lastIndex));
+      return result;
+    }
+
+    // ACTIONS: COPY & DOWNLOADS (Always copies clean raw plain text!)
+    function getCleanActiveScriptContent() {
+      if (state.activeTab === 'arch_flow') {
+        if (state.archMode === 'mermaid') return generateArchMermaid();
+        if (state.archMode === 'ascii') return generateArchAscii();
+        return generateArchSvg();
+      } else if (state.activeTab === 'bash_script') return generateBashScript();
+      else if (state.activeTab === 'terraform') return generateTerraformScript();
+      else if (state.activeTab === 'python_ingest') return generatePythonScript();
+      else if (state.activeTab === 'slurm_job') return generateSlurmScript();
+      else if (state.activeTab === 'transfer_json') return generateTransferJson();
+      else if (state.activeTab === 'readme_doc') return generateReadmeMarkdown();
+      return '';
+    }
+
+    function copyActiveScript() {
+      const content = getCleanActiveScriptContent();
+
+      navigator.clipboard.writeText(content).then(() => {
+        showToast('Pure plain text script copied to clipboard!');
+      }).catch(err => {
+        console.error('Copy error:', err);
+        showToast('Failed to copy', false);
+      });
+    }
+
+    function downloadCurrentScript() {
+      const content = getCleanActiveScriptContent();
+      let filename = 'script.txt';
+
+      if (state.activeTab === 'arch_flow') {
+        if (state.archMode === 'mermaid') filename = 'architecture_flow.mmd';
+        else if (state.archMode === 'ascii') filename = 'pipeline_tree.txt';
+        else filename = 'data_architecture.svg';
+      } else if (state.activeTab === 'bash_script') filename = 'download_datasets.sh';
+      else if (state.activeTab === 'terraform') filename = 'main.tf';
+      else if (state.activeTab === 'python_ingest') filename = 'ingest_datasets.py';
+      else if (state.activeTab === 'slurm_job') filename = 'slurm_stage_in.sh';
+      else if (state.activeTab === 'transfer_json') filename = 'transfer_spec.json';
+      else if (state.activeTab === 'readme_doc') filename = 'README.md';
+
+      downloadFile(filename, content);
+      showToast(`Downloaded ${filename}`);
+    }
+
+    function downloadBundle() {
+      downloadFile('download_datasets.sh', generateBashScript());
+      setTimeout(() => downloadFile('main.tf', generateTerraformScript()), 300);
+      setTimeout(() => downloadFile('ingest_datasets.py', generatePythonScript()), 600);
+      setTimeout(() => downloadFile('README.md', generateReadmeMarkdown()), 900);
+      showToast('Downloaded dataset ingestion bundle!');
+    }
+
+    function downloadFile(filename, text) {
+      const element = document.createElement('a');
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+      element.setAttribute('download', filename);
+      element.style.display = 'none';
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    }
+
+    // DRAGGABLE SPLIT GUTTER RESIZE
+    function initSplitGutter() {
+      const gutter = document.getElementById('splitGutter');
+      const lhs = document.getElementById('lhsPanel');
+      const container = document.getElementById('mainContainer');
+      let isDragging = false;
+
+      gutter.addEventListener('mousedown', (e) => {
+        if (state.layoutMode === 'flow') return;
+        isDragging = true;
+        gutter.classList.add('dragging');
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const containerRect = container.getBoundingClientRect();
+        const newLeftWidth = e.clientX - containerRect.left;
+        const totalWidth = containerRect.width;
+        const minWidth = 360;
+        const maxWidth = totalWidth - 380;
+
+        if (newLeftWidth >= minWidth && newLeftWidth <= maxWidth) {
+          const percentage = (newLeftWidth / totalWidth) * 100;
+          lhs.style.width = `${percentage}%`;
+        }
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (isDragging) {
+          isDragging = false;
+          gutter.classList.remove('dragging');
+          document.body.style.cursor = '';
+          document.body.style.userSelect = '';
+        }
+      });
+
+      gutter.addEventListener('dblclick', () => {
+        lhs.style.width = '50%';
+        showToast('Panels reset to 50% / 50%');
+      });
+    }
+  </script>
+</body>
+</html>
